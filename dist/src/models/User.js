@@ -14,8 +14,8 @@ module.exports = (sequelize) => {
     sequelize.define(path_1.default.basename(__filename, path_1.default.extname(__filename)).toLowerCase(), {
         id: {
             type: sequelize_1.DataTypes.UUID,
-            defaultValue: sequelize_1.DataTypes.UUIDV4,
             primaryKey: true,
+            defaultValue: sequelize_1.DataTypes.UUIDV4,
         },
         username: {
             type: sequelize_1.DataTypes.STRING(64),

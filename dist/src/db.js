@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -17,20 +8,20 @@ const sequelize_1 = require("sequelize");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
-const sequelize = new sequelize_1.Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`, {
+const sequelize = new sequelize_1.Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`, {
     logging: false,
     native: false, // lets Sequelize know we can use pg-native for ~30% more speed
 });
 // Test function to check the connectivity to the database.
-const checkConnection = () => __awaiter(void 0, void 0, void 0, function* () {
+const checkConnection = async () => {
     try {
-        yield sequelize.authenticate();
+        await sequelize.authenticate();
         console.log("Connection has been established successfully.");
     }
     catch (error) {
         console.error("Unable to connect to the database:", error);
     }
-});
+};
 exports.checkConnection = checkConnection;
 const basename = path_1.default.basename(__filename);
 const modelDefiners = [];
@@ -59,8 +50,15 @@ const { Ccp, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
 // Ejemplo: Product.hasMany(Reviews);
 Role.hasMany(User);
 User.belongsTo(Role);
-Municipality.hasMany(Parish);
-Parish.belongsTo(Municipality);
+Municipality.hasMany(Parish, {
+    sourceKey: "id",
+    foreignKey: "parishId",
+    as: "parishes",
+});
+Parish.belongsTo(Municipality, {
+    foreignKey: "municipalityId",
+    as: "municipality",
+});
 Quadrant.belongsTo(Parish);
 Parish.hasMany(Quadrant);
 Ccp.belongsTo(Parish);

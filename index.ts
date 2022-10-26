@@ -17,14 +17,17 @@
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+import * as dotenv from "dotenv";
+dotenv.config();
 import server from "./src/app";
 import sequelize, { checkConnection } from "./src/db";
 
+const { DB_PORT } = process.env;
 // Syncing all the models at once.
 checkConnection().then(async () => {
-  sequelize.sync({ force: true }).then(() => {
-    server.listen(3001, () => {
-      console.log("Server listening at 3001"); // eslint-disable-line no-console
+  sequelize.sync({ alter: true }).then(() => {
+    server.listen(DB_PORT, () => {
+      console.log(`Server listening at ${DB_PORT}`); // eslint-disable-line no-console
     });
   });
 });

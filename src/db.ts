@@ -5,7 +5,7 @@ import path from "path";
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
 
 const sequelize = new Sequelize(
-  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`,
+  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`,
   {
     logging: false, // set to console.log to see the raw SQL queries
     native: false, // lets Sequelize know we can use pg-native for ~30% more speed
@@ -60,8 +60,15 @@ const { Ccp, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
 // Ejemplo: Product.hasMany(Reviews);
 Role.hasMany(User);
 User.belongsTo(Role);
-Municipality.hasMany(Parish);
-Parish.belongsTo(Municipality);
+Municipality.hasMany(Parish, {
+  sourceKey: "id",
+  foreignKey: "parishId",
+  as: "parishes",
+});
+Parish.belongsTo(Municipality, {
+  foreignKey: "municipalityId",
+  as: "municipality",
+});
 Quadrant.belongsTo(Parish);
 Parish.hasMany(Quadrant);
 Ccp.belongsTo(Parish);

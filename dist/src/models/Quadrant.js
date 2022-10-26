@@ -10,6 +10,11 @@ const path_1 = __importDefault(require("path"));
 module.exports = (sequelize) => {
     // defino el modelo
     sequelize.define(path_1.default.basename(__filename, path_1.default.extname(__filename)).toLowerCase(), {
+        id: {
+            type: sequelize_1.DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         name: {
             type: sequelize_1.DataTypes.STRING,
             allowNull: false,
