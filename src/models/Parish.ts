@@ -1,9 +1,20 @@
 import {
+  Association,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
   CreationOptional,
   DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyAddAssociationsMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
@@ -13,6 +24,7 @@ import {
 } from "sequelize";
 import path from "path";
 import { Municipality } from "./Municipality";
+import { CCP } from "./CCP";
 
 export class Parish extends Model<
   InferAttributes<Parish>,
@@ -37,6 +49,24 @@ export class Parish extends Model<
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
   declare setMunicipality: BelongsToSetAssociationMixin<Municipality, number>;
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
+  declare getCCPs: HasManyGetAssociationsMixin<CCP>; // Note the null assertions!
+  declare countCCPs: HasManyCountAssociationsMixin;
+  declare hasCCP: HasManyHasAssociationMixin<CCP, number>;
+  declare hasCCPs: HasManyHasAssociationsMixin<CCP, number>;
+  declare setCCPs: HasManySetAssociationsMixin<CCP, number>;
+  declare addCCP: HasManyAddAssociationMixin<CCP, number>;
+  declare addCCPs: HasManyAddAssociationsMixin<CCP, number>;
+  declare removeCCP: HasManyRemoveAssociationMixin<CCP, number>;
+  declare removeCCPs: HasManyRemoveAssociationsMixin<CCP, number>;
+  declare createCCP: HasManyCreateAssociationMixin<CCP, "ccpId">;
+
+  // You can also pre-declare possible inclusions, these will only be populated if you
+  // actively include a relation.
+  declare ccps?: NonAttribute<CCP[]>; // Note this is optional since it's only populated when explicitly requested in code
+
+  declare static associations: {
+    ccps: Association<Parish, CCP>;
+  };
 }
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.

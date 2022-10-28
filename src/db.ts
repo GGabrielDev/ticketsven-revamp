@@ -54,7 +54,7 @@ let capsEntries = entries.map((entry) => [
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
-const { Ccp, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
+const { CCP, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Ejemplo: Product.hasMany(Reviews);
@@ -65,6 +65,14 @@ Municipality.hasMany(Parish, {
 });
 Parish.belongsTo(Municipality, {
   foreignKey: "municipalityId",
+});
+Parish.hasMany(CCP, {
+  sourceKey: "id",
+  foreignKey: "parishId",
+  as: "ccps", // this determines the name in `associations`!
+});
+CCP.belongsTo(Parish, {
+  foreignKey: "parishId",
 });
 
 export const Models = sequelize.models; // Para importar un objeto con solo los modelos: import { Models } from "./db.js"
