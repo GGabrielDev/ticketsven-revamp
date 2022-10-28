@@ -8,19 +8,17 @@ import {
 } from "sequelize";
 import path from "path";
 
-interface CCPModel
-  extends Model<InferAttributes<CCPModel>, InferCreationAttributes<CCPModel>> {
+class CCP extends Model<InferAttributes<CCP>, InferCreationAttributes<CCP>> {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  id: CreationOptional<number>;
-  name: string;
+  declare id: CreationOptional<number>;
+  declare name: string;
 }
 
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize: Sequelize) => {
   // defino el modelo
-  sequelize.define<CCPModel>(
-    path.basename(__filename, path.extname(__filename)).toLowerCase(),
+  CCP.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -35,6 +33,12 @@ module.exports = (sequelize: Sequelize) => {
         },
       },
     },
-    { timestamps: false }
+    {
+      sequelize,
+      tableName: path
+        .basename(__filename, path.extname(__filename))
+        .toLowerCase(),
+      timestamps: false,
+    }
   );
 };

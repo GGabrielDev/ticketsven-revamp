@@ -1,29 +1,62 @@
 import {
-  Sequelize,
-  Model,
+  Association,
   DataTypes,
-  CreationOptional,
+  HasManyAddAssociationMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyAddAssociationsMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  Model,
+  Sequelize,
   InferAttributes,
   InferCreationAttributes,
+  CreationOptional,
+  NonAttribute,
 } from "sequelize";
 import path from "path";
+import { Parish } from "./Parish";
 
-interface MunicipalityModel
-  extends Model<
-    InferAttributes<MunicipalityModel>,
-    InferCreationAttributes<MunicipalityModel>
-  > {
+export class Municipality extends Model<
+  InferAttributes<Municipality>,
+  InferCreationAttributes<Municipality>
+> {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  id: CreationOptional<number>;
-  name: string;
+  declare id: CreationOptional<number>;
+  declare name: string;
+
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
+  declare getParishes: HasManyGetAssociationsMixin<Parish>; // Note the null assertions!
+  declare countParishes: HasManyCountAssociationsMixin;
+  declare hasParish: HasManyHasAssociationMixin<Parish, number>;
+  declare hasParishes: HasManyHasAssociationsMixin<Parish, number>;
+  declare setParishes: HasManySetAssociationsMixin<Parish, number>;
+  declare addParish: HasManyAddAssociationMixin<Parish, number>;
+  declare addParishes: HasManyAddAssociationsMixin<Parish, number>;
+  declare removeParish: HasManyRemoveAssociationMixin<Parish, number>;
+  declare removeParishes: HasManyRemoveAssociationsMixin<Parish, number>;
+  declare createParish: HasManyCreateAssociationMixin<Parish, "municipalityId">;
+
+  // You can also pre-declare possible inclusions, these will only be populated if you
+  // actively include a relation.
+  declare parishes?: NonAttribute<Parish[]>; // Note this is optional since it's only populated when explicitly requested in code
+
+  declare static associations: {
+    parishes: Association<Municipality, Parish>;
+  };
 }
 
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize: Sequelize) => {
   // defino el modelo
-  sequelize.define<MunicipalityModel>(
-    path.basename(__filename, path.extname(__filename)).toLowerCase(),
+  Municipality.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -38,6 +71,12 @@ module.exports = (sequelize: Sequelize) => {
         },
       },
     },
-    { timestamps: false }
+    {
+      sequelize,
+      tableName: path
+        .basename(__filename, path.extname(__filename))
+        .toLowerCase(),
+      timestamps: false,
+    }
   );
 };

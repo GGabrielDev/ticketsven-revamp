@@ -58,21 +58,14 @@ const { Ccp, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Ejemplo: Product.hasMany(Reviews);
-Role.hasMany(User);
-User.belongsTo(Role);
 Municipality.hasMany(Parish, {
   sourceKey: "id",
-  foreignKey: "parishId",
-  as: "parishes",
+  foreignKey: "municipalityId",
+  as: "parishes", // this determines the name in `associations`!
 });
 Parish.belongsTo(Municipality, {
   foreignKey: "municipalityId",
-  as: "municipality",
 });
-Quadrant.belongsTo(Parish);
-Parish.hasMany(Quadrant);
-Ccp.belongsTo(Parish);
-Parish.hasMany(Ccp);
 
 export const Models = sequelize.models; // Para importar un objeto con solo los modelos: import { Models } from "./db.js"
 export default sequelize; // Para importar la conexión: import conn = from './db.js';

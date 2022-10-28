@@ -1,6 +1,8 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { Models } from "../db";
+import { Municipality as MunicipalityEntity } from "../models/Municipality";
+import { Parish as ParishEntity } from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
@@ -64,8 +66,17 @@ router.post(
           }`
         );
       } else {
-        const municipality = await Municipality.findByPk(municipalityId);
-        const result = await Parish.create({ name });
+        const municipality = await Municipality.findByPk(municipalityId)
+          .then((value) => value as MunicipalityEntity | null)
+          .catch((error) => {
+            if (error.parent.code === "22P02") {
+              throw new HttpException(
+                400,
+                "The format of the request is not UUID"
+              );
+            }
+          });
+        const result = (await Parish.create({ name })) as ParishEntity;
 
         if (!municipality) {
           throw new HttpException(
@@ -73,11 +84,14 @@ router.post(
             "The requested Municipality doesn't exist"
           );
         }
-        municipality.addParish(result);
+        await municipality.addParish(result);
 
-        return res.status(201).send(result);
+        return res.status(201).send(
+          await Parish.findByPk(result.id)
+        );
       }
     } catch (error) {
+      console.error(error);
       next(error);
     }
   }

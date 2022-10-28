@@ -30,6 +30,7 @@ router.get(
               },
             }
           : {},
+        include: [Municipality.associations.parishes],
       });
 
       if (result.length === 0) {
