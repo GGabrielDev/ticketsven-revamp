@@ -35,13 +35,26 @@ router.get(
           : {},
       });
 
-      if (result.length === 0) {
-        throw new HttpException(404, "No entries has been found.", {
-          amount: result.length,
-          result,
-        });
-      }
-      return res.status(200).send({ amount: result.length, result });
+      console.log(result);
+
+      return res
+        .status(result.length === 0 ? 204 : 200)
+        .send({ amount: result.length, result });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:ccpId",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    const { ccpId } = req.params;
+
+    try {
+      const result = await CCP.findByPk(ccpId);
+
+      return res.status(!result ? 204 : 200).send(result);
     } catch (error) {
       next(error);
     }
@@ -77,7 +90,7 @@ router.post(
         if (!parish) {
           throw new HttpException(404, "The requested Parish doesn't exist");
         }
-        await parish.addCCP(result);
+        await parish.addCcp(result);
 
         return res.status(201).send(await CCP.findByPk(result.id));
       }

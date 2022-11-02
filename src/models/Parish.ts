@@ -47,18 +47,21 @@ export class Parish extends Model<
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
-  declare setMunicipality: BelongsToSetAssociationMixin<Municipality, number>;
+  declare setMunicipality: BelongsToSetAssociationMixin<
+    Municipality,
+    CCP["id"]
+  >;
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
-  declare getCCPs: HasManyGetAssociationsMixin<CCP>; // Note the null assertions!
-  declare countCCPs: HasManyCountAssociationsMixin;
-  declare hasCCP: HasManyHasAssociationMixin<CCP, number>;
-  declare hasCCPs: HasManyHasAssociationsMixin<CCP, number>;
-  declare setCCPs: HasManySetAssociationsMixin<CCP, number>;
-  declare addCCP: HasManyAddAssociationMixin<CCP, number>;
-  declare addCCPs: HasManyAddAssociationsMixin<CCP, number>;
-  declare removeCCP: HasManyRemoveAssociationMixin<CCP, number>;
-  declare removeCCPs: HasManyRemoveAssociationsMixin<CCP, number>;
-  declare createCCP: HasManyCreateAssociationMixin<CCP, "ccpId">;
+
+  declare getCcps: HasManyGetAssociationsMixin<CCP>; // Note the null assertions!
+  declare countCcps: HasManyCountAssociationsMixin;
+  declare hasCcp: HasManyHasAssociationMixin<CCP, CCP["id"]>;
+  declare hasCcps: HasManyHasAssociationsMixin<CCP, CCP["id"]>;
+  declare setCcps: HasManySetAssociationsMixin<CCP, CCP["id"]>;
+  declare addCcp: HasManyAddAssociationMixin<CCP, CCP["id"]>;
+  declare addCcps: HasManyAddAssociationsMixin<CCP, CCP["id"]>;
+  declare removeCcp: HasManyRemoveAssociationMixin<CCP, CCP["id"]>;
+  declare createCcp: HasManyCreateAssociationMixin<CCP, "parishId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.

@@ -9,16 +9,15 @@ import {
 import bcrypt from "bcrypt";
 import path from "path";
 
-interface UserModel
-  extends Model<
-    InferAttributes<UserModel>,
-    InferCreationAttributes<UserModel>
-  > {
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  id: CreationOptional<string>;
-  username: string;
-  fullname: string;
-  password: string;
+  declare id: CreationOptional<string>;
+  declare username: string;
+  declare fullname: string;
+  declare password: string;
 }
 
 const saltRounds = 10;
@@ -27,8 +26,7 @@ const saltRounds = 10;
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize: Sequelize) => {
   // defino el modelo
-  sequelize.define<UserModel>(
-    path.basename(__filename, path.extname(__filename)).toLowerCase(),
+  User.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -61,6 +59,13 @@ module.exports = (sequelize: Sequelize) => {
         },
       },
     },
-    { timestamps: false }
+    {
+      sequelize,
+      tableName: path
+        .basename(__filename, path.extname(__filename))
+        .toLowerCase(),
+      timestamps: false,
+      paranoid: true,
+    }
   );
 };

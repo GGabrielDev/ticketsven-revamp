@@ -8,27 +8,32 @@ import {
 } from "sequelize";
 import path from "path";
 
-interface TicketModel
-  extends Model<
-    InferAttributes<TicketModel>,
-    InferCreationAttributes<TicketModel>
-  > {
+export class Ticket extends Model<
+  InferAttributes<Ticket>,
+  InferCreationAttributes<Ticket>
+> {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  id: CreationOptional<string>;
+  declare id: CreationOptional<string>;
 }
 
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize: Sequelize) => {
   // defino el modelo
-  sequelize.define<TicketModel>(
-    path.basename(__filename, path.extname(__filename)).toLowerCase(),
+  Ticket.init(
     {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
+    },
+    {
+      sequelize,
+      tableName: path
+        .basename(__filename, path.extname(__filename))
+        .toLowerCase(),
+      paranoid: true,
     }
   );
 };

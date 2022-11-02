@@ -34,12 +34,29 @@ router.get(
       });
 
       if (result.length === 0) {
-        throw new HttpException(404, "No entries has been found.", {
-          amount: result.length,
-          result,
-        });
+        return res.status(204).send({ amount: result.length, result });
       }
       return res.status(200).send({ amount: result.length, result });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:municipalityId",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { municipalityId } = req.params;
+
+      const result = await Municipality.findByPk(municipalityId, {
+        include: [Municipality.associations.parishes],
+      });
+
+      if (!result) {
+        return res.status(204).send("No entries has been found");
+      }
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }

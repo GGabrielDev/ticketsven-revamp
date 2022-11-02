@@ -34,13 +34,13 @@ export class Municipality extends Model<
   // these will not exist until `Model.init` was called.
   declare getParishes: HasManyGetAssociationsMixin<Parish>; // Note the null assertions!
   declare countParishes: HasManyCountAssociationsMixin;
-  declare hasParish: HasManyHasAssociationMixin<Parish, number>;
-  declare hasParishes: HasManyHasAssociationsMixin<Parish, number>;
-  declare setParishes: HasManySetAssociationsMixin<Parish, number>;
-  declare addParish: HasManyAddAssociationMixin<Parish, number>;
-  declare addParishes: HasManyAddAssociationsMixin<Parish, number>;
-  declare removeParish: HasManyRemoveAssociationMixin<Parish, number>;
-  declare removeParishes: HasManyRemoveAssociationsMixin<Parish, number>;
+  declare hasParish: HasManyHasAssociationMixin<Parish, Parish["id"]>;
+  declare hasParishes: HasManyHasAssociationsMixin<Parish, Parish["id"]>;
+  declare setParishes: HasManySetAssociationsMixin<Parish, Parish["id"]>;
+  declare addParish: HasManyAddAssociationMixin<Parish, Parish["id"]>;
+  declare addParishes: HasManyAddAssociationsMixin<Parish, Parish["id"]>;
+  declare removeParish: HasManyRemoveAssociationMixin<Parish, Parish["id"]>;
+  declare removeParishes: HasManyRemoveAssociationsMixin<Parish, Parish["id"]>;
   declare createParish: HasManyCreateAssociationMixin<Parish, "municipalityId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you

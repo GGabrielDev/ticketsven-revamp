@@ -41,15 +41,6 @@ modelFilenames.forEach((file) =>
 modelDefiners.forEach((model) => {
   model(sequelize);
 });
-// Capitalizamos los nombres de los modelos ie: product => Product
-let entries = Object.entries(sequelize.models);
-let capsEntries = entries.map((entry) => [
-  entry[0][0].toUpperCase() + entry[0].slice(1),
-  entry[1],
-]);
-(sequelize.models as { [key: string]: ModelStatic<Model> }) =
-  Object.fromEntries(capsEntries);
-
 // Aqui irian las declaraciones de las junction tables.
 
 // En sequelize.models están todos los modelos importados como propiedades
@@ -73,6 +64,14 @@ Parish.hasMany(CCP, {
 });
 CCP.belongsTo(Parish, {
   foreignKey: "parishId",
+});
+CCP.hasMany(Quadrant, {
+  sourceKey: "id",
+  foreignKey: "ccpId",
+  as: "quadrants",
+});
+Quadrant.belongsTo(CCP, {
+  foreignKey: "ccpId",
 });
 
 export const Models = sequelize.models; // Para importar un objeto con solo los modelos: import { Models } from "./db.js"

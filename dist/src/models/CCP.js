@@ -3,10 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CCP = void 0;
 const sequelize_1 = require("sequelize");
 const path_1 = __importDefault(require("path"));
 class CCP extends sequelize_1.Model {
 }
+exports.CCP = CCP;
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {

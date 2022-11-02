@@ -36,12 +36,27 @@ router.get(
       });
 
       if (result.length === 0) {
-        throw new HttpException(404, "No entries has been found.", {
-          amount: result.length,
-          result,
-        });
+        return res.status(204).send({ amount: result.length, result });
       }
       return res.status(200).send({ amount: result.length, result });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:parishId",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    const { parishId } = req.params;
+
+    try {
+      const result = await Parish.findByPk(parishId);
+
+      if (!result) {
+        return res.status(204).send("No entries has been found");
+      }
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -86,9 +101,7 @@ router.post(
         }
         await municipality.addParish(result);
 
-        return res.status(201).send(
-          await Parish.findByPk(result.id)
-        );
+        return res.status(201).send(await Parish.findByPk(result.id));
       }
     } catch (error) {
       console.error(error);

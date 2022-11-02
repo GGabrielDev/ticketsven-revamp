@@ -8,22 +8,20 @@ import {
 } from "sequelize";
 import path from "path";
 
-interface ReasonModel
-  extends Model<
-    InferAttributes<ReasonModel>,
-    InferCreationAttributes<ReasonModel>
-  > {
+export class Reason extends Model<
+  InferAttributes<Reason>,
+  InferCreationAttributes<Reason>
+> {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  id: CreationOptional<number>;
-  name: string;
+  declare id: CreationOptional<number>;
+  declare name: string;
 }
 
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize: Sequelize) => {
   // defino el modelo
-  sequelize.define<ReasonModel>(
-    path.basename(__filename, path.extname(__filename)).toLowerCase(),
+  Reason.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -38,6 +36,12 @@ module.exports = (sequelize: Sequelize) => {
         },
       },
     },
-    { timestamps: false }
+    {
+      sequelize,
+      tableName: path
+        .basename(__filename, path.extname(__filename))
+        .toLowerCase(),
+      timestamps: false,
+    }
   );
 };
