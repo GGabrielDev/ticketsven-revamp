@@ -1,6 +1,5 @@
 import { html } from "htm/preact";
-import CssBaseline from "@mui/material/CssBaseline";
-import Button from "@mui/material/Button";
+import { CssBaseline, Button } from "@mui/material";
 
 export function App() {
   return html`
