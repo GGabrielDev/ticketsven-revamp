@@ -1,11 +1,12 @@
 import { html } from "htm/preact";
-import { CssBaseline, Button } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import ResponsiveAppBar from "./components/ResponsiveAppBar";
 
 export function App() {
   return html`
     <div>
       <${CssBaseline} />
-      <${Button} variant="outlined">Hello World<//>
+      <${ResponsiveAppBar} />
     </div>
   `;
 }
