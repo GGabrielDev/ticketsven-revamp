@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Adb as AdbIcon, Menu as MenuIcon, Person } from "@mui/icons-material";
+import { Menu as MenuIcon, Person } from "@mui/icons-material";
 import Logo from "../assets/logo.png";
 
 const pages = [

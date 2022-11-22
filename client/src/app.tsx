@@ -1,12 +1,18 @@
 import { html } from "htm/preact";
-import { CssBaseline } from "@mui/material";
-import ResponsiveAppBar from "./components/ResponsiveAppBar";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import Router from "./router";
+
+const theme = createTheme({
+  palette: {
+    mode: "light",
+  },
+});
 
 export function App() {
   return html`
-    <div>
+    <${ThemeProvider} theme=${theme}>
       <${CssBaseline} />
-      <${ResponsiveAppBar} />
+			<${Router} />
     </div>
   `;
 }
