@@ -18,7 +18,6 @@ import {
   CreationOptional,
   NonAttribute,
 } from "sequelize";
-import path from "path";
 import { Parish } from "./Parish";
 
 export class Municipality extends Model<
@@ -73,9 +72,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "municipalities",
       timestamps: false,
     }
   );

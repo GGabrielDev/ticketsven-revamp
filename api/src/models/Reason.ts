@@ -6,7 +6,6 @@ import {
   InferAttributes,
   InferCreationAttributes,
 } from "sequelize";
-import path from "path";
 
 export class Reason extends Model<
   InferAttributes<Reason>,
@@ -38,9 +37,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "reasons",
       timestamps: false,
     }
   );

@@ -10,6 +10,7 @@ express.json({ limit: "50mb" });
 const server = express();
 
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
 server.use(morgan("dev"));
 server.use((_, res: Response, next: NextFunction) => {

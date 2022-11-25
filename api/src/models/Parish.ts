@@ -14,7 +14,6 @@ import {
   HasManyAddAssociationsMixin,
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
@@ -22,7 +21,6 @@ import {
   NonAttribute,
   Sequelize,
 } from "sequelize";
-import path from "path";
 import { Municipality } from "./Municipality";
 import { CCP } from "./CCP";
 
@@ -92,9 +90,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "parishes",
       timestamps: false,
     }
   );

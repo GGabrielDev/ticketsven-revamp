@@ -1,13 +1,18 @@
 import {
-  Sequelize,
-  Model,
-  DataTypes,
   CreationOptional,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  BelongsToCreateAssociationMixin,
+  DataTypes,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  Model,
+  NonAttribute,
+  Sequelize,
 } from "sequelize";
-import bcrypt from "bcrypt";
-import path from "path";
+import bcrypt from "bcryptjs";
+import { Role } from "./Role";
 
 export class User extends Model<
   InferAttributes<User>,
@@ -18,6 +23,22 @@ export class User extends Model<
   declare username: string;
   declare fullname: string;
   declare password: string;
+
+  // foreign keys are automatically added by associations methods (like Project.belongsTo)
+  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
+  // display an error if ownerId is missing.
+  declare roleId: ForeignKey<Role["id"]>;
+
+  // `municipality` is an eagerly-loaded association.
+  // We tag it as `NonAttribute`
+  declare role?: NonAttribute<Role>;
+
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
+  declare getRole: BelongsToGetAssociationMixin<Role>;
+  declare setRole: BelongsToSetAssociationMixin<Role, Role["id"]>;
+  declare createRole: BelongsToCreateAssociationMixin<Role>;
 }
 
 const saltRounds = 10;
@@ -37,7 +58,7 @@ module.exports = (sequelize: Sequelize) => {
         type: DataTypes.STRING(64),
         allowNull: false,
         validate: {
-          is: /[^A-Za-z0-9]+$/i,
+          is: /[a-z0-9]+$/i,
         },
       },
       fullname: {
@@ -52,8 +73,10 @@ module.exports = (sequelize: Sequelize) => {
         allowNull: false,
         set(value: string) {
           let resultHash = "";
-          bcrypt.hash(value, saltRounds, function (_, hash) {
-            resultHash = hash;
+          bcrypt.genSalt(saltRounds, function (_, salt) {
+            bcrypt.hash(value, salt, function (_, hash) {
+              resultHash = hash;
+            });
           });
           this.setDataValue("password", resultHash);
         },
@@ -61,9 +84,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "users",
       timestamps: false,
       paranoid: true,
     }

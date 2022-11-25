@@ -11,7 +11,6 @@ import {
   NonAttribute,
   Sequelize,
 } from "sequelize";
-import path from "path";
 import { CCP } from "./CCP";
 
 export class Quadrant extends Model<
@@ -68,9 +67,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "quadrants",
       timestamps: false,
     }
   );

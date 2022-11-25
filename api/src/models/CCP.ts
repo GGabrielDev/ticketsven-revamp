@@ -22,7 +22,6 @@ import {
   NonAttribute,
   Sequelize,
 } from "sequelize";
-import path from "path";
 import { Parish } from "./Parish";
 import { Quadrant } from "./Quadrant";
 
@@ -97,9 +96,7 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-      tableName: path
-        .basename(__filename, path.extname(__filename))
-        .toLowerCase(),
+      tableName: "ccps",
       timestamps: false,
     }
   );

@@ -1,11 +1,13 @@
-import { Sequelize, Model, ModelStatic } from "sequelize";
+import { Sequelize, Model } from "sequelize";
 import fs from "fs";
 import path from "path";
+import { Role as RoleEntity } from "./models/Role";
+import { User as UserEntity } from "./models/User";
 
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT } = process.env;
 
 const sequelize = new Sequelize(
-  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}`,
+  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
   {
     logging: false, // set to console.log to see the raw SQL queries
     native: false, // lets Sequelize know we can use pg-native for ~30% more speed
@@ -49,6 +51,14 @@ const { CCP, Municipality, Parish, Quadrant, Role, User } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Ejemplo: Product.hasMany(Reviews);
+Role.hasMany(User, {
+  sourceKey: "id",
+  foreignKey: "roleId",
+  as: "users",
+});
+User.belongsTo(Role, {
+  foreignKey: "roleId",
+});
 Municipality.hasMany(Parish, {
   sourceKey: "id",
   foreignKey: "municipalityId",
@@ -73,6 +83,23 @@ CCP.hasMany(Quadrant, {
 Quadrant.belongsTo(CCP, {
   foreignKey: "ccpId",
 });
+
+export const forceInitializer = async () => {
+  const adminRole = (await Role.create({ id: 1, name: "admin" })) as RoleEntity;
+  await Role.create({ id: 2, name: "supervisor" });
+  await Role.create({ id: 3, name: "dispatcher" });
+  await Role.create({ id: 4, name: "agent" });
+
+  const adminUser = (await User.create({
+    username: "systemAdmin",
+    fullname: "Administrador del Sistema",
+    password: "hardcodedPassword1235",
+  })) as UserEntity;
+
+  adminRole.addUser(adminUser);
+
+  console.log("Roles and Admin User created.");
+};
 
 export const Models = sequelize.models; // Para importar un objeto con solo los modelos: import { Models } from "./db.js"
 export default sequelize; // Para importar la conexión: import conn = from './db.js';
