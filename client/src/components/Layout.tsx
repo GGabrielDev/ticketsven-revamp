@@ -6,13 +6,9 @@ import ResponsiveAppBar from "./ResponsiveAppBar";
 function Layout() {
   return html`
     <${ResponsiveAppBar} />
-    <${Box}
-      sx=${{
-        width: 1,
-        p: 2,
-      }}
-      ><${Outlet}
-    /><//>
+    <${Box} sx=${{ width: 1 }}>
+      <${Outlet} />
+    <//>
   `;
 }
 

@@ -2,7 +2,7 @@ import { html } from "htm/preact";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import Router from "./router";
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
     mode: "light",
   },

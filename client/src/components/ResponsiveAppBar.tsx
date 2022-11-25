@@ -12,6 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { Menu as MenuIcon, Person } from "@mui/icons-material";
 import Logo from "../assets/logo.png";
 
@@ -28,6 +29,7 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | EventTarget>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
+  const location = useLocation();
 
   const handleOpenNavMenu = (event: MouseEvent) => {
     setAnchorElNav(event.currentTarget);
@@ -45,7 +47,10 @@ function ResponsiveAppBar() {
   };
 
   return html`
-    <${AppBar} position="static" sx=${{ p: 1 }}>
+    <${AppBar}
+      position="static"
+      sx=${{ p: 1, display: location.pathname === "/" ? "none" : "flex" }}
+    >
       <${Container} maxWidth="xl">
         <${Toolbar} disableGutters>
           <${Box}
