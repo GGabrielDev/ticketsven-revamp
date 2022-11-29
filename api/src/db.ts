@@ -14,16 +14,6 @@ const sequelize = new Sequelize(
   }
 );
 
-// Test function to check the connectivity to the database.
-export const checkConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-};
-
 const basename = path.basename(__filename);
 
 const modelDefiners: ((arg0: Sequelize) => Model)[] = [];
@@ -83,6 +73,16 @@ CCP.hasMany(Quadrant, {
 Quadrant.belongsTo(CCP, {
   foreignKey: "ccpId",
 });
+
+// Test function to check the connectivity to the database.
+export const checkConnection = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
 
 export const forceInitializer = async () => {
   const adminRole = (await Role.create({ id: 1, name: "admin" })) as RoleEntity;
