@@ -17,7 +17,8 @@ const handleError: ErrorRequestHandler = (err, req, res, next) => {
   if (!(err instanceof HttpException)) {
     customError = new HttpException(
       500,
-      "Oh no, this is embarrasing. We are having troubles my friend"
+      "Oh no, this is embarrasing. We are having troubles my friend",
+      err
     );
   }
 

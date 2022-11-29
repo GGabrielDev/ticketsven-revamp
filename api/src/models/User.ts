@@ -40,9 +40,7 @@ export class User extends Model<
   declare setRole: BelongsToSetAssociationMixin<Role, Role["id"]>;
   declare createRole: BelongsToCreateAssociationMixin<Role>;
 
-  validatePassword(password: string) {
-    return bcrypt.compareSync(password, this.password);
-  }
+  declare validatePassword: NonAttribute<(password: any) => boolean>;
 }
 
 const saltRounds = 10;
@@ -69,7 +67,7 @@ module.exports = (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          is: /^[a-zA-Z\s]*$/i,
+          is: /^[a-zA-Z\s.]*$/i,
         },
       },
       password: {
@@ -96,7 +94,7 @@ module.exports = (sequelize: Sequelize) => {
   User.beforeUpdate(async (user) => {
     if (user.changed("password")) {
       try {
-				const salt = await bcrypt.genSalt(saltRounds);
+        const salt = await bcrypt.genSalt(saltRounds);
         const hash = await bcrypt.hash(user.password, salt);
         user.setDataValue("password", hash);
       } catch (error) {
@@ -104,4 +102,7 @@ module.exports = (sequelize: Sequelize) => {
       }
     }
   });
+  User.prototype.validatePassword = function (password: string) {
+    return bcrypt.compareSync(password, this.password);
+  };
 };

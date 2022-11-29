@@ -4,7 +4,15 @@ import path from "path";
 import { Role as RoleEntity } from "./models/Role";
 import { User as UserEntity } from "./models/User";
 
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT } = process.env;
+const {
+  DB_USER,
+  DB_PASSWORD,
+  DB_HOST,
+  DB_NAME,
+  DB_PORT,
+  ADMIN_USER,
+  ADMIN_PASSWORD,
+} = process.env;
 
 const sequelize = new Sequelize(
   `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
@@ -88,12 +96,12 @@ export const forceInitializer = async () => {
   const adminRole = (await Role.create({ id: 1, name: "admin" })) as RoleEntity;
   await Role.create({ id: 2, name: "supervisor" });
   await Role.create({ id: 3, name: "dispatcher" });
-  await Role.create({ id: 4, name: "agent" });
+  await Role.create({ id: 4, name: "operator" });
 
   const adminUser = (await User.create({
-    username: "systemAdmin",
+    username: ADMIN_USER || "admin",
     fullname: "Administrador del Sistema",
-    password: "hardcodedPassword1235",
+    password: ADMIN_PASSWORD || "password",
   })) as UserEntity;
 
   adminRole.addUser(adminUser);
