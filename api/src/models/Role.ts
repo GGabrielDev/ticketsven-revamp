@@ -69,6 +69,10 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
+      name: {
+        singular: "role",
+        plural: "roles",
+      },
       tableName: "roles",
       timestamps: false,
     }

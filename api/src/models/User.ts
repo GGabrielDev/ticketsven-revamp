@@ -77,6 +77,10 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
+			name: {
+				singular: "user",
+				plural: "users"
+			},
       tableName: "users",
       timestamps: false,
       paranoid: true,

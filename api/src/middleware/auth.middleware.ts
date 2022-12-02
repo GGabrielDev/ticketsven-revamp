@@ -17,9 +17,7 @@ export const authJWT: RequestHandler = (req, _, next) => {
     if (authHeader && authHeader !== "null") {
       const token = authHeader.split(" ")[1];
       verify(token, JWT_SECRET, (err: any, payload: any) => {
-        console.log(payload);
-        console.log(err);
-        if (err) throw new HttpException(403, "Token Expired");
+        if (err) throw new HttpException(403, "Token Auth failed", err);
         req.userId = payload.userId;
         next();
       });
@@ -32,7 +30,7 @@ export const authJWT: RequestHandler = (req, _, next) => {
   }
 };
 
-export const authRole: (role: Roles) => RequestHandler =
+export const authRole: (role: Roles | Roles[]) => RequestHandler =
   (role) => async (req, _, next) => {
     try {
       if (!req.userId)
@@ -46,13 +44,22 @@ export const authRole: (role: Roles) => RequestHandler =
           "User assigned to the token doesn't exists"
         );
       req.user = user;
-      const roleName = (await user.getRole()).name;
-      console.log(user);
-      if (roleName !== role)
-        throw new HttpException(
-          403,
-          "This user is not authorized for this route"
-        );
+      const roleName = (await user.getRole()).name as Roles;
+      switch (typeof role) {
+        case "string":
+          if (roleName !== role)
+            throw new HttpException(
+              403,
+              "This user is not authorized for this route"
+            );
+          break;
+        case "object":
+          if (!role.includes(roleName))
+            throw new HttpException(
+              403,
+              "This user is not authorized for this route"
+            );
+      }
       next();
     } catch (error) {
       console.error(error);
