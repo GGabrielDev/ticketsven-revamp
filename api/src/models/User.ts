@@ -60,14 +60,14 @@ module.exports = (sequelize: Sequelize) => {
         type: DataTypes.STRING(64),
         allowNull: false,
         validate: {
-          is: /[a-z0-9]+$/i,
+          is: /[a-zA-Z0-9]+$/g,
         },
       },
       fullname: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          is: /^[a-zA-Z\s.]*$/i,
+          is: /^[a-zA-Z\s.]+$/g,
         },
       },
       password: {
@@ -77,10 +77,10 @@ module.exports = (sequelize: Sequelize) => {
     },
     {
       sequelize,
-			name: {
-				singular: "user",
-				plural: "users"
-			},
+      name: {
+        singular: "user",
+        plural: "users",
+      },
       tableName: "users",
       timestamps: false,
       paranoid: true,

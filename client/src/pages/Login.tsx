@@ -9,30 +9,33 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import {
+  Controller,
+  ControllerRenderProps,
+  SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import Logo from "../assets/logo.png";
 import { theme as Theme } from "../app";
 
-type FormState = {
+type FormData = {
   username: string;
   password: string;
 };
 
+/*
+ */
+
 export default function LoginPage() {
-  const [form, setForm] = useState<FormState>({
-    username: "",
-    password: "",
-  });
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    watch,
+  } = useForm<FormData>();
+  const { username, password } = watch();
 
-  const handleChange = (e: Event) => {
-    if (e.target instanceof HTMLInputElement)
-      setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: Event) => {
-    e.preventDefault();
-
-    console.log(form);
-  };
+  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
 
   return html`
     <${Grid} container component="main" sx=${{ height: "100vh" }}>
@@ -88,30 +91,61 @@ export default function LoginPage() {
           <${Box}
             component="form"
             noValidate
-            onSubmit=${handleSubmit}
+            onSubmit=${handleSubmit(onSubmit)}
             sx=${{ mt: 1 }}
           >
-            <${TextField}
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Nombre de Usuario"
-              name="username"
-              autoComplete="username"
-              autoFocus
-            />
-            <${TextField}
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
+						<${Controller} 
+							name="username" 
+							control=${control}	
+							rules=${{
+                required: "Se necesita nombre de usuario",
+              }}
+							render=${({
+                field,
+              }: {
+                field: ControllerRenderProps<FormData, "username">;
+              }) => html`
+                <${TextField}
+                  error=${Boolean(errors.username)}
+                  helperText=${errors.username?.message
+                    ? errors.username.message
+                    : ""}
+                  margin="normal"
+                  fullWidth
+                  label="Nombre de Usuario"
+                  autoComplete="username"
+                  autoFocus
+                  ...${field}
+                />
+              `}
+						/>
+						<${Controller} 
+							name="password" 
+							control=${control}	
+							rules=${{
+                required: "Se requiere una contraseña",
+              }}
+							render=${({
+                field,
+              }: {
+                field: ControllerRenderProps<FormData, "password">;
+              }) => html`
+                <${TextField}
+                  error=${Boolean(errors.password)}
+                  helperText=${errors.password?.message
+                    ? errors.password.message
+                    : ""}
+                  margin="normal"
+                  fullWidth
+                  label="Contraseña"
+                  type="password"
+                  autoComplete="current-password"
+                  ...${field}
+                />
+              `}
+						/>
             <${Button}
+							disabled=${!Boolean(username && password)}
               type="submit"
               fullWidth
               variant="contained"

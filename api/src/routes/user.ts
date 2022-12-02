@@ -2,22 +2,25 @@ import { Router, Request, Response, NextFunction } from "express";
 import { authRole } from "../middleware/auth.middleware";
 import HttpException from "../exceptions/HttpException";
 import { User as UserEntity } from "../models/User";
+import { Role as RoleEntity } from "../models/Role";
 import { Models } from "../db";
 
 const { User, Role } = Models;
 
 const router = Router();
 
-interface IUserParams {}
+type RequestUserParams = {
+  userId: string;
+};
 
-interface IUserBody {
+type RequestUserBody = {
   username: string;
   password: string;
   fullname: string;
   roleId: number;
-}
+};
 
-type RouteRequest = Request<IUserParams, {}, IUserBody>;
+type RouteRequest = Request<RequestUserParams, {}, RequestUserBody>;
 
 router.get(
   "/",
@@ -51,8 +54,94 @@ router.get(
           exclude: ["password", "roleId"],
         },
         include: [Role],
+        paranoid: true,
       })) as UserEntity[];
       return res.status(200).json(result);
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/",
+  authRole("admin"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { username, password, fullname, roleId } = req.body;
+      if (!(username && password && fullname && roleId))
+        throw new HttpException(
+          400,
+          "Required values are missing in the request body"
+        );
+      const role = (await Role.findByPk(roleId)) as RoleEntity | null;
+      if (!role)
+        throw new HttpException(404, "The choosen role doesn't exists");
+      const user = (await User.create({
+        username,
+        password,
+        fullname,
+      })) as UserEntity;
+      user.setRole(role);
+      return res.status(201).json(
+        await User.findByPk(user.id, {
+          attributes: {
+            exclude: ["password", "roleId"],
+          },
+          include: [Role],
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/:userId",
+  authRole("admin"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = req.params;
+      const { username, password, fullname, roleId } = req.body;
+      const user = (await User.findByPk(userId)) as UserEntity | null;
+      if (!user)
+        throw new HttpException(404, "The selected user doesn't exists");
+      user.update({ username, password, fullname });
+      if (!(user.roleId = roleId)) {
+        const role = (await Role.findByPk(roleId)) as RoleEntity | null;
+        if (!role)
+          throw new HttpException(404, "The selected role doesn't exists");
+        user.setRole(role);
+      }
+      return res.status(201).json(
+        await User.findByPk(user.id, {
+          attributes: {
+            exclude: ["password", "roleId"],
+          },
+          include: [Role],
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  "/:userId",
+  authRole("admin"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = req.params;
+      const user = (await User.findByPk(userId)) as UserEntity | null;
+      if (!user)
+        throw new HttpException(404, "The selected user doesn't exists");
+      user.destroy();
+      return res.status(200).send("The user has been suspended sucessfully");
     } catch (error) {
       console.error(error);
       next(error);
