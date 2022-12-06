@@ -19,9 +19,10 @@ interface IAuthBody {
 
 type RouteRequest = Request<{}, {}, IAuthBody>;
 
-router.get(
+router.post(
   "/login",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
+    console.log(req);
     try {
       const { username, password } = req.body;
       if (!JWT_SECRET)

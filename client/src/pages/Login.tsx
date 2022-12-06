@@ -1,42 +1,63 @@
-import { useState } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
 import {
   Box,
   Button,
+  CircularProgress,
   Grid,
   Paper,
   SxProps,
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  Controller,
-  ControllerRenderProps,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { useTheme } from "@mui/material/styles";
+import { Formik, FormikHelpers, FormikProps, Field } from "formik";
+import * as Yup from "yup";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { actions, selectors } from "../redux/features/user/userSlice";
 import Logo from "../assets/logo.png";
-import { theme as Theme } from "../app";
 
 type FormData = {
   username: string;
   password: string;
 };
 
-/*
- */
+const { loginUser } = actions;
+const { selectUser, selectError, selectStatus } = selectors;
 
 export default function LoginPage() {
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-    watch,
-  } = useForm<FormData>();
-  const { username, password } = watch();
+  // Define the initial values for the form
+  const initialValues: FormData = {
+    username: "",
+    password: "",
+  };
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
 
-  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
+  // Define the validation schema for the form using Yup
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .min(4, "El nombre de usuario debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "El nombre de usuario no puede contener espacios")
+      .required("El campo es requerido"),
+    password: Yup.string()
+      .min(4, "La contraseña debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "La contraseña no puede contener espacios")
+      .required("El campo es requerido"),
+  });
 
+  // Define the submit handler for the form
+  const handleSubmit = (
+    values: FormData,
+    { setSubmitting }: FormikHelpers<FormData>
+  ) => {
+    // TODO: Add code to handle the submission of the form here
+    dispatch(loginUser(values)).then(() => setSubmitting(false));
+  };
+
+  useEffect(() => {});
+
+  // Define the render method for the form component
   return html`
     <${Grid} container component="main" sx=${{ height: "100vh" }}>
       <${Grid}
@@ -44,18 +65,16 @@ export default function LoginPage() {
         xs=${false}
         sm=${4}
         md=${7}
-        sx=${
-          {
-            backgroundImage: "url(https://source.unsplash.com/random)",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[50]
-                : theme.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          } as SxProps<typeof Theme>
-        }
+        sx=${{
+          backgroundImage: "url(https://source.unsplash.com/random)",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: (theme) =>
+            theme.palette.mode === "light"
+              ? theme.palette.grey[50]
+              : theme.palette.grey[900],
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        } as SxProps<typeof theme>}
       />
       <${Grid}
         item
@@ -76,86 +95,76 @@ export default function LoginPage() {
             alignItems: "center",
           }}
         >
-            <${Box}
-              component="img"
-              href="/"
-              sx=${{
-                height: 92,
-              }}
-              alt="Your logo."
-              src=${Logo}
-            />
+          <${Box}
+            component="img"
+            href="/"
+            sx=${{
+              height: 92,
+            }}
+            alt="Your logo."
+            src=${Logo}
+          />
           <${Typography} component="h1" variant="h5">
             Inicie sesión en el sistema
           <//>
-          <${Box}
-            component="form"
-            noValidate
-            onSubmit=${handleSubmit(onSubmit)}
-            sx=${{ mt: 1 }}
+          <${Formik}
+            initialValues=${initialValues}
+            validationSchema=${validationSchema}
+            onSubmit=${handleSubmit}
           >
-						<${Controller} 
-							name="username" 
-							control=${control}	
-							rules=${{
-                required: "Se necesita nombre de usuario",
-              }}
-							render=${({
-                field,
-              }: {
-                field: ControllerRenderProps<FormData, "username">;
-              }) => html`
-                <${TextField}
-                  error=${Boolean(errors.username)}
-                  helperText=${errors.username?.message
-                    ? errors.username.message
-                    : ""}
+            ${(props: FormikProps<FormData>) => html`
+              <${Box}
+                component="form"
+                noValidate
+                sx=${{ mt: 1 }}
+                onReset=${props.handleReset}
+                onSubmit=${props.handleSubmit}
+              >
+                <${Field}
+                  as=${TextField}
                   margin="normal"
                   fullWidth
                   label="Nombre de Usuario"
+                  id="username"
+                  name="username"
                   autoComplete="username"
-                  autoFocus
-                  ...${field}
+                  value=${props.values.username}
+                  onChange=${props.handleChange}
+                  error=${props.touched.username &&
+                  Boolean(props.errors.username)}
+                  helperText=${props.touched.username && props.errors.username}
                 />
-              `}
-						/>
-						<${Controller} 
-							name="password" 
-							control=${control}	
-							rules=${{
-                required: "Se requiere una contraseña",
-              }}
-							render=${({
-                field,
-              }: {
-                field: ControllerRenderProps<FormData, "password">;
-              }) => html`
-                <${TextField}
-                  error=${Boolean(errors.password)}
-                  helperText=${errors.password?.message
-                    ? errors.password.message
-                    : ""}
+                <${Field}
+                  as=${TextField}
                   margin="normal"
                   fullWidth
                   label="Contraseña"
+                  id="password"
+                  name="password"
                   type="password"
                   autoComplete="current-password"
-                  ...${field}
+                  value=${props.values.password}
+                  onChange=${props.handleChange}
+                  error=${props.touched.password &&
+                  Boolean(props.errors.password)}
+                  helperText=${props.touched.password && props.errors.password}
                 />
-              `}
-						/>
-            <${Button}
-							disabled=${!Boolean(username && password)}
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx=${{ mt: 3, mb: 2 }}
-            >
-              Iniciar Sesión
-            <//>
+                <${Button}
+                  disabled=${props.isSubmitting}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx=${{ p: 1, mt: 3, mb: 2 }}
+                >
+                  ${props.isSubmitting
+                    ? html`<${CircularProgress} size=${24} />`
+                    : "Submit"}
+                <//>
+              <//>
+            `}
           <//>
         <//>
       <//>
-    </${Grid}>
+    <//>
   `;
 }

@@ -12,24 +12,22 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
 import { Menu as MenuIcon, Person } from "@mui/icons-material";
 import Logo from "../assets/logo.png";
 
 const pages = [
-  { name: "Municipios", link: "/admin/miunicipality" },
-  { name: "Parroquias", link: "/admin/parish" },
-  { name: "CCPs", link: "/admin/ccp" },
-  { name: "Cuadrantes", link: "/admin/quadrant" },
-  { name: "Razones", link: "/admin/reasons" },
-  { name: "Usuarios", link: "/admin/users" },
+  { name: "Municipios", link: "/municipality" },
+  { name: "Parroquias", link: "/parish" },
+  { name: "CCPs", link: "/ccp" },
+  { name: "Cuadrantes", link: "/quadrant" },
+  { name: "Razones", link: "/reasons" },
+  { name: "Usuarios", link: "/users" },
 ];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = useState<null | EventTarget>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
-  const location = useLocation();
 
   const handleOpenNavMenu = (event: MouseEvent) => {
     setAnchorElNav(event.currentTarget);
@@ -47,10 +45,7 @@ function ResponsiveAppBar() {
   };
 
   return html`
-    <${AppBar}
-      position="static"
-      sx=${{ p: 1, display: location.pathname === "/" ? "none" : "flex" }}
-    >
+    <${AppBar} position="static" sx=${{ p: 1, display: "flex" }}>
       <${Container} maxWidth="xl">
         <${Toolbar} disableGutters>
           <${Box}

@@ -1,18 +1,17 @@
 import { html } from "htm/preact";
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline } from "@mui/material";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import ThemeProvider from "./components/ThemeProvider";
 import Router from "./router";
-
-export const theme = createTheme({
-  palette: {
-    mode: "light",
-  },
-});
 
 export function App() {
   return html`
-    <${ThemeProvider} theme=${theme}>
+    <${Provider} store=${store}>
       <${CssBaseline} />
-			<${Router} />
-    </div>
+      <${ThemeProvider}>
+        <${Router} />
+      <//>
+    <//>
   `;
 }

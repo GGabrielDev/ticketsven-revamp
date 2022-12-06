@@ -1,8 +1,11 @@
-import express, { NextFunction, Response } from "express";
+import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import cors from "cors";
 import routes from "./routes/index.js";
 import errorHandler from "./middleware/error.middleware";
+
+const { CLIENT_URL } = process.env;
 
 require("./db.js");
 
@@ -13,16 +16,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
 server.use(morgan("dev"));
-server.use((_, res: Response, next: NextFunction) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  next();
-});
+if (CLIENT_URL) server.use(cors());
 
 server.use("/", routes);
 
