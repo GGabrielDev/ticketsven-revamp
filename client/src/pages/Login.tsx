@@ -55,8 +55,6 @@ export default function LoginPage() {
     dispatch(loginUser(values)).then(() => setSubmitting(false));
   };
 
-  useEffect(() => {});
-
   // Define the render method for the form component
   return html`
     <${Grid} container component="main" sx=${{ height: "100vh" }}>

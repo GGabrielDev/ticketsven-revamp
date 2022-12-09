@@ -13,19 +13,21 @@ import {
   Typography,
 } from "@mui/material";
 import { Menu as MenuIcon, Person } from "@mui/icons-material";
-import Logo from "../assets/logo.png";
+import Logo from "../../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const pages = [
-  { name: "Municipios", link: "/municipality" },
-  { name: "Parroquias", link: "/parish" },
-  { name: "CCPs", link: "/ccp" },
-  { name: "Cuadrantes", link: "/quadrant" },
-  { name: "Razones", link: "/reasons" },
-  { name: "Usuarios", link: "/users" },
+  { name: "Municipios", link: "municipality" },
+  { name: "Parroquias", link: "parish" },
+  { name: "CCPs", link: "ccp" },
+  { name: "Cuadrantes", link: "quadrant" },
+  { name: "Razones", link: "reasons" },
+  { name: "Usuarios", link: "users" },
 ];
 const settings = ["Profile", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = useState<null | EventTarget>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
 
@@ -36,8 +38,15 @@ function ResponsiveAppBar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (e: Event) => {
+    e.stopPropagation();
     setAnchorElNav(null);
+  };
+
+  const handleRedirection = (link: string) => (e: Event) => {
+    e.stopPropagation();
+    setAnchorElNav(null);
+    navigate(`/dashboard/${link}`);
   };
 
   const handleCloseUserMenu = () => {
@@ -58,6 +67,7 @@ function ResponsiveAppBar() {
             }}
             alt="Your logo."
             src=${Logo}
+            onClick${() => navigate("/dashboard")}
           />
           <${Box} sx=${{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <${IconButton}
@@ -90,7 +100,10 @@ function ResponsiveAppBar() {
             >
               ${pages.map(
                 (page) => html`
-                  <${MenuItem} key=${page.name} onClick=${handleCloseNavMenu}>
+                  <${MenuItem}
+                    key=${page.name}
+                    onClick=${handleRedirection(page.link)}
+                  >
                     <${Typography} textAlign="center">${page.name}<//>
                   <//>
                 `
@@ -112,6 +125,7 @@ function ResponsiveAppBar() {
               }}
               alt="Your logo."
               src=${Logo}
+              onClick${() => navigate("/dashboard")}
             />
           <//>
           <${Box} sx=${{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
@@ -119,7 +133,7 @@ function ResponsiveAppBar() {
               (page) => html`
                 <${Button}
                   key=${page.name}
-                  onClick=${handleCloseNavMenu}
+                  onClick=${handleRedirection(page.link)}
                   sx=${{ my: 2, color: "white", display: "block" }}
                 >
                   ${page.name}

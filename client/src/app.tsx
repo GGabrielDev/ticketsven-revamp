@@ -8,8 +8,8 @@ import Router from "./router";
 export function App() {
   return html`
     <${Provider} store=${store}>
-      <${CssBaseline} />
       <${ThemeProvider}>
+        <${CssBaseline} />
         <${Router} />
       <//>
     <//>

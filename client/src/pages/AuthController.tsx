@@ -1,6 +1,7 @@
+import { VNode } from "preact";
 import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, CircularProgress } from "@mui/material";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { selectors, actions } from "../redux/features/user/userSlice";
@@ -8,7 +9,11 @@ import { selectors, actions } from "../redux/features/user/userSlice";
 const { getUser, clearToken } = actions;
 const { selectUser, selectStatus } = selectors;
 
-export default function AuthController() {
+type AuthControllerProps = {
+  children: VNode | VNode[];
+};
+
+export default function AuthController(props: AuthControllerProps) {
   const user = useAppSelector(selectUser);
   const status = useAppSelector(selectStatus);
   const dispatch = useAppDispatch();
@@ -16,17 +21,18 @@ export default function AuthController() {
 
   useEffect(() => {
     switch (status) {
-      case "Idle":
-        if (!user) dispatch(getUser());
-        break;
       case "Error":
         dispatch(clearToken());
         navigate("/");
         break;
       case "Login":
-        navigate("/redirect");
+        navigate("/dashboard");
     }
   }, [user, status]);
+
+  useEffect(() => {
+    dispatch(getUser());
+  }, []);
 
   return status === "Loading"
     ? html` <${Box}
@@ -40,5 +46,5 @@ export default function AuthController() {
       >
         <${CircularProgress} size=${64} />
       <//>`
-    : html`<${Outlet} />`;
+    : props.children;
 }
