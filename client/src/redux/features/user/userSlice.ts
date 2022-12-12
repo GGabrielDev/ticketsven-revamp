@@ -12,11 +12,6 @@ export type UserType = {
   };
 };
 
-export type ErrorType = {
-  status: number;
-  message: string;
-};
-
 export type SliceType = {
   status: "Idle" | "Loading" | "Login" | "Logout" | "Error";
   token?: string;
@@ -27,6 +22,7 @@ export type SliceType = {
 
 export const initialState = {
   status: "Idle",
+  // Set the token of the initialState as the one present in the session storage
   token: sessionStorage.getItem("user/token"),
   theme:
     sessionStorage.getItem("user/theme") === null
@@ -45,9 +41,9 @@ const userSlice = createSlice({
       // Set the token to an empty string in session storage
       sessionStorage.setItem("token", "");
     },
-		toggleColorTheme: (state) => {
-			state.theme === 'light' ? 'dark' : 'light'
-		}
+    toggleColorTheme: (state) => {
+      state.theme === "light" ? "dark" : "light";
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -60,7 +56,6 @@ const userSlice = createSlice({
         state.status = "Login";
       })
       .addCase(asyncActions.loginUser.rejected, (state, action) => {
-        console.log(action);
         state.error = action.payload as ErrorType;
         state.status = "Error";
       })
@@ -72,7 +67,6 @@ const userSlice = createSlice({
         state.status = "Login";
       })
       .addCase(asyncActions.getUser.rejected, (state, action) => {
-        console.log(action);
         state.error = action.payload as ErrorType;
         state.status = "Error";
       });
@@ -90,6 +84,5 @@ export const selectors = {
   selectToken: (state: RootState) => state.user.token,
   selectTheme: (state: RootState) => state.user.theme,
 };
-export const helpers = {};
 
 export default userSlice.reducer;

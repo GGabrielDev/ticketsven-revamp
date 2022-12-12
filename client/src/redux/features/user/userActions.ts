@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../../helpers/Axios";
-import { ErrorType, UserType } from "./userSlice";
+import { UserType } from "./userSlice";
 import { RootState } from "../../store";
 
 export const asyncActions = {
@@ -21,7 +21,7 @@ export const asyncActions = {
       try {
         const token = getState().user.token; // Get the token from the state
         return (
-          await axios.get("/user/", {
+          await axios.get("/user", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
