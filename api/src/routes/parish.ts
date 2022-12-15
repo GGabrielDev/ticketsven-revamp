@@ -6,7 +6,7 @@ import { Parish as ParishEntity } from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Municipality, Parish } = Models;
+const { Municipality, Parish, CCP } = Models;
 
 interface IParishParams {
   parishId: number;
@@ -36,6 +36,35 @@ router.get(
               },
             }
           : {},
+        include: [Parish.associations.CCP],
+      });
+
+      return res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/municipality",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { municipalityId } = req.body;
+
+      if (!municipalityId || municipalityId === 0)
+        throw new HttpException(
+          400,
+          "A valid municipality ID must be provided"
+        );
+
+      const result = await Parish.findAll({
+        attributes: {
+          exclude: ["municipalityId"],
+        },
+        where: {
+          municipalityId,
+        },
         include: [Municipality, Parish.associations.CCP],
       });
 

@@ -5,7 +5,10 @@ import {
   Button,
   CircularProgress,
   Grid,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -22,13 +25,19 @@ import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  actions,
-  selectors,
+  actions as municipalityActions,
+  selectors as municipalitySelectors,
 } from "../../redux/features/municipality/municipalitySlice";
+import {
+  actions as parishActions,
+  selectors as parishSelectors,
+} from "../../redux/features/parish/parishSlice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createMunicipality, getAllMunicipalities } = actions;
-const { selectMunicipalities } = selectors;
+const { createMunicipality, getAllMunicipalities } = municipalityActions;
+const { createParish, getAllParishes } = parishActions;
+const { selectMunicipalities } = municipalitySelectors;
+const { selectParishes } = parishSelectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,8 +70,10 @@ export default function Parish() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const initialValues: Partial<MunicipalityData> = {
     name: "",
+    municipalityId: 0,
   };
   const municipalities = useAppSelector(selectMunicipalities);
+  const parishes = useAppSelector(selectParishes);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
@@ -92,6 +103,10 @@ export default function Parish() {
       resetForm();
     });
   };
+
+  useEffect(() => {
+    dispatch(getAllMunicipalities());
+  }, []);
 
   return html`
     <${Grid} container spacing=${1}>
@@ -124,7 +139,7 @@ export default function Parish() {
                 as=${TextField}
                 margin="normal"
                 fullWidth
-                label="Municipio"
+                label="Parroquia"
                 id="name"
                 name="name"
                 value=${props.values.name}
@@ -132,8 +147,32 @@ export default function Parish() {
                 error=${props.touched.name && Boolean(props.errors.name)}
                 helperText=${props.touched.name && props.errors.name}
               />
+              <${InputLabel} id="municipalityId">Municipio<//>
+              <${Field}
+                as=${Select}
+                margin="normal"
+                fullWidth
+                id="municipalityId"
+                name="municipalityId"
+                value=${props.values.municipalityId}
+                onChange=${props.handleChange}
+                error=${props.touched.municipalityId &&
+                Boolean(props.errors.municipalityId)}
+                helperText=${props.touched.municipalityId &&
+                props.errors.municipalityId}
+              >
+                <${MenuItem} value=${0}>Select a municipality<//>
+                ${municipalities.map(
+                  (municipality) => html`
+                    <${MenuItem} value=${municipality.id}
+                      >${municipality.name}</${MenuItem}
+                    >
+                  `
+                )}
+              <//>
               <${Button}
-                disabled=${props.isSubmitting}
+                disabled=${props.isSubmitting &&
+                props.values.municipalityId === 0}
                 type="submit"
                 fullWidth
                 variant="contained"
@@ -141,7 +180,7 @@ export default function Parish() {
               >
                 ${props.isSubmitting
                   ? html`<${CircularProgress} size=${24} />`
-                  : "Crear Municipio"}
+                  : "Crear Parroquia"}
               <//>
             <//>
           `}
@@ -153,16 +192,18 @@ export default function Parish() {
             <${TableHead}>
               <${StyledTableRow}>
                 <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
+                <${StyledTableCell}>Parroquia<//>
                 <${StyledTableCell}>Municipio<//>
               <//>
             <//>
             <${TableBody}>
               ${municipalities.length > 0
-                ? municipalities.map(
+                ? parishes.map(
                     (row) => html`
                       <${StyledTableRow} hover key=${row.id}>
                         <${StyledTableCell}>${row.id}<//>
                         <${StyledTableCell}>${row.name}<//>
+                        <${StyledTableCell}>${row.municipality.name}<//>
                       <//>
                     `
                   )

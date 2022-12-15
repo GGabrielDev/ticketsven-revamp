@@ -14,7 +14,7 @@ export type UserType = {
 
 export type SliceType = {
   status: "Idle" | "Loading" | "Login" | "Logout" | "Error";
-  token?: string;
+  token: string;
   user?: UserType;
   error?: ErrorType;
   theme: "light" | "dark";
@@ -54,7 +54,7 @@ const userSlice = createSlice({
         sessionStorage.setItem("user/token", action.payload);
         state.token = action.payload;
         state.status = "Login";
-				location.reload()
+        location.reload();
       })
       .addCase(asyncActions.loginUser.rejected, (state, action) => {
         state.error = action.payload as ErrorType;

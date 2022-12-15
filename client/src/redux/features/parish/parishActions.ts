@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../../helpers/Axios";
+import axios, { axiosConfig } from "../../../helpers/Axios";
 import { RootState } from "../../store";
 
 export const asyncActions = {
@@ -7,9 +7,10 @@ export const asyncActions = {
     ParishType[],
     undefined,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/getAll", async (_, { rejectWithValue }) => {
+  >("parish/getAll", async (_, { rejectWithValue, getState }) => {
     try {
-      return (await axios.get("/parish")).data;
+      return (await axios.get("/parish", axiosConfig(getState().user.token)))
+        .data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -18,10 +19,11 @@ export const asyncActions = {
     ParishType[],
     string,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/getByName", async (payload, { rejectWithValue }) => {
+  >("parish/getByName", async (payload, { rejectWithValue, getState }) => {
     try {
       return (
         await axios.get("/parish", {
+          ...axiosConfig(getState().user.token),
           data: {
             name: payload,
           },
@@ -31,13 +33,39 @@ export const asyncActions = {
       return rejectWithValue(error.response.data);
     }
   }),
+  getParishesByMunicipality: createAsyncThunk<
+    ParishType[],
+    number,
+    { state: RootState; rejectValue: ErrorType }
+  >(
+    "parish/getByMunicipality",
+    async (payload, { rejectWithValue, getState }) => {
+      try {
+        return (
+          await axios.get("/parish/municipality", {
+            ...axiosConfig(getState().user.token),
+            data: {
+              municipalityId: payload,
+            },
+          })
+        ).data;
+      } catch (error: any) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  ),
   getParishById: createAsyncThunk<
     ParishType,
     number,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/getById", async (payload, { rejectWithValue }) => {
+  >("parish/getById", async (payload, { rejectWithValue, getState }) => {
     try {
-      return (await axios.get(`/parish/${payload}`)).data;
+      return (
+        await axios.get(
+          `/parish/${payload}`,
+          axiosConfig(getState().user.token)
+        )
+      ).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -46,9 +74,11 @@ export const asyncActions = {
     ParishType,
     Partial<ParishType>,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/post", async (payload, { rejectWithValue }) => {
+  >("parish/post", async (payload, { rejectWithValue, getState }) => {
     try {
-      return (await axios.post("/parish", payload)).data;
+      return (
+        await axios.post("/parish", payload, axiosConfig(getState().user.token))
+      ).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -57,9 +87,15 @@ export const asyncActions = {
     ParishType,
     ParishType,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/put", async (payload, { rejectWithValue }) => {
+  >("parish/put", async (payload, { rejectWithValue, getState }) => {
     try {
-      return (await axios.put(`/parish/${payload.id}`, payload)).data;
+      return (
+        await axios.put(
+          `/parish/${payload.id}`,
+          payload,
+          axiosConfig(getState().user.token)
+        )
+      ).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -68,9 +104,12 @@ export const asyncActions = {
     number,
     ParishType,
     { state: RootState; rejectValue: ErrorType }
-  >("parish/delete", async (payload, { rejectWithValue }) => {
+  >("parish/delete", async (payload, { rejectWithValue, getState }) => {
     try {
-      await axios.delete(`/parish/${payload.id}`);
+      await axios.delete(
+        `/parish/${payload.id}`,
+        axiosConfig(getState().user.token)
+      );
       return payload.id;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

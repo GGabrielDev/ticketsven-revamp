@@ -12,6 +12,7 @@ import HttpException from "../exceptions/HttpException";
  */
 
 const handleError: ErrorRequestHandler = (err, req, res, next) => {
+  console.error(err);
   let customError = err;
 
   if (!(err instanceof HttpException)) {

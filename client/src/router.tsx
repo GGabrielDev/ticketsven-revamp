@@ -7,6 +7,7 @@ import Layout from "./components/admin/Layout";
 import Landing from "./pages/admin/Landing";
 import Login from "./pages/Login";
 import Municipality from "./pages/admin/Municipality";
+import Parish from "./pages/admin/Parish";
 
 const { selectUser } = selectors;
 
@@ -27,6 +28,7 @@ function Router() {
                       path="municipality"
                       element=${html`<${Municipality} />`}
                     />
+                    <${Route} path="parish" element=${html`<${Parish} />`} />
                   <//>
                 `
               : null}

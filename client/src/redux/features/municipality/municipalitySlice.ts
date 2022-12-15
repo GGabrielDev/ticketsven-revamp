@@ -2,15 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { asyncActions } from "./municipalityActions";
 import { RootState } from "../../store";
 
-export type MunicipalityType = {
-  id: number;
-  name: string;
-  parishes: {
-    id: number;
-    name: string;
-  }[];
-};
-
 export type SliceType = {
   status: "Idle" | "Loading" | "Error";
   municipalities: MunicipalityType[];

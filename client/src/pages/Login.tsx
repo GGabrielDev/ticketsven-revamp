@@ -1,6 +1,7 @@
 import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -31,6 +32,7 @@ export default function LoginPage() {
     username: "",
     password: "",
   };
+  const error = useAppSelector(selectError);
   const dispatch = useAppDispatch();
   const theme = useTheme();
 
@@ -160,6 +162,9 @@ export default function LoginPage() {
               <//>
             `}
           <//>
+          ${error
+            ? html`<${Alert} severity="error">${error.message}<//>`
+            : null}
         <//>
       <//>
     <//>
