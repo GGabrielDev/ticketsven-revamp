@@ -22,7 +22,6 @@ type RouteRequest = Request<{}, {}, IAuthBody>;
 router.post(
   "/login",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
-    console.log(req);
     try {
       const { username, password } = req.body;
       if (!JWT_SECRET)
@@ -35,17 +34,14 @@ router.post(
           username,
         },
       })) as UserEntity | null;
-      if (!result) {
-        throw new HttpException(404, "User doesn't exists");
-      } else {
-        const expiresIn = JWT_EXPIRE || "1h";
-        if (!result.validatePassword(password))
-          throw new HttpException(403, "The password is incorrect");
-        const token = sign({ userId: result.id }, JWT_SECRET, {
-          expiresIn,
-        });
-        return res.status(200).json({ token });
-      }
+      if (!result) throw new HttpException(404, "User doesn't exists");
+      const expiresIn = JWT_EXPIRE || "1h";
+      if (!result.validatePassword(password))
+        throw new HttpException(403, "The password is incorrect");
+      const token = sign({ userId: result.id }, JWT_SECRET, {
+        expiresIn,
+      });
+      return res.status(200).json({ token });
     } catch (error) {
       console.error(error);
       next(error);

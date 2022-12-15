@@ -33,10 +33,7 @@ router.get(
         include: [Municipality.associations.parishes],
       });
 
-      if (result.length === 0) {
-        return res.status(204).send({ amount: result.length, result });
-      }
-      return res.status(200).send({ amount: result.length, result });
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }

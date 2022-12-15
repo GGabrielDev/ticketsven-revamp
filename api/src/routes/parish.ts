@@ -26,6 +26,9 @@ router.get(
       const { name } = req.body;
 
       const result = await Parish.findAll({
+        attributes: {
+          exclude: ["municipalityId"],
+        },
         where: name
           ? {
               name: {
@@ -33,12 +36,10 @@ router.get(
               },
             }
           : {},
+        include: [Municipality, Parish.associations.CCP],
       });
 
-      if (result.length === 0) {
-        return res.status(204).send({ amount: result.length, result });
-      }
-      return res.status(200).send({ amount: result.length, result });
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -51,7 +52,12 @@ router.get(
     const { parishId } = req.params;
 
     try {
-      const result = await Parish.findByPk(parishId);
+      const result = await Parish.findByPk(parishId, {
+        attributes: {
+          exclude: ["municipalityId"],
+        },
+        include: [Municipality, Parish.associations.CCP],
+      });
 
       if (!result) {
         return res.status(204).send("No entries has been found");
@@ -101,7 +107,14 @@ router.post(
         }
         await municipality.addParish(result);
 
-        return res.status(201).send(await Parish.findByPk(result.id));
+        return res.status(201).send(
+          await Parish.findByPk(result.id, {
+            attributes: {
+              exclude: ["municipalityId"],
+            },
+            include: [Municipality, Parish.associations.CCP],
+          })
+        );
       }
     } catch (error) {
       console.error(error);
@@ -123,7 +136,12 @@ router.put(
       if (!name) {
         throw new HttpException(400, "The name is missing as the body");
       }
-      const result = await Parish.findByPk(parishId);
+      const result = await Parish.findByPk(parishId, {
+        attributes: {
+          exclude: ["municipalityId"],
+        },
+        include: [Municipality, Parish.associations.CCP],
+      });
 
       if (!result) {
         throw new HttpException(404, "The requested Parish doesn't exist");

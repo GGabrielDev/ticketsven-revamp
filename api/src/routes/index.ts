@@ -10,8 +10,9 @@ const router = Router();
 
 router.use("/auth", authRouter);
 
-router.use("/user", authJWT, userRouter);
+router.use(authJWT);
 
+router.use("/user", userRouter);
 router.use("/municipality", municipalityRouter);
 router.use("/parish", parishRouter);
 router.use("/ccp", ccpRouter);
