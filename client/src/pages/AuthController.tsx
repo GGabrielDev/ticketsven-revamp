@@ -37,8 +37,9 @@ export default function AuthController(props: AuthControllerProps) {
   return status === "Loading"
     ? html` <${Box}
         sx=${{
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
+					p: 4,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

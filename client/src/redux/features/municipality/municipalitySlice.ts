@@ -5,10 +5,10 @@ import { RootState } from "../../store";
 export type MunicipalityType = {
   id: number;
   name: string;
-  parish: {
+  parishes: {
     id: number;
     name: string;
-  };
+  }[];
 };
 
 export type SliceType = {

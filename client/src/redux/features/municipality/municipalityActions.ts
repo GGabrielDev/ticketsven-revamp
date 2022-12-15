@@ -10,7 +10,7 @@ export const asyncActions = {
     { state: RootState; rejectValue: ErrorType }
   >("municipality/getAll", async (_, { rejectWithValue }) => {
     try {
-      return await axios.get("/municipality");
+      return (await axios.get("/municipality")).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -21,11 +21,13 @@ export const asyncActions = {
     { state: RootState; rejectValue: ErrorType }
   >("municipality/getByName", async (payload, { rejectWithValue }) => {
     try {
-      return await axios.get("/municipality", {
-        data: {
-          name: payload,
-        },
-      });
+      return (
+        await axios.get("/municipality", {
+          data: {
+            name: payload,
+          },
+        })
+      ).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -36,7 +38,7 @@ export const asyncActions = {
     { state: RootState; rejectValue: ErrorType }
   >("municipality/getById", async (payload, { rejectWithValue }) => {
     try {
-      return await axios.get(`/municipality/${payload}`);
+      return (await axios.get(`/municipality/${payload}`)).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -47,7 +49,7 @@ export const asyncActions = {
     { state: RootState; rejectValue: ErrorType }
   >("municipality/post", async (payload, { rejectWithValue }) => {
     try {
-      return await axios.post("/municipality", payload);
+      return (await axios.post("/municipality", payload)).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -58,7 +60,7 @@ export const asyncActions = {
     { state: RootState; rejectValue: ErrorType }
   >("municipality/put", async (payload, { rejectWithValue }) => {
     try {
-      return await axios.put(`/municipality/${payload.id}`, payload);
+      return (await axios.put(`/municipality/${payload.id}`, payload)).data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }

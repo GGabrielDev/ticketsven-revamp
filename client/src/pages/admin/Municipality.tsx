@@ -1,3 +1,5 @@
+import { html } from "htm/preact";
+import { useEffect, useState } from "preact/hooks";
 import {
   Box,
   Button,
@@ -9,15 +11,24 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
-import { html } from "htm/preact";
-import { Formik, FormikProps, Field } from "formik";
+import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import {
+  actions,
+  selectors,
+} from "../../redux/features/municipality/municipalitySlice";
+import TablePaginationActions from "../../components/admin/TablePagination";
+
+const { createMunicipality, getAllMunicipalities } = actions;
+const { selectMunicipalities } = selectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -41,28 +52,49 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 interface MunicipalityData {
   id: number;
-  municipality: string;
+  name: string;
 }
 
-const municipalityData: MunicipalityData[] = [
-  { id: 1, municipality: "New York" },
-  { id: 2, municipality: "Los Angeles" },
-  { id: 3, municipality: "Chicago" },
-  { id: 4, municipality: "Houston" },
-];
-
 export default function Municipality() {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const initialValues: Partial<MunicipalityData> = {
-    municipality: "",
+    name: "",
   };
+  const municipalities = useAppSelector(selectMunicipalities);
+  const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
-    municipality: Yup.string().required(
-      "Necesitas escribir un nombre de Municipio"
-    ),
+    name: Yup.string().required("Necesitas escribir un nombre de Municipio"),
   });
 
-  const handleSubmit = (values: Partial<MunicipalityData>) => {};
+  const handleChangePage = (event: Event, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: Event) => {
+    setRowsPerPage(
+      parseInt(
+        (event.target as HTMLInputElement | HTMLTextAreaElement).value,
+        10
+      )
+    );
+    setPage(0);
+  };
+
+  const handleSubmit = (
+    values: Partial<MunicipalityData>,
+    { setSubmitting, resetForm }: FormikHelpers<FormData>
+  ) => {
+    dispatch(createMunicipality(values)).then(() => {
+      setSubmitting(false);
+      resetForm();
+    });
+  };
+
+  useEffect(() => {
+    dispatch(getAllMunicipalities());
+  }, []);
 
   return html`
     <${Grid} container spacing=${1}>
@@ -96,14 +128,12 @@ export default function Municipality() {
                 margin="normal"
                 fullWidth
                 label="Municipio"
-                id="municipality"
-                name="municipality"
-                value=${props.values.municipality}
+                id="name"
+                name="name"
+                value=${props.values.name}
                 onChange=${props.handleChange}
-                error=${props.touched.municipality &&
-                Boolean(props.errors.municipality)}
-                helperText=${props.touched.municipality &&
-                props.errors.municipality}
+                error=${props.touched.name && Boolean(props.errors.name)}
+                helperText=${props.touched.name && props.errors.name}
               />
               <${Button}
                 disabled=${props.isSubmitting}
@@ -114,30 +144,49 @@ export default function Municipality() {
               >
                 ${props.isSubmitting
                   ? html`<${CircularProgress} size=${24} />`
-                  : "Submit"}
+                  : "Crear Municipio"}
               <//>
             <//>
           `}
         <//>
       <//>
       <${Grid} item xs=${12} md=${6}>
-        <${TableContainer} component=${Paper}>
-          <${Table}>
+        <${TableContainer} component=${Paper} sx=${{ maxHeight: 440 }}>
+          <${Table} stickyHeader>
             <${TableHead}>
               <${StyledTableRow}>
-                <${StyledTableCell}>ID<//>
+                <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
                 <${StyledTableCell}>Municipio<//>
               <//>
             <//>
             <${TableBody}>
-              ${municipalityData.map(
-                (row) => html`
-                  <${StyledTableRow} key=${row.id}>
-                    <${StyledTableCell}>${row.id}<//>
-                    <${StyledTableCell}>${row.municipality}<//>
-                  <//>
-                `
-              )}
+              ${municipalities.length > 0
+                ? municipalities.map(
+                    (row) => html`
+                      <${StyledTableRow} hover key=${row.id}>
+                        <${StyledTableCell}>${row.id}<//>
+                        <${StyledTableCell}>${row.name}<//>
+                      <//>
+                    `
+                  )
+                : html`
+                    <${StyledTableRow}>
+                      <${StyledTableCell}>N/E<//>
+                      <${StyledTableCell}>No hay entradas disponibles<//>
+                    <//>
+                  `}
+            <//>
+            <${StyledTableRow}>
+              <${TablePagination}
+                rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
+                colSpan=${3}
+                count=${municipalities.length}
+                rowsPerPage=${rowsPerPage}
+                page=${page}
+                onPageChange=${handleChangePage}
+                onRowsPerPageChange=${handleChangeRowsPerPage}
+                ActionsComponent=${TablePaginationActions}
+              />
             <//>
           <//>
         <//>

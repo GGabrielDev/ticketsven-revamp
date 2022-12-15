@@ -51,7 +51,6 @@ export default function LoginPage() {
     values: FormData,
     { setSubmitting }: FormikHelpers<FormData>
   ) => {
-    // TODO: Add code to handle the submission of the form here
     dispatch(loginUser(values)).then(() => setSubmitting(false));
   };
 

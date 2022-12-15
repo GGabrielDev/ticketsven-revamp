@@ -26,9 +26,8 @@ function Router() {
                     <${Route}
                       path="municipality"
                       element=${html`<${Municipality} />`}
-                    >
-                    <//>
-                  </${Route}>
+                    />
+                  <//>
                 `
               : null}
           <//>
