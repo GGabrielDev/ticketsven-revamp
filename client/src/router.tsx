@@ -8,6 +8,7 @@ import Landing from "./pages/admin/Landing";
 import Login from "./pages/Login";
 import Municipality from "./pages/admin/Municipality";
 import Parish from "./pages/admin/Parish";
+import CCP from "./pages/admin/CCP";
 
 const { selectUser } = selectors;
 
@@ -29,6 +30,7 @@ function Router() {
                       element=${html`<${Municipality} />`}
                     />
                     <${Route} path="parish" element=${html`<${Parish} />`} />
+                    <${Route} path="ccp" element=${html`<${CCP} />`} />
                   <//>
                 `
               : null}

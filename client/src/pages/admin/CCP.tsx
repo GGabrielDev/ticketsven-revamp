@@ -26,15 +26,15 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectors as municipalitySelectors } from "../../redux/features/municipality/municipalitySlice";
+import { selectors as parishSelectors } from "../../redux/features/parish/parishSlice";
 import {
-  actions as parishActions,
-  selectors as parishSelectors,
-} from "../../redux/features/parish/parishSlice";
+  actions as ccpActions,
+  selectors as ccpSelectors,
+} from "../../redux/features/ccp/ccpSlice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createParish, editParish, deleteParish } = parishActions;
-const { selectMunicipalities } = municipalitySelectors;
+const { createCCP, editCCP, deleteCCP } = ccpActions;
+const { selectCCPs } = ccpSelectors;
 const { selectParishes } = parishSelectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -60,20 +60,20 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 interface FormData {
   id: number;
   name: string;
-  municipalityId: number;
+  parishId: number;
 }
 
-export default function Parish() {
+export default function CCP() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<ParishType | null>(null);
+  const [selectedRow, setSelectedRow] = useState<CCPType | null>(null);
   const [edit, setEdit] = useState(false);
   const initialValues: Partial<FormData> = {
     name: "",
-    municipalityId: 0,
+    parishId: 0,
   };
-  const municipalities = useAppSelector(selectMunicipalities);
   const parishes = useAppSelector(selectParishes);
+  const ccps = useAppSelector(selectCCPs);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
@@ -101,17 +101,17 @@ export default function Parish() {
     values: Partial<FormData>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
-    dispatch(createParish(values)).then(() => {
+    dispatch(createCCP(values)).then(() => {
       setSubmitting(false);
       resetForm();
     });
   };
 
   const handleEdit = (
-    values: ParishType & FormData,
-    { setSubmitting, resetForm }: FormikHelpers<ParishType & FormData>
+    values: CCPType & FormData,
+    { setSubmitting, resetForm }: FormikHelpers<CCPType & FormData>
   ) => {
-    dispatch(editParish(values)).then(() => {
+    dispatch(editCCP(values)).then(() => {
       setSelectedRow(values);
       setSubmitting(false);
       setEdit(false);
@@ -134,7 +134,7 @@ export default function Parish() {
       >
         <${Paper} sx=${{ p: 4, m: 2 }}>
           <${Typography} component="h1" variant="h4">
-            Crar una nueva parroquia
+            Crar una nuevo Centro de Coordinación Policial
           <//>
           <${Formik}
             initialValues=${initialValues}
@@ -153,7 +153,7 @@ export default function Parish() {
                   as=${TextField}
                   margin="normal"
                   fullWidth
-                  label="Parroquia"
+                  label="Centro de Coordinación Policial"
                   id="name"
                   name="name"
                   value=${props.values.name}
@@ -161,25 +161,24 @@ export default function Parish() {
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
-                <${InputLabel} id="municipalityId">Municipio<//>
+                <${InputLabel} id="municipalityId">Parroquia<//>
                 <${Field}
                   as=${Select}
                   margin="normal"
                   fullWidth
-                  id="municipalityId"
-                  name="municipalityId"
-                  value=${props.values.municipalityId}
+                  id="parishId"
+                  name="parishId"
+                  value=${props.values.parishId}
                   onChange=${props.handleChange}
-                  error=${props.touched.municipalityId &&
-                  Boolean(props.errors.municipalityId)}
-                  helperText=${props.touched.municipalityId &&
-                  props.errors.municipalityId}
+                  error=${props.touched.parishId &&
+                  Boolean(props.errors.parishId)}
+                  helperText=${props.touched.parishId && props.errors.parishId}
                 >
                   <${MenuItem} value=${0}>Selecciona un municipio<//>
-                  ${municipalities.map(
-                    (municipality) => html`
-                    <${MenuItem} value=${municipality.id}
-                      >${municipality.name}</${MenuItem}
+                  ${parishes.map(
+                    (parish) => html`
+                    <${MenuItem} value=${parish.id}
+                      >${parish.name}</${MenuItem}
                     >
                   `
                   )}
@@ -193,7 +192,7 @@ export default function Parish() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Crear Parroquia"}
+                    : "Crear CCP"}
                 <//>
               <//>
             `}
@@ -210,19 +209,14 @@ export default function Parish() {
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
                         <${Typography}>Nombre: ${selectedRow.name}<//>
-                        <${Typography}
-                          >Municipio: ${selectedRow.municipality.name}<//
-                        >
+                        <${Typography}>Parroquia: ${selectedRow.parish.name}<//>
                       <//>
                       <${Box}
                         mt=${1}
                         display="flex"
                         justifyContent="space-between"
                       >
-                        <${Tooltip}
-                          title="Editar Parroquia"
-                          placement="top-end"
-                        >
+                        <${Tooltip} title="Editar CCP" placement="top-end">
                           <span>
                             <${Button}
                               variant="contained"
@@ -235,18 +229,17 @@ export default function Parish() {
                           </span>
                         <//>
                         <${Tooltip}
-                          title=${selectedRow.ccps.length > 0
-                            ? "No se puede borrar si tiene CCPs asignados"
-                            : "Borrar Parroquia"}
+                          title=${selectedRow.quadrants.length > 0
+                            ? "No se puede borrar si tiene Cuadrantes asignados"
+                            : "Borrar CCP"}
                           placement="top-end"
                         >
                           <span>
                             <${Button}
                               variant="contained"
                               color="error"
-                              disabled=${selectedRow.ccps.length > 0}
-                              onClick=${() =>
-                                dispatch(deleteParish(selectedRow))}
+                              disabled=${selectedRow.quadrants.length > 0}
+                              onClick=${() => dispatch(deleteCCP(selectedRow))}
                             >
                               <${DeleteIcon} />
                               Borrar
@@ -257,17 +250,17 @@ export default function Parish() {
                     `
                   : html`
                       <${Typography} component="h1" variant="h4">
-                        Editar Parroquia
+                        Editar Centro de Coordinación Policial
                       <//>
                       <${Formik}
                         initialValues=${{
                           ...selectedRow,
-                          municipalityId: selectedRow.municipality.id,
+                          parishId: selectedRow.parish.id,
                         }}
                         validationSchema=${validationSchema}
                         onSubmit=${handleEdit}
                       >
-                        ${(props: FormikProps<ParishType & FormData>) => html`
+                        ${(props: FormikProps<CCPType & FormData>) => html`
                           <${Box}
                             component="form"
                             noValidate
@@ -279,7 +272,7 @@ export default function Parish() {
                               as=${TextField}
                               margin="normal"
                               fullWidth
-                              label="Parroquia"
+                              label="Centro de Coordinación Policial;"
                               id="name"
                               name="name"
                               value=${props.values.name}
@@ -289,27 +282,27 @@ export default function Parish() {
                               helperText=${props.touched.name &&
                               props.errors.name}
                             />
-                            <${InputLabel} id="municipalityId">Municipio<//>
+                            <${InputLabel} id="municipalityId">Parroquia<//>
                             <${Field}
                               as=${Select}
                               margin="normal"
                               fullWidth
-                              id="municipalityId"
-                              name="municipalityId"
-                              value=${props.values.municipalityId}
+                              id="parishId"
+                              name="parishId"
+                              value=${props.values.parishId}
                               onChange=${props.handleChange}
-                              error=${props.touched.municipalityId &&
-                              Boolean(props.errors.municipalityId)}
-                              helperText=${props.touched.municipalityId &&
-                              props.errors.municipalityId}
+                              error=${props.touched.parishId &&
+                              Boolean(props.errors.parishId)}
+                              helperText=${props.touched.parishId &&
+                              props.errors.parishId}
                             >
                               <${MenuItem} value=${0}
                                 >Selecciona un municipio<//
                               >
-                              ${municipalities.map(
-                                (municipality) => html`
-                    <${MenuItem} value=${municipality.id}
-                      >${municipality.name}</${MenuItem}
+                              ${parishes.map(
+                                (parish) => html`
+                    <${MenuItem} value=${parish.id}
+                      >${parish.name}</${MenuItem}
                     >
                   `
                               )}
@@ -355,13 +348,13 @@ export default function Parish() {
             <${TableHead}>
               <${StyledTableRow}>
                 <${StyledTableCell}>ID<//>
+                <${StyledTableCell}>CCP<//>
                 <${StyledTableCell}>Parroquia<//>
-                <${StyledTableCell}>Municipio<//>
               <//>
             <//>
             <${TableBody}>
-              ${parishes.length > 0
-                ? parishes.map(
+              ${ccps.length > 0
+                ? ccps.map(
                     (row) => html`
                       <${StyledTableRow}
                         hover
@@ -386,7 +379,7 @@ export default function Parish() {
               <${TablePagination}
                 rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
                 colSpan=${3}
-                count=${parishes.length}
+                count=${ccps.length}
                 rowsPerPage=${rowsPerPage}
                 page=${page}
                 onPageChange=${handleChangePage}
