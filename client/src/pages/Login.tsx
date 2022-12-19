@@ -1,4 +1,3 @@
-import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
 import {
   Alert,
@@ -24,7 +23,7 @@ type FormData = {
 };
 
 const { loginUser } = actions;
-const { selectUser, selectError, selectStatus } = selectors;
+const { selectError } = selectors;
 
 export default function LoginPage() {
   // Define the initial values for the form
@@ -84,6 +83,11 @@ export default function LoginPage() {
         elevation=${6}
         square
       >
+        ${error !== undefined
+          ? error.message === "Autorización del Token fallida."
+            ? ""
+            : html`<${Alert} severity="error">${error.message}<//>`
+          : ""}
         <${Box}
           sx=${{
             my: 8,
@@ -162,9 +166,6 @@ export default function LoginPage() {
               <//>
             `}
           <//>
-          ${error
-            ? html`<${Alert} severity="error">${error.message}<//>`
-            : null}
         <//>
       <//>
     <//>

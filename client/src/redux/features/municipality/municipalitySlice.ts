@@ -130,13 +130,11 @@ const municipalitySlice = createSlice({
       .addCase(asyncActions.deleteMunicipality.pending, (state) => {
         state.status = "Loading";
       })
-      .addCase(asyncActions.deleteMunicipality.fulfilled, (state, action) => {
-        state.status = "Idle";
-        state.error = undefined;
-        state.municipalities = state.municipalities.filter((municipality) => {
-          municipality.id != action.payload;
-        });
-      })
+			.addCase(asyncActions.deleteMunicipality.fulfilled, (state, action) => {
+				state.status = "Idle";
+				state.error = undefined;
+				state.municipalities = state.municipalities.filter(municipality => municipality.id !== action.payload);
+			})
       .addCase(asyncActions.deleteMunicipality.rejected, (state, action) => {
         state.status = "Error";
         state.error = action.payload;

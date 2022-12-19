@@ -85,7 +85,7 @@ export const asyncActions = {
   }),
   editParish: createAsyncThunk<
     ParishType,
-    ParishType,
+    Partial<ParishType>,
     { state: RootState; rejectValue: ErrorType }
   >("parish/put", async (payload, { rejectWithValue, getState }) => {
     try {

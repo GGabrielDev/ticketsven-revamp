@@ -96,9 +96,6 @@ const parishSlice = createSlice({
         state.status = "Error";
         state.error = action.payload;
       })
-      .addCase(asyncActions.createParish.pending, (state) => {
-        state.status = "Loading";
-      })
       .addCase(asyncActions.getParishesByMunicipality.pending, (state) => {
         state.status = "Loading";
       })
@@ -117,6 +114,9 @@ const parishSlice = createSlice({
           state.error = action.payload;
         }
       )
+      .addCase(asyncActions.createParish.pending, (state) => {
+        state.status = "Loading";
+      })
       .addCase(asyncActions.createParish.fulfilled, (state, action) => {
         state.status = "Idle";
         state.error = undefined;

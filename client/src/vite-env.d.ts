@@ -28,3 +28,16 @@ type ParishType = {
     name: string;
   }[];
 };
+
+type CCPType = {
+  id: number;
+  name: string;
+  parish: {
+    id: number;
+    name: string;
+  };
+  quadrants: {
+    id: number;
+    name: string;
+  }[];
+};

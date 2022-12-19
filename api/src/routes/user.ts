@@ -33,7 +33,7 @@ router.get(
         attributes: {
           exclude: ["password", "roleId"],
         },
-        include: [Role],
+        include: [{ model: Role, as: "role" }],
       })) as UserEntity | null;
       if (!user) throw new HttpException(404, "User doesn't exists");
       return res.status(200).json(user);
@@ -53,7 +53,7 @@ router.get(
         attributes: {
           exclude: ["password", "roleId"],
         },
-        include: [Role],
+        include: [{ model: Role, as: "role" }],
         paranoid: true,
       })) as UserEntity[];
       return res.status(200).json(result);
@@ -89,7 +89,7 @@ router.post(
           attributes: {
             exclude: ["password", "roleId"],
           },
-          include: [Role],
+          include: [{ model: Role, as: "role" }],
         })
       );
     } catch (error) {
@@ -121,7 +121,7 @@ router.put(
           attributes: {
             exclude: ["password", "roleId"],
           },
-          include: [Role],
+          include: [{ model: Role, as: "role" }],
         })
       );
     } catch (error) {

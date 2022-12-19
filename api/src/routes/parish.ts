@@ -36,7 +36,10 @@ router.get(
               },
             }
           : {},
-        include: [Parish.associations.CCP],
+        include: [
+          { model: Municipality, as: "municipality" },
+          { model: CCP, as: "ccps" },
+        ],
       });
 
       return res.status(200).send(result);
@@ -62,10 +65,11 @@ router.get(
         attributes: {
           exclude: ["municipalityId"],
         },
-        where: {
-          municipalityId,
-        },
-        include: [Municipality, Parish.associations.CCP],
+        where: { municipalityId },
+        include: [
+          { model: Municipality, as: "municipality" },
+          { model: CCP, as: "ccps" },
+        ],
       });
 
       return res.status(200).send(result);
@@ -85,7 +89,10 @@ router.get(
         attributes: {
           exclude: ["municipalityId"],
         },
-        include: [Municipality, Parish.associations.CCP],
+        include: [
+          { model: Municipality, as: "municipality" },
+          { model: CCP, as: "ccps" },
+        ],
       });
 
       if (!result) {
@@ -141,7 +148,10 @@ router.post(
             attributes: {
               exclude: ["municipalityId"],
             },
-            include: [Municipality, Parish.associations.CCP],
+            include: [
+              { model: Municipality, as: "municipality" },
+              { model: CCP, as: "ccps" },
+            ],
           })
         );
       }
@@ -157,29 +167,42 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { parishId } = req.params;
-      const { name } = req.body;
+      const { name, municipalityId } = req.body;
 
-      if (!parishId) {
+      if (!parishId)
         throw new HttpException(400, "The Parish ID is missing as the param");
-      }
-      if (!name) {
+      if (!name)
         throw new HttpException(400, "The name is missing as the body");
-      }
-      const result = await Parish.findByPk(parishId, {
+      const result = (await Parish.findByPk(parishId, {
         attributes: {
           exclude: ["municipalityId"],
         },
-        include: [Municipality, Parish.associations.CCP],
-      });
+        include: [
+          { model: Municipality, as: "municipality" },
+          { model: CCP, as: "ccps" },
+        ],
+      })) as ParishEntity | null;
 
-      if (!result) {
+      if (!result)
         throw new HttpException(404, "The requested Parish doesn't exist");
+      if (municipalityId) {
+        const municipality = await Municipality.findByPk(municipalityId);
+        if (municipality) result.setMunicipality(municipalityId);
       }
-
       result.set({ name });
       await result.save();
 
-      res.status(200).send(result);
+      res.status(200).send(
+        await Parish.findByPk(result.id, {
+          attributes: {
+            exclude: ["municipalityId"],
+          },
+          include: [
+            { model: Municipality, as: "municipality" },
+            { model: CCP, as: "ccps" },
+          ],
+        })
+      );
     } catch (error) {
       next(error);
     }

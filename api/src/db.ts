@@ -56,6 +56,7 @@ Role.hasMany(User, {
 });
 User.belongsTo(Role, {
   foreignKey: "roleId",
+  as: "role",
 });
 Municipality.hasMany(Parish, {
   sourceKey: "id",
@@ -64,6 +65,7 @@ Municipality.hasMany(Parish, {
 });
 Parish.belongsTo(Municipality, {
   foreignKey: "municipalityId",
+  as: "municipality",
 });
 Parish.hasMany(CCP, {
   sourceKey: "id",
@@ -72,6 +74,7 @@ Parish.hasMany(CCP, {
 });
 CCP.belongsTo(Parish, {
   foreignKey: "parishId",
+  as: "parish",
 });
 CCP.hasMany(Quadrant, {
   sourceKey: "id",
@@ -80,6 +83,7 @@ CCP.hasMany(Quadrant, {
 });
 Quadrant.belongsTo(CCP, {
   foreignKey: "ccpId",
+  as: "ccp",
 });
 
 // Test function to check the connectivity to the database.

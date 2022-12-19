@@ -1,6 +1,7 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { Models } from "../db";
+import { Municipality as MunicipalityEntity } from "../models/Municipality";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
@@ -67,9 +68,15 @@ router.post(
       const { name } = req.body;
 
       if (name) {
-        const result = await Municipality.create({ name });
+        const result = (await Municipality.create({
+          name,
+        })) as MunicipalityEntity;
 
-        return res.status(201).send(result);
+        return res.status(201).send(
+          await Municipality.findByPk(result.id, {
+            include: [Municipality.associations.parishes],
+          })
+        );
       } else {
         throw new HttpException(400, "The name is missing as the body");
       }

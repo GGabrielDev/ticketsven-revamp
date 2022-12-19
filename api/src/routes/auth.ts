@@ -25,19 +25,22 @@ router.post(
     try {
       const { username, password } = req.body;
       if (!JWT_SECRET)
-        throw new HttpException(500, "Server doesn't have JWT Secret set");
+        throw new HttpException(
+          500,
+          "El servidor no tiene un Secreto JWT definido."
+        );
       if (!(username && password))
-        throw new HttpException(400, "Missing username or password");
+        throw new HttpException(400, "Falta el usuario o contraseña.");
       const result = (await User.findOne({
         attributes: ["id", "password"],
         where: {
           username,
         },
       })) as UserEntity | null;
-      if (!result) throw new HttpException(404, "User doesn't exists");
+      if (!result) throw new HttpException(404, "El usuario no existe.");
       const expiresIn = JWT_EXPIRE || "1h";
       if (!result.validatePassword(password))
-        throw new HttpException(403, "The password is incorrect");
+        throw new HttpException(403, "La contraseña es incorrecta.");
       const token = sign({ userId: result.id }, JWT_SECRET, {
         expiresIn,
       });
@@ -59,7 +62,7 @@ router.post(
       if (!(username && password && fullname && roleId))
         throw new HttpException(
           400,
-          "There's parameters missing in the request"
+          "Hay parametros faltantes en la solicitud."
         );
       const result = (await User.create({
         username,

@@ -1,3 +1,6 @@
+// Must be the first import
+import "preact/debug";
+
 import { render } from "preact";
 import { App } from "./app";
 import "@fontsource/roboto/300.css";

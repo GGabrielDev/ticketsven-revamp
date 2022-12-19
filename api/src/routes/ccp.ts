@@ -6,7 +6,7 @@ import { CCP as CCPEntity } from "../models/CCP";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Parish, CCP } = Models;
+const { Parish, CCP, Quadrant } = Models;
 
 interface ICCPParams {
   ccpId: number;
@@ -26,6 +26,9 @@ router.get(
       const { name } = req.body;
 
       const result = await CCP.findAll({
+        attributes: {
+          exclude: ["parishId"],
+        },
         where: name
           ? {
               name: {
@@ -33,6 +36,41 @@ router.get(
               },
             }
           : {},
+        include: [
+          { model: Parish, as: "parish" },
+          { model: Quadrant, as: "quadrants" },
+        ],
+      });
+
+      console.log(result);
+
+      return res
+        .status(result.length === 0 ? 204 : 200)
+        .send({ amount: result.length, result });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/parish",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { parishId } = req.body;
+
+      if (!parishId || parishId === 0)
+        throw new HttpException(400, "A valid parish ID must be provided");
+
+      const result = await CCP.findAll({
+        attributes: {
+          exclude: ["parishId"],
+        },
+        where: { parishId },
+        include: [
+          { model: Parish, as: "parish" },
+          { model: Quadrant, as: "quadrants" },
+        ],
       });
 
       console.log(result);
@@ -52,7 +90,15 @@ router.get(
     const { ccpId } = req.params;
 
     try {
-      const result = await CCP.findByPk(ccpId);
+      const result = await CCP.findByPk(ccpId, {
+        attributes: {
+          exclude: ["parishId"],
+        },
+        include: [
+          { model: Parish, as: "parish" },
+          { model: Quadrant, as: "quadrants" },
+        ],
+      });
 
       return res.status(!result ? 204 : 200).send(result);
     } catch (error) {
@@ -85,14 +131,24 @@ router.post(
               );
             }
           });
-        const result = (await CCP.create({ name })) as CCPEntity;
-
         if (!parish) {
           throw new HttpException(404, "The requested Parish doesn't exist");
         }
+        const result = (await CCP.create({ name })) as CCPEntity;
+
         await parish.addCcp(result);
 
-        return res.status(201).send(await CCP.findByPk(result.id));
+        return res.status(201).send(
+          await CCP.findByPk(result.id, {
+            attributes: {
+              exclude: ["parishId"],
+            },
+            include: [
+              { model: Parish, as: "parish" },
+              { model: Quadrant, as: "quadrants" },
+            ],
+          })
+        );
       }
     } catch (error) {
       console.error(error);
@@ -106,7 +162,7 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { ccpId } = req.params;
-      const { name } = req.body;
+      const { name, parishId } = req.body;
 
       if (!ccpId) {
         throw new HttpException(400, "The CCP ID is missing as the param");
@@ -114,16 +170,31 @@ router.put(
       if (!name) {
         throw new HttpException(400, "The name is missing as the body");
       }
-      const result = await CCP.findByPk(ccpId);
+      const result = (await CCP.findByPk(ccpId)) as CCPEntity;
 
       if (!result) {
         throw new HttpException(404, "The requested CCP doesn't exist");
       }
 
+      if (parishId) {
+        const parish = await Parish.findByPk(parishId);
+        if (parish) result.setParish(parishId);
+      }
+
       result.set({ name });
       await result.save();
 
-      res.status(200).send(result);
+      return res.status(200).send(
+        await CCP.findByPk(result.id, {
+          attributes: {
+            exclude: ["parishId"],
+          },
+          include: [
+            { model: Parish, as: "parish" },
+            { model: Quadrant, as: "quadrants" },
+          ],
+        })
+      );
     } catch (error) {
       next(error);
     }
