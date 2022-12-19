@@ -1,5 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 
+const { VITE_API_URL } = import.meta.env;
+
 export const axiosConfig: (token: string) => AxiosRequestConfig = (token) => {
   return {
     headers: {
@@ -9,6 +11,6 @@ export const axiosConfig: (token: string) => AxiosRequestConfig = (token) => {
 };
 
 export default axios.create({
-  baseURL: "http://localhost:3080",
+  baseURL: VITE_API_URL ? VITE_API_URL : "http://localhost:3080",
   timeout: 8000,
 });

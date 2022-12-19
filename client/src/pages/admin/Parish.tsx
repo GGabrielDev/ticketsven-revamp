@@ -132,70 +132,72 @@ export default function Parish() {
           alignItems: "center",
         }}
       >
-        <${Typography} component="h1" variant="h4">
-          Crar una nueva parroquia
-        <//>
-        <${Formik}
-          initialValues=${initialValues}
-          validationSchema=${validationSchema}
-          onSubmit=${handleSubmit}
-        >
-          ${(props: FormikProps<Partial<FormData>>) => html`
-            <${Box}
-              component="form"
-              noValidate
-              sx=${{ mt: 2, mb: 2 }}
-              onReset=${props.handleReset}
-              onSubmit=${props.handleSubmit}
-            >
-              <${Field}
-                as=${TextField}
-                margin="normal"
-                fullWidth
-                label="Parroquia"
-                id="name"
-                name="name"
-                value=${props.values.name}
-                onChange=${props.handleChange}
-                error=${props.touched.name && Boolean(props.errors.name)}
-                helperText=${props.touched.name && props.errors.name}
-              />
-              <${InputLabel} id="municipalityId">Municipio<//>
-              <${Field}
-                as=${Select}
-                margin="normal"
-                fullWidth
-                id="municipalityId"
-                name="municipalityId"
-                value=${props.values.municipalityId}
-                onChange=${props.handleChange}
-                error=${props.touched.municipalityId &&
-                Boolean(props.errors.municipalityId)}
-                helperText=${props.touched.municipalityId &&
-                props.errors.municipalityId}
+        <${Paper} sx=${{ p: 4, m: 2 }}>
+          <${Typography} component="h1" variant="h4">
+            Crar una nueva parroquia
+          <//>
+          <${Formik}
+            initialValues=${initialValues}
+            validationSchema=${validationSchema}
+            onSubmit=${handleSubmit}
+          >
+            ${(props: FormikProps<Partial<FormData>>) => html`
+              <${Box}
+                component="form"
+                noValidate
+                sx=${{ mt: 2, mb: 2 }}
+                onReset=${props.handleReset}
+                onSubmit=${props.handleSubmit}
               >
-                <${MenuItem} value=${0}>Selecciona un municipio<//>
-                ${municipalities.map(
-                  (municipality) => html`
+                <${Field}
+                  as=${TextField}
+                  margin="normal"
+                  fullWidth
+                  label="Parroquia"
+                  id="name"
+                  name="name"
+                  value=${props.values.name}
+                  onChange=${props.handleChange}
+                  error=${props.touched.name && Boolean(props.errors.name)}
+                  helperText=${props.touched.name && props.errors.name}
+                />
+                <${InputLabel} id="municipalityId">Municipio<//>
+                <${Field}
+                  as=${Select}
+                  margin="normal"
+                  fullWidth
+                  id="municipalityId"
+                  name="municipalityId"
+                  value=${props.values.municipalityId}
+                  onChange=${props.handleChange}
+                  error=${props.touched.municipalityId &&
+                  Boolean(props.errors.municipalityId)}
+                  helperText=${props.touched.municipalityId &&
+                  props.errors.municipalityId}
+                >
+                  <${MenuItem} value=${0}>Selecciona un municipio<//>
+                  ${municipalities.map(
+                    (municipality) => html`
                     <${MenuItem} value=${municipality.id}
                       >${municipality.name}</${MenuItem}
                     >
                   `
-                )}
+                  )}
+                <//>
+                <${Button}
+                  disabled=${props.isSubmitting}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx=${{ p: 1, mt: 3, mb: 2 }}
+                >
+                  ${props.isSubmitting
+                    ? html`<${CircularProgress} size=${24} />`
+                    : "Crear Parroquia"}
+                <//>
               <//>
-              <${Button}
-                disabled=${props.isSubmitting}
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx=${{ p: 1, mt: 3, mb: 2 }}
-              >
-                ${props.isSubmitting
-                  ? html`<${CircularProgress} size=${24} />`
-                  : "Crear Parroquia"}
-              <//>
-            <//>
-          `}
+            `}
+          <//>
         <//>
         ${selectedRow
           ? html`

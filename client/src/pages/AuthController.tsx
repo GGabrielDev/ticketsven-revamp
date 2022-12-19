@@ -19,6 +19,8 @@ export default function AuthController(props: AuthControllerProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  console.log(import.meta.env.VITE_API_URL);
+
   useEffect(() => {
     switch (status) {
       case "Error":
@@ -39,7 +41,7 @@ export default function AuthController(props: AuthControllerProps) {
         sx=${{
           width: "100%",
           height: "100%",
-					p: 4,
+          p: 4,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

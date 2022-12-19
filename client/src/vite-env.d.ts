@@ -1,5 +1,14 @@
 /// <reference types="vite/client" />
 
+// Enviromental Variables
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 // Error type handled in the slices
 type ErrorType = {
   status: number;
