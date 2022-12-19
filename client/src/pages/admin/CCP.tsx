@@ -363,7 +363,7 @@ export default function CCP() {
                       >
                         <${StyledTableCell}>${row.id}<//>
                         <${StyledTableCell}>${row.name}<//>
-                        <${StyledTableCell}>${row.municipality.name}<//>
+                        <${StyledTableCell}>${row.parish.name}<//>
                       <//>
                     `
                   )
