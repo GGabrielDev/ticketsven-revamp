@@ -10,6 +10,7 @@ import Municipality from "./pages/admin/Municipality";
 import Parish from "./pages/admin/Parish";
 import CCP from "./pages/admin/CCP";
 import Quadrant from "./pages/admin/Quadrant";
+import Reason from "./pages/admin/Reason";
 
 const { selectUser } = selectors;
 
@@ -36,6 +37,7 @@ function Router() {
                       path="quadrant"
                       element=${html`<${Quadrant} />`}
                     />
+                    <${Route} path="reasons" element=${html`<${Reason} />`} />
                   <//>
                 `
               : null}

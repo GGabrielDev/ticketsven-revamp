@@ -38,3 +38,5 @@ type CCPType = GenericType & {
 type QuadrantType = GenericType & {
   ccp: GenericType;
 };
+
+type ReasonType = GenericType;
