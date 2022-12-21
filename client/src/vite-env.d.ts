@@ -16,37 +16,25 @@ type ErrorType = {
 };
 
 // Slice types
-type MunicipalityType = {
+type GenericType = {
   id: number;
   name: string;
-  parishes: {
-    id: number;
-    name: string;
-  }[];
 };
 
-type ParishType = {
-  id: number;
-  name: string;
-  municipality: {
-    id: number;
-    name: string;
-  };
-  ccps: {
-    id: number;
-    name: string;
-  }[];
+type MunicipalityType = GenericType & {
+  parishes: GenericType[];
 };
 
-type CCPType = {
-  id: number;
-  name: string;
-  parish: {
-    id: number;
-    name: string;
-  };
-  quadrants: {
-    id: number;
-    name: string;
-  }[];
+type ParishType = GenericType & {
+  municipality: GenericType;
+  ccps: GenericType[];
+};
+
+type CCPType = GenericType & {
+  parish: GenericType;
+  quadrants: GenericType[];
+};
+
+type QuadrantType = GenericType & {
+  ccp: GenericType;
 };

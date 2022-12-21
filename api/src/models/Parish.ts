@@ -89,6 +89,7 @@ module.exports = (sequelize: Sequelize) => {
       sequelize,
       tableName: "parishes",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

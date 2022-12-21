@@ -71,6 +71,7 @@ module.exports = (sequelize: Sequelize) => {
       sequelize,
       tableName: "municipalities",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

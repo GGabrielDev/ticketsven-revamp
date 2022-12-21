@@ -26,16 +26,16 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectors as parishSelectors } from "../../redux/features/parish/parishSlice";
+import { selectors as ccpSelectors } from "../../redux/features/ccp/ccpSlice";
 import {
-  actions as ccpActions,
-  selectors as ccpSelectors,
-} from "../../redux/features/ccp/ccpSlice";
+  actions as quadrantActions,
+  selectors as quadrantSelectors,
+} from "../../redux/features/quadrant/quadrantSlice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createCCP, editCCP, deleteCCP } = ccpActions;
+const { createQuadrant, editQuadrant, deleteQuadrant } = quadrantActions;
 const { selectCCPs } = ccpSelectors;
-const { selectParishes } = parishSelectors;
+const { selectQuadrants } = quadrantSelectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -56,27 +56,27 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 interface FormData {
   id: number;
   name: string;
-  parishId: number;
+  ccpId: number;
 }
 
-export default function CCP() {
+export default function Parish() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<CCPType | null>(null);
+  const [selectedRow, setSelectedRow] = useState<QuadrantType | null>(null);
   const [edit, setEdit] = useState(false);
   const initialValues: Partial<FormData> = {
     name: "",
-    parishId: 0,
+    ccpId: 0,
   };
-  const parishes = useAppSelector(selectParishes);
+  const quadrants = useAppSelector(selectQuadrants);
   const ccps = useAppSelector(selectCCPs);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
-    municipalityId: Yup.number()
-      .notOneOf([0], "Debe de seleccionar un municipio.")
-      .required("Debe de seleccionar un municipio."),
+    name: Yup.string().required("Necesitas escribir un nombre de Cuadrante."),
+    ccpId: Yup.number()
+      .notOneOf([0], "Debe de seleccionar un CCP.")
+      .required("Debe de seleccionar un CCP."),
   });
 
   const handleChangePage = (event: Event, newPage: number) => {
@@ -97,17 +97,17 @@ export default function CCP() {
     values: Partial<FormData>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
-    dispatch(createCCP(values)).then(() => {
+    dispatch(createQuadrant(values)).then(() => {
       setSubmitting(false);
       resetForm();
     });
   };
 
   const handleEdit = (
-    values: CCPType & FormData,
-    { setSubmitting, resetForm }: FormikHelpers<CCPType & FormData>
+    values: QuadrantType & FormData,
+    { setSubmitting, resetForm }: FormikHelpers<QuadrantType & FormData>
   ) => {
-    dispatch(editCCP(values)).then(() => {
+    dispatch(editQuadrant(values)).then(() => {
       setSelectedRow(values);
       setSubmitting(false);
       setEdit(false);
@@ -130,7 +130,7 @@ export default function CCP() {
       >
         <${Paper} sx=${{ p: 4, m: 2 }}>
           <${Typography} component="h1" variant="h4">
-            Crar una nuevo Centro de Coordinación Policial
+            Crar una nuevo Cuadrante
           <//>
           <${Formik}
             initialValues=${initialValues}
@@ -148,7 +148,7 @@ export default function CCP() {
                 <${Field}
                   as=${TextField}
                   fullWidth
-                  label="Centro de Coordinación Policial"
+                  label="Cuadrante"
                   id="name"
                   name="name"
                   value=${props.values.name}
@@ -156,36 +156,34 @@ export default function CCP() {
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
-                <${InputLabel} id="municipalityId">Parroquia<//>
+                <${InputLabel} id="ccpId">Centro de Coordinación Policial<//>
                 <${Field}
                   as=${Select}
                   fullWidth
-                  id="parishId"
-                  name="parishId"
-                  disabled=${parishes.length === 0}
-                  value=${props.values.parishId}
+                  id="ccpId"
+                  name="ccpId"
+                  disabled=${ccps.length === 0}
+                  value=${props.values.ccpId}
                   onChange=${props.handleChange}
-                  error=${props.touched.parishId &&
-                  Boolean(props.errors.parishId)}
-                  helperText=${props.touched.parishId && props.errors.parishId}
+                  error=${props.touched.ccpId && Boolean(props.errors.ccpId)}
+                  helperText=${props.touched.ccpId && props.errors.ccpId}
                 >
-                  ${parishes.length > 0
+                  ${ccps.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un municipio<//>
-                        ${parishes.map(
-                          (parish) => html`
-                            <${MenuItem} value=${parish.id}>${parish.name}<//>
-                          `
+                        <${MenuItem} value=${0}>Selecciona un CCP<//>
+                        ${ccps.map(
+                          (ccp) =>
+                            html`<${MenuItem} value=${ccp.id}>${ccp.name}<//>`
                         )}
                       `
                     : html`
                         <${MenuItem} value=${0} disabled>
-                          No hay Parroquias en el sistema
+                          No hay CCPs en el sistema
                         <//>
                       `}
                 <//>
                 <${Button}
-                  disabled=${props.isSubmitting || parishes.length === 0}
+                  disabled=${props.isSubmitting || ccps.length === 0}
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -193,7 +191,7 @@ export default function CCP() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Crear CCP"}
+                    : "Crear Cuadrante"}
                 <//>
               <//>
             `}
@@ -210,14 +208,17 @@ export default function CCP() {
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
                         <${Typography}>Nombre: ${selectedRow.name}<//>
-                        <${Typography}>Parroquia: ${selectedRow.parish.name}<//>
+                        <${Typography}>CCP: ${selectedRow.ccp.name}<//>
                       <//>
                       <${Box}
                         mt=${1}
                         display="flex"
                         justifyContent="space-between"
                       >
-                        <${Tooltip} title="Editar CCP" placement="top-end">
+                        <${Tooltip}
+                          title="Editar Parroquia"
+                          placement="top-end"
+                        >
                           <span>
                             <${Button}
                               variant="contained"
@@ -230,17 +231,15 @@ export default function CCP() {
                           </span>
                         <//>
                         <${Tooltip}
-                          title=${selectedRow.quadrants.length > 0
-                            ? "No se puede borrar si tiene Cuadrantes asignados"
-                            : "Borrar CCP"}
+                          title="Borrar Cuadrante"
                           placement="top-end"
                         >
                           <span>
                             <${Button}
                               variant="contained"
                               color="error"
-                              disabled=${selectedRow.quadrants.length > 0}
-                              onClick=${() => dispatch(deleteCCP(selectedRow))}
+                              onClick=${() =>
+                                dispatch(deleteQuadrant(selectedRow))}
                             >
                               <${DeleteIcon} />
                               Borrar
@@ -251,17 +250,17 @@ export default function CCP() {
                     `
                   : html`
                       <${Typography} component="h1" variant="h4">
-                        Editar Centro de Coordinación Policial
+                        Editar Parroquia
                       <//>
                       <${Formik}
                         initialValues=${{
                           ...selectedRow,
-                          parishId: selectedRow.parish.id,
+                          ccpId: selectedRow.ccp.id,
                         }}
                         validationSchema=${validationSchema}
                         onSubmit=${handleEdit}
                       >
-                        ${(props: FormikProps<CCPType & FormData>) => html`
+                        ${(props: FormikProps<ParishType & FormData>) => html`
                           <${Box}
                             component="form"
                             noValidate
@@ -273,7 +272,7 @@ export default function CCP() {
                               as=${TextField}
                               margin="normal"
                               fullWidth
-                              label="Centro de Coordinación Policial;"
+                              label="Parroquia"
                               id="name"
                               name="name"
                               value=${props.values.name}
@@ -283,29 +282,29 @@ export default function CCP() {
                               helperText=${props.touched.name &&
                               props.errors.name}
                             />
-                            <${InputLabel} id="municipalityId">Parroquia<//>
+                            <${InputLabel} id="ccpId">
+                              Centro de Coordinación Policial
+                            <//>
                             <${Field}
                               as=${Select}
                               margin="normal"
                               fullWidth
-                              id="parishId"
-                              name="parishId"
-                              value=${props.values.parishId}
+                              id="ccpId"
+                              name="ccpId"
+                              value=${props.values.ccpId}
                               onChange=${props.handleChange}
-                              error=${props.touched.parishId &&
-                              Boolean(props.errors.parishId)}
-                              helperText=${props.touched.parishId &&
-                              props.errors.parishId}
+                              error=${props.touched.ccpId &&
+                              Boolean(props.errors.ccpId)}
+                              helperText=${props.touched.ccpId &&
+                              props.errors.ccpId}
                             >
-                              <${MenuItem} value=${0}
-                                >Selecciona un municipio<//
-                              >
-                              ${parishes.map(
-                                (parish) => html`
-                    <${MenuItem} value=${parish.id}
-                      >${parish.name}</${MenuItem}
-                    >
-                  `
+                              <${MenuItem} value=${0}>
+                                Selecciona un municipio
+                              <//>
+                              ${ccps.map(
+                                (ccp) => html`
+                                  <${MenuItem} value=${ccp.id}>${ccp.name}<//>
+                                `
                               )}
                             <//>
                             <${Box}
@@ -349,13 +348,13 @@ export default function CCP() {
             <${TableHead}>
               <${StyledTableRow}>
                 <${StyledTableCell}>ID<//>
+                <${StyledTableCell}>Cuadrante<//>
                 <${StyledTableCell}>CCP<//>
-                <${StyledTableCell}>Parroquia<//>
               <//>
             <//>
             <${TableBody}>
-              ${ccps.length > 0
-                ? ccps.map(
+              ${quadrants.length > 0
+                ? quadrants.map(
                     (row) => html`
                       <${StyledTableRow}
                         hover
@@ -364,7 +363,7 @@ export default function CCP() {
                       >
                         <${StyledTableCell}>${row.id}<//>
                         <${StyledTableCell}>${row.name}<//>
-                        <${StyledTableCell}>${row.parish.name}<//>
+                        <${StyledTableCell}>${row.ccp.name}<//>
                       <//>
                     `
                   )
@@ -380,7 +379,7 @@ export default function CCP() {
               <${TablePagination}
                 rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
                 colSpan=${3}
-                count=${ccps.length}
+                count=${quadrants.length}
                 rowsPerPage=${rowsPerPage}
                 page=${page}
                 onPageChange=${handleChangePage}

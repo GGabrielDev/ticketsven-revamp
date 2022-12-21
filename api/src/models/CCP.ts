@@ -98,6 +98,7 @@ module.exports = (sequelize: Sequelize) => {
       sequelize,
       tableName: "ccps",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

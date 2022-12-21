@@ -95,9 +95,6 @@ router.get(
         ],
       });
 
-      if (!result) {
-        return res.status(204).send("No entries has been found");
-      }
       return res.status(200).send(result);
     } catch (error) {
       next(error);
@@ -111,7 +108,7 @@ router.post(
     try {
       const { name, municipalityId } = req.body;
 
-      if (!name || !municipalityId) {
+      if (!(name && municipalityId))
         throw new HttpException(
           400,
           `The following values are missing from the request's body: ${
@@ -122,39 +119,38 @@ router.post(
               : null
           }`
         );
-      } else {
-        const municipality = await Municipality.findByPk(municipalityId)
-          .then((value) => value as MunicipalityEntity | null)
-          .catch((error) => {
-            if (error.parent.code === "22P02") {
-              throw new HttpException(
-                400,
-                "The format of the request is not UUID"
-              );
-            }
-          });
-        const result = (await Parish.create({ name })) as ParishEntity;
 
-        if (!municipality) {
-          throw new HttpException(
-            404,
-            "The requested Municipality doesn't exist"
-          );
-        }
-        await municipality.addParish(result);
-
-        return res.status(201).send(
-          await Parish.findByPk(result.id, {
-            attributes: {
-              exclude: ["municipalityId"],
-            },
-            include: [
-              { model: Municipality, as: "municipality" },
-              { model: CCP, as: "ccps" },
-            ],
-          })
+      const municipality = await Municipality.findByPk(municipalityId)
+        .then((value) => value as MunicipalityEntity | null)
+        .catch((error) => {
+          if (error.parent.code === "22P02") {
+            throw new HttpException(
+              400,
+              "The format of the request is not UUID"
+            );
+          }
+        });
+      if (!municipality) {
+        throw new HttpException(
+          404,
+          "The requested Municipality doesn't exist"
         );
       }
+
+      const result = (await Parish.create({ name })) as ParishEntity;
+      await municipality.addParish(result);
+
+      return res.status(201).send(
+        await Parish.findByPk(result.id, {
+          attributes: {
+            exclude: ["municipalityId"],
+          },
+          include: [
+            { model: Municipality, as: "municipality" },
+            { model: CCP, as: "ccps" },
+          ],
+        })
+      );
     } catch (error) {
       console.error(error);
       next(error);
@@ -171,8 +167,6 @@ router.put(
 
       if (!parishId)
         throw new HttpException(400, "The Parish ID is missing as the param");
-      if (!name)
-        throw new HttpException(400, "The name is missing as the body");
       const result = (await Parish.findByPk(parishId, {
         attributes: {
           exclude: ["municipalityId"],
@@ -182,15 +176,14 @@ router.put(
           { model: CCP, as: "ccps" },
         ],
       })) as ParishEntity | null;
-
       if (!result)
         throw new HttpException(404, "The requested Parish doesn't exist");
+
+      if (name) await result.update({ name });
       if (municipalityId) {
         const municipality = await Municipality.findByPk(municipalityId);
         if (municipality) result.setMunicipality(municipalityId);
       }
-      result.set({ name });
-      await result.save();
 
       res.status(200).send(
         await Parish.findByPk(result.id, {
@@ -226,7 +219,7 @@ router.delete(
 
       await result.destroy();
 
-      res.status(200).send("The choosed Parish was deleted successfully");
+      res.status(200).send("The choosed Parish was disabled successfully");
     } catch (error) {
       next(error);
     }

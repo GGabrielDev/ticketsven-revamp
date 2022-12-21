@@ -75,6 +75,7 @@ module.exports = (sequelize: Sequelize) => {
       },
       tableName: "roles",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

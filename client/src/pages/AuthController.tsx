@@ -7,7 +7,7 @@ import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { selectors, actions } from "../redux/features/user/userSlice";
 
 const { getUser, clearToken } = actions;
-const { selectUser, selectStatus } = selectors;
+const { selectUser, selectStatus, selectToken } = selectors;
 
 type AuthControllerProps = {
   children: VNode | VNode[];
@@ -15,11 +15,10 @@ type AuthControllerProps = {
 
 export default function AuthController(props: AuthControllerProps) {
   const user = useAppSelector(selectUser);
+  const token = useAppSelector(selectToken);
   const status = useAppSelector(selectStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  console.log(import.meta.env.VITE_API_URL);
 
   useEffect(() => {
     switch (status) {
@@ -33,7 +32,7 @@ export default function AuthController(props: AuthControllerProps) {
   }, [user, status]);
 
   useEffect(() => {
-    dispatch(getUser());
+    if (token) dispatch(getUser());
   }, []);
 
   return status === "Loading"

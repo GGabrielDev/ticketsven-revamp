@@ -51,10 +51,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
 }));
 
 interface FormData {
@@ -151,7 +147,6 @@ export default function Parish() {
               >
                 <${Field}
                   as=${TextField}
-                  margin="normal"
                   fullWidth
                   label="Parroquia"
                   id="name"
@@ -164,10 +159,10 @@ export default function Parish() {
                 <${InputLabel} id="municipalityId">Municipio<//>
                 <${Field}
                   as=${Select}
-                  margin="normal"
                   fullWidth
                   id="municipalityId"
                   name="municipalityId"
+                  disabled=${municipalities.length === 0}
                   value=${props.values.municipalityId}
                   onChange=${props.handleChange}
                   error=${props.touched.municipalityId &&
@@ -175,17 +170,25 @@ export default function Parish() {
                   helperText=${props.touched.municipalityId &&
                   props.errors.municipalityId}
                 >
-                  <${MenuItem} value=${0}>Selecciona un municipio<//>
-                  ${municipalities.map(
-                    (municipality) => html`
-                    <${MenuItem} value=${municipality.id}
-                      >${municipality.name}</${MenuItem}
-                    >
-                  `
-                  )}
+                  ${municipalities.length > 0
+                    ? html`
+                        <${MenuItem} value=${0}>Selecciona un municipio<//>
+                        ${municipalities.map(
+                          (municipality) => html`
+                            <${MenuItem} value=${municipality.id}>
+                              ${municipality.name}
+                            <//>
+                          `
+                        )}
+                      `
+                    : html`
+                        <${MenuItem} value=${0} disabled>
+                          No hay Municipios en el sistema
+                        <//>
+                      `}
                 <//>
                 <${Button}
-                  disabled=${props.isSubmitting}
+                  disabled=${props.isSubmitting || municipalities.length === 0}
                   type="submit"
                   fullWidth
                   variant="contained"

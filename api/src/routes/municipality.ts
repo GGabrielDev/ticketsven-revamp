@@ -51,9 +51,6 @@ router.get(
         include: [Municipality.associations.parishes],
       });
 
-      if (!result) {
-        return res.status(204).send("No entries has been found");
-      }
       return res.status(200).send(result);
     } catch (error) {
       next(error);
@@ -67,19 +64,18 @@ router.post(
     try {
       const { name } = req.body;
 
-      if (name) {
-        const result = (await Municipality.create({
-          name,
-        })) as MunicipalityEntity;
-
-        return res.status(201).send(
-          await Municipality.findByPk(result.id, {
-            include: [Municipality.associations.parishes],
-          })
-        );
-      } else {
+      if (!name)
         throw new HttpException(400, "The name is missing as the body");
-      }
+
+      const result = (await Municipality.create({
+        name,
+      })) as MunicipalityEntity;
+
+      return res.status(201).send(
+        await Municipality.findByPk(result.id, {
+          include: [Municipality.associations.parishes],
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -99,10 +95,10 @@ router.put(
           "The Municipality ID is missing as the param"
         );
       }
-      if (!name) {
-        throw new HttpException(400, "The name is missing as the body");
-      }
-      const result = await Municipality.findByPk(municipalityId);
+
+      const result = (await Municipality.findByPk(
+        municipalityId
+      )) as MunicipalityEntity | null;
 
       if (!result) {
         throw new HttpException(
@@ -111,8 +107,7 @@ router.put(
         );
       }
 
-      result.set({ name });
-      await result.save();
+      if (name && name !== result.name) result.update({ name });
 
       res.status(200).send(result);
     } catch (error) {
@@ -144,7 +139,7 @@ router.delete(
 
       await result.destroy();
 
-      res.status(200).send("The choosed Municipality was deleted successfully");
+      res.status(200).send("The choosed Municipality was disable successfully");
     } catch (error) {
       next(error);
     }

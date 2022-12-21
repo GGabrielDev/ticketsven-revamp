@@ -39,6 +39,7 @@ module.exports = (sequelize: Sequelize) => {
       sequelize,
       tableName: "reasons",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

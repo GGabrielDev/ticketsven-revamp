@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { actions, selectors } from "../redux/features/user/userSlice";
 import Logo from "../assets/logo.png";
+import SplashImage from "../assets/ind_user.png";
 
 type FormData = {
   username: string;
@@ -64,7 +65,7 @@ export default function LoginPage() {
         sm=${4}
         md=${7}
         sx=${{
-          backgroundImage: "url(https://source.unsplash.com/random)",
+          backgroundImage: `url(${SplashImage})`,
           backgroundRepeat: "no-repeat",
           backgroundColor: (theme) =>
             theme.palette.mode === "light"

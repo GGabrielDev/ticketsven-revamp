@@ -69,6 +69,7 @@ module.exports = (sequelize: Sequelize) => {
       sequelize,
       tableName: "quadrants",
       timestamps: false,
+      paranoid: true,
     }
   );
 };

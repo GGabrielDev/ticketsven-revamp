@@ -42,11 +42,7 @@ router.get(
         ],
       });
 
-      console.log(result);
-
-      return res
-        .status(result.length === 0 ? 204 : 200)
-        .send({ amount: result.length, result });
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -73,11 +69,7 @@ router.get(
         ],
       });
 
-      console.log(result);
-
-      return res
-        .status(result.length === 0 ? 204 : 200)
-        .send({ amount: result.length, result });
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -100,7 +92,7 @@ router.get(
         ],
       });
 
-      return res.status(!result ? 204 : 200).send(result);
+      return res.status(200).send(result);
     } catch (error) {
       next(error);
     }
@@ -113,43 +105,40 @@ router.post(
     try {
       const { name, parishId } = req.body;
 
-      if (!name || !parishId) {
+      if (!(name && parishId))
         throw new HttpException(
           400,
           `The following values are missing from the request's body: ${
             !name ? (!parishId ? "name and parishId" : "name") : null
           }`
         );
-      } else {
-        const parish = await Parish.findByPk(parishId)
-          .then((value) => value as ParishEntity | null)
-          .catch((error) => {
-            if (error.parent.code === "22P02") {
-              throw new HttpException(
-                400,
-                "The format of the request is not UUID"
-              );
-            }
-          });
-        if (!parish) {
-          throw new HttpException(404, "The requested Parish doesn't exist");
-        }
-        const result = (await CCP.create({ name })) as CCPEntity;
+      const parish = await Parish.findByPk(parishId)
+        .then((value) => value as ParishEntity | null)
+        .catch((error) => {
+          if (error.parent.code === "22P02") {
+            throw new HttpException(
+              400,
+              "The format of the request is not UUID"
+            );
+          }
+        });
+      if (!parish)
+        throw new HttpException(404, "The requested Parish doesn't exist");
 
-        await parish.addCcp(result);
+      const result = (await CCP.create({ name })) as CCPEntity;
+      await parish.addCcp(result);
 
-        return res.status(201).send(
-          await CCP.findByPk(result.id, {
-            attributes: {
-              exclude: ["parishId"],
-            },
-            include: [
-              { model: Parish, as: "parish" },
-              { model: Quadrant, as: "quadrants" },
-            ],
-          })
-        );
-      }
+      return res.status(201).send(
+        await CCP.findByPk(result.id, {
+          attributes: {
+            exclude: ["parishId"],
+          },
+          include: [
+            { model: Parish, as: "parish" },
+            { model: Quadrant, as: "quadrants" },
+          ],
+        })
+      );
     } catch (error) {
       console.error(error);
       next(error);
@@ -167,22 +156,18 @@ router.put(
       if (!ccpId) {
         throw new HttpException(400, "The CCP ID is missing as the param");
       }
-      if (!name) {
-        throw new HttpException(400, "The name is missing as the body");
-      }
+
       const result = (await CCP.findByPk(ccpId)) as CCPEntity;
 
       if (!result) {
         throw new HttpException(404, "The requested CCP doesn't exist");
       }
 
+      if (name) await result.update({ name });
       if (parishId) {
         const parish = await Parish.findByPk(parishId);
         if (parish) result.setParish(parishId);
       }
-
-      result.set({ name });
-      await result.save();
 
       return res.status(200).send(
         await CCP.findByPk(result.id, {
@@ -208,17 +193,17 @@ router.delete(
       const { ccpId } = req.params;
 
       if (!ccpId) {
-        throw new HttpException(400, "The Parish ID is missing as the param");
+        throw new HttpException(400, "The CCP ID is missing as the param");
       }
       const result = await CCP.findByPk(ccpId);
 
       if (!result) {
-        throw new HttpException(404, "The requested Parish doesn't exist");
+        throw new HttpException(404, "The requested CCP doesn't exist");
       }
 
       await result.destroy();
 
-      res.status(200).send("The choosed Parish was deleted successfully");
+      res.status(200).send("The choosen CCP was disabled successfully");
     } catch (error) {
       next(error);
     }
