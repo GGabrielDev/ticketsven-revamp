@@ -44,29 +44,27 @@ router.get(
   }
 );
 
-router.get(
-  "/all",
-  authRole("admin"),
-  async (_, res: Response, next: NextFunction) => {
-    try {
-      const result = (await User.findAll({
-        attributes: {
-          exclude: ["password", "roleId"],
-        },
-        include: [{ model: Role, as: "role" }],
-        paranoid: true,
-      })) as UserEntity[];
-      return res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      next(error);
-    }
+// From this point, only users with the "admin" role can use the following routes.
+router.use(authRole("admin"));
+
+router.get("/all", async (_, res: Response, next: NextFunction) => {
+  try {
+    const result = (await User.findAll({
+      attributes: {
+        exclude: ["password", "roleId"],
+      },
+      include: [{ model: Role, as: "role" }],
+      paranoid: true,
+    })) as UserEntity[];
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
-);
+});
 
 router.post(
   "/",
-  authRole("admin"),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { username, password, fullname, roleId } = req.body;
@@ -101,7 +99,6 @@ router.post(
 
 router.put(
   "/:userId",
-  authRole("admin"),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.params;
@@ -133,7 +130,6 @@ router.put(
 
 router.delete(
   "/:userId",
-  authRole("admin"),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.params;

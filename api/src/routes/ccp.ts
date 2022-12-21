@@ -1,5 +1,6 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
+import { authRole } from "../middleware/auth.middleware";
 import { Models } from "../db";
 import { Parish as ParishEntity } from "../models/Parish";
 import { CCP as CCPEntity } from "../models/CCP";
@@ -98,6 +99,9 @@ router.get(
     }
   }
 );
+
+// From this point, only users with the "admin" role can use the following routes.
+router.use(authRole("admin"));
 
 router.post(
   "/",

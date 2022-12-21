@@ -162,7 +162,7 @@ export default function LoginPage() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Submit"}
+                    : "Iniciar Sesión"}
                 <//>
               <//>
             `}
