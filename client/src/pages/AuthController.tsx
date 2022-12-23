@@ -2,7 +2,7 @@ import { VNode } from "preact";
 import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
 import { useNavigate } from "react-router-dom";
-import { Box, CircularProgress } from "@mui/material";
+import LoadingBox from "../components/LoadingBox";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { selectors, actions } from "../redux/features/user/userSlice";
 
@@ -26,27 +26,16 @@ export default function AuthController(props: AuthControllerProps) {
         dispatch(clearToken());
         navigate("/");
         break;
-      case "Login":
-        navigate("/dashboard");
+      case "Idle":
+        if (!token) navigate("/");
     }
   }, [user, status]);
 
   useEffect(() => {
     if (token) dispatch(getUser());
-  }, []);
+  }, [token]);
 
-  return status === "Loading"
-    ? html` <${Box}
-        sx=${{
-          width: "100%",
-          height: "100%",
-          p: 4,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <${CircularProgress} size=${64} />
-      <//>`
+  return status === "Loading" && !token && !user
+    ? html`<${LoadingBox} />`
     : props.children;
 }

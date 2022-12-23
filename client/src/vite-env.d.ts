@@ -40,3 +40,9 @@ type QuadrantType = GenericType & {
 };
 
 type ReasonType = GenericType;
+
+type RoleType = GenericType;
+
+type UserType = Record<"id" | "username" | "fullname", string> & {
+  role: RoleType;
+};

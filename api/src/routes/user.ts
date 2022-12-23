@@ -54,7 +54,6 @@ router.get("/all", async (_, res: Response, next: NextFunction) => {
         exclude: ["password", "roleId"],
       },
       include: [{ model: Role, as: "role" }],
-      paranoid: true,
     })) as UserEntity[];
     return res.status(200).json(result);
   } catch (error) {
@@ -81,7 +80,7 @@ router.post(
         password,
         fullname,
       })) as UserEntity;
-      user.setRole(role);
+      await user.setRole(role);
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {

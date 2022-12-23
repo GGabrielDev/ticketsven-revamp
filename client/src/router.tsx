@@ -1,3 +1,4 @@
+import { useEffect } from "preact/hooks";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { html } from "htm/preact";
 import { useAppSelector } from "./redux/hooks";
@@ -11,11 +12,14 @@ import Parish from "./pages/admin/Parish";
 import CCP from "./pages/admin/CCP";
 import Quadrant from "./pages/admin/Quadrant";
 import Reason from "./pages/admin/Reason";
+import User from "./pages/admin/User";
 
 const { selectUser } = selectors;
 
 function Router() {
   const user = useAppSelector(selectUser);
+
+  useEffect(() => {}, [user]);
 
   return html`
     <${BrowserRouter}>
@@ -38,6 +42,7 @@ function Router() {
                       element=${html`<${Quadrant} />`}
                     />
                     <${Route} path="reasons" element=${html`<${Reason} />`} />
+                    <${Route} path="users" element=${html`<${User} />`} />
                   <//>
                 `
               : null}

@@ -75,8 +75,8 @@ export default function CCP() {
   const validationSchema = Yup.object({
     name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
     municipalityId: Yup.number()
-      .notOneOf([0], "Debe de seleccionar un municipio.")
-      .required("Debe de seleccionar un municipio."),
+      .notOneOf([0], "Debe de seleccionar un parroquia.")
+      .required("Debe de seleccionar un parroquia."),
   });
 
   const handleChangePage = (event: Event, newPage: number) => {
@@ -171,7 +171,7 @@ export default function CCP() {
                 >
                   ${parishes.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un municipio<//>
+                        <${MenuItem} value=${0}>Selecciona un parroquia<//>
                         ${parishes.map(
                           (parish) => html`
                             <${MenuItem} value=${parish.id}>${parish.name}<//>
@@ -298,7 +298,7 @@ export default function CCP() {
                               props.errors.parishId}
                             >
                               <${MenuItem} value=${0}
-                                >Selecciona un municipio<//
+                                >Selecciona un parroquia<//
                               >
                               ${parishes.map(
                                 (parish) => html`

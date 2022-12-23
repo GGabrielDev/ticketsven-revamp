@@ -1,4 +1,6 @@
+import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -13,6 +15,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
+import LoadingBox from "../components/LoadingBox";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { actions, selectors } from "../redux/features/user/userSlice";
 import Logo from "../assets/logo.png";
@@ -24,7 +27,7 @@ type FormData = {
 };
 
 const { loginUser } = actions;
-const { selectError } = selectors;
+const { selectError, selectStatus, selectToken, selectUser } = selectors;
 
 export default function LoginPage() {
   // Define the initial values for the form
@@ -33,8 +36,12 @@ export default function LoginPage() {
     password: "",
   };
   const error = useAppSelector(selectError);
+  const status = useAppSelector(selectStatus);
+  const token = useAppSelector(selectToken);
+  const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
   const theme = useTheme();
+  const navigate = useNavigate();
 
   // Define the validation schema for the form using Yup
   const validationSchema = Yup.object({
@@ -56,119 +63,127 @@ export default function LoginPage() {
     dispatch(loginUser(values)).then(() => setSubmitting(false));
   };
 
+  useEffect(() => {
+    if (token) navigate("/dashboard");
+  }, [token]);
+
   // Define the render method for the form component
-  return html`
-    <${Grid} container component="main" sx=${{ height: "100vh" }}>
-      <${Grid}
-        item
-        xs=${false}
-        sm=${4}
-        md=${7}
-        sx=${{
-          backgroundImage: `url(${SplashImage})`,
-          backgroundRepeat: "no-repeat",
-          backgroundColor: (theme) =>
-            theme.palette.mode === "light"
-              ? theme.palette.grey[50]
-              : theme.palette.grey[900],
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        } as SxProps<typeof theme>}
-      />
-      <${Grid}
-        item
-        xs=${12}
-        sm=${8}
-        md=${5}
-        component=${Paper}
-        elevation=${6}
-        square
-      >
-        ${error !== undefined
-          ? error.message === "Autorización del Token fallida."
-            ? ""
-            : html`<${Alert} severity="error">${error.message}<//>`
-          : ""}
-        <${Box}
-          sx=${{
-            my: 8,
-            mx: 4,
-            gap: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <${Box}
-            component="img"
-            href="/"
+  return !((!user && token) || status === "Loading" || user)
+    ? html`
+        <${Grid} container component="main" sx=${{ height: "100vh" }}>
+          <${Grid}
+            item
+            xs=${false}
+            sm=${4}
+            md=${7}
             sx=${{
-              height: 92,
-            }}
-            alt="Your logo."
-            src=${Logo}
+              backgroundImage: `url(${SplashImage})`,
+              backgroundRepeat: "no-repeat",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "light"
+                  ? theme.palette.grey[50]
+                  : theme.palette.grey[900],
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            } as SxProps<typeof theme>}
           />
-          <${Typography} component="h1" variant="h5">
-            Inicie sesión en el sistema
-          <//>
-          <${Formik}
-            initialValues=${initialValues}
-            validationSchema=${validationSchema}
-            onSubmit=${handleSubmit}
+          <${Grid}
+            item
+            xs=${12}
+            sm=${8}
+            md=${5}
+            component=${Paper}
+            elevation=${6}
+            square
           >
-            ${(props: FormikProps<FormData>) => html`
+            ${error !== undefined
+              ? error.message === "Autorización del Token fallida."
+                ? ""
+                : html`<${Alert} severity="error">${error.message}<//>`
+              : ""}
+            <${Box}
+              sx=${{
+                my: 8,
+                mx: 4,
+                gap: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
               <${Box}
-                component="form"
-                noValidate
-                sx=${{ mt: 1 }}
-                onReset=${props.handleReset}
-                onSubmit=${props.handleSubmit}
-              >
-                <${Field}
-                  as=${TextField}
-                  margin="normal"
-                  fullWidth
-                  label="Nombre de Usuario"
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  value=${props.values.username}
-                  onChange=${props.handleChange}
-                  error=${props.touched.username &&
-                  Boolean(props.errors.username)}
-                  helperText=${props.touched.username && props.errors.username}
-                />
-                <${Field}
-                  as=${TextField}
-                  margin="normal"
-                  fullWidth
-                  label="Contraseña"
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  value=${props.values.password}
-                  onChange=${props.handleChange}
-                  error=${props.touched.password &&
-                  Boolean(props.errors.password)}
-                  helperText=${props.touched.password && props.errors.password}
-                />
-                <${Button}
-                  disabled=${props.isSubmitting}
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx=${{ p: 1, mt: 3, mb: 2 }}
-                >
-                  ${props.isSubmitting
-                    ? html`<${CircularProgress} size=${24} />`
-                    : "Iniciar Sesión"}
-                <//>
+                component="img"
+                href="/"
+                sx=${{
+                  height: 92,
+                }}
+                alt="Your logo."
+                src=${Logo}
+              />
+              <${Typography} component="h1" variant="h5">
+                Inicie sesión en el sistema
               <//>
-            `}
+              <${Formik}
+                initialValues=${initialValues}
+                validationSchema=${validationSchema}
+                onSubmit=${handleSubmit}
+              >
+                ${(props: FormikProps<FormData>) => html`
+                  <${Box}
+                    component="form"
+                    noValidate
+                    sx=${{ mt: 1 }}
+                    onReset=${props.handleReset}
+                    onSubmit=${props.handleSubmit}
+                  >
+                    <${Field}
+                      as=${TextField}
+                      margin="normal"
+                      fullWidth
+                      label="Nombre de Usuario"
+                      id="username"
+                      name="username"
+                      autoComplete="username"
+                      value=${props.values.username}
+                      onChange=${props.handleChange}
+                      error=${props.touched.username &&
+                      Boolean(props.errors.username)}
+                      helperText=${props.touched.username &&
+                      props.errors.username}
+                    />
+                    <${Field}
+                      as=${TextField}
+                      margin="normal"
+                      fullWidth
+                      label="Contraseña"
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      value=${props.values.password}
+                      onChange=${props.handleChange}
+                      error=${props.touched.password &&
+                      Boolean(props.errors.password)}
+                      helperText=${props.touched.password &&
+                      props.errors.password}
+                    />
+                    <${Button}
+                      disabled=${props.isSubmitting}
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx=${{ p: 1, mt: 3, mb: 2 }}
+                    >
+                      ${props.isSubmitting
+                        ? html`<${CircularProgress} size=${24} />`
+                        : "Iniciar Sesión"}
+                    <//>
+                  <//>
+                `}
+              <//>
+            <//>
           <//>
         <//>
-      <//>
-    <//>
-  `;
+      `
+    : html`<${LoadingBox} />`;
 }

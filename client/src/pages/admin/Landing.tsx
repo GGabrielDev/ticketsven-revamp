@@ -1,29 +1,36 @@
-import { useEffect } from "preact/hooks";
 import { html } from "htm/preact";
-import { Typography } from "@mui/material";
-import { useAppDispatch } from "../../redux/hooks";
-import { actions as municipalityActions } from "../../redux/features/municipality/municipalitySlice";
-import { actions as parishActions } from "../../redux/features/parish/parishSlice";
-import { actions as ccpActions } from "../../redux/features/ccp/ccpSlice";
-import { actions as quadrantActions } from "../../redux/features/quadrant/quadrantSlice";
-
-const { getAllMunicipalities } = municipalityActions;
-const { getAllParishes } = parishActions;
-const { getAllCCPs } = ccpActions;
-const { getAllQuadrants } = quadrantActions;
+import { Box, Icon, SxProps, Typography } from "@mui/material";
+import { Dashboard } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 
 function Landing() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getAllMunicipalities());
-    dispatch(getAllParishes());
-    dispatch(getAllCCPs());
-    dispatch(getAllQuadrants());
-  }, []);
+  const theme = useTheme();
 
   return html`
-    <${Typography} variant="h1">Welcome Admin, to the Landing Page<//>
+    <${Box}
+      sx=${{
+        w: 1,
+        h: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        "& > *": {
+          margin: theme.spacing(1),
+        },
+      } as SxProps<typeof theme>}
+    >
+      <${Icon}>
+        <${Dashboard} />
+      <//>
+      <${Typography} variant="h4" component="h1" gutterBottom>
+        Bienvenido, Administrador
+      <//>
+      <${Typography} variant="subtitle1">
+        Desde aqui puedes manejar los datos y usuarios que existen en el sistema
+      <//>
+    <//>
   `;
 }
 

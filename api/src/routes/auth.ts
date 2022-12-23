@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { sign } from "jsonwebtoken";
-import { authJWT, authRole } from "../middleware/auth.middleware";
 import HttpException from "../exceptions/HttpException";
 import { User as UserEntity } from "../models/User";
 import { Models } from "../db";
@@ -45,34 +44,6 @@ router.post(
         expiresIn,
       });
       return res.status(200).json({ token });
-    } catch (error) {
-      console.error(error);
-      next(error);
-    }
-  }
-);
-
-router.post(
-  "/register",
-  authJWT,
-  authRole("admin"),
-  async (req: RouteRequest, res: Response, next: NextFunction) => {
-    try {
-      const { username, password, fullname, roleId } = req.body;
-      if (!(username && password && fullname && roleId))
-        throw new HttpException(
-          400,
-          "Hay parametros faltantes en la solicitud."
-        );
-      const result = (await User.create({
-        username,
-        password,
-        fullname,
-      })) as UserEntity;
-      result.setRole(roleId);
-      return res
-        .status(200)
-        .send({ id: result.id, username, fullname, roleId });
     } catch (error) {
       console.error(error);
       next(error);

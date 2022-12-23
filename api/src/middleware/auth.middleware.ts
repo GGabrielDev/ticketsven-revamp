@@ -40,7 +40,7 @@ export const authRole: (role: Roles | Roles[]) => RequestHandler =
       if (!req.userId)
         throw new HttpException(500, "Autenticación debe de ser verificada.");
       const user = (await User.findByPk(req.userId, {
-        include: [Role],
+        include: [{ model: Role, as: "role" }],
       })) as UserEntity | null;
       if (user === null)
         throw new HttpException(404, "El usuario asignado al token no existe.");

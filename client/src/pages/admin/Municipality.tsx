@@ -48,6 +48,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+type GenericType = {
+  id: number;
+  name: string;
+};
+
+type MunicipalityType = GenericType & {
+  parishes: GenericType[];
+};
+
 interface MunicipalityData {
   id: number;
   name: string;

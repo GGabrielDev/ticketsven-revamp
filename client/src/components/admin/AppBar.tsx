@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { html } from "htm/preact";
+import { useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -13,8 +14,11 @@ import {
   Typography,
 } from "@mui/material";
 import { Menu as MenuIcon, Person } from "@mui/icons-material";
+import { useAppDispatch } from "../../redux/hooks";
+import { actions } from "../../redux/features/user/userSlice";
 import Logo from "../../assets/logo.png";
-import { useNavigate } from "react-router-dom";
+
+const { logout } = actions;
 
 const pages = [
   { name: "Municipios", link: "municipality" },
@@ -24,10 +28,10 @@ const pages = [
   { name: "Razones", link: "reasons" },
   { name: "Usuarios", link: "users" },
 ];
-const settings = ["Profile", "Dashboard", "Logout"];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [anchorElNav, setAnchorElNav] = useState<null | EventTarget>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
 
@@ -49,8 +53,14 @@ function ResponsiveAppBar() {
     navigate(`/dashboard/${link}`);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (e: Event) => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = (e: Event) => {
+    e.stopPropagation();
+    setAnchorElUser(null);
+    dispatch(logout());
   };
 
   return html`
@@ -64,10 +74,11 @@ function ResponsiveAppBar() {
               height: 64,
               display: { xs: "none", md: "flex" },
               mr: 1,
+              cursor: "pointer",
             }}
             alt="Your logo."
             src=${Logo}
-            onClick${() => navigate("/dashboard")}
+            onClick=${() => navigate("/dashboard")}
           />
           <${Box} sx=${{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <${IconButton}
@@ -125,7 +136,7 @@ function ResponsiveAppBar() {
               }}
               alt="Your logo."
               src=${Logo}
-              onClick${() => navigate("/dashboard")}
+              onClick=${() => navigate("/dashboard")}
             />
           <//>
           <${Box} sx=${{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
@@ -167,13 +178,9 @@ function ResponsiveAppBar() {
               open=${Boolean(anchorElUser)}
               onClose=${handleCloseUserMenu}
             >
-              ${settings.map(
-                (setting) => html`
-                  <${MenuItem} key=${setting} onClick=${handleCloseUserMenu}>
-                    <${Typography} textAlign="center">${setting}<//>
-                  <//>
-                `
-              )}
+              <${MenuItem} onClick=${handleLogout}>
+                <${Typography} textAlign="center">Cerrar sesión<//>
+              <//>
             <//>
           <//>
         <//>

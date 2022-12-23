@@ -26,16 +26,11 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectors as municipalitySelectors } from "../../redux/features/municipality/municipalitySlice";
-import {
-  actions as parishActions,
-  selectors as parishSelectors,
-} from "../../redux/features/parish/parishSlice";
+import { actions, selectors } from "../../redux/features/user/userSlice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createParish, editParish, deleteParish } = parishActions;
-const { selectMunicipalities } = municipalitySelectors;
-const { selectParishes } = parishSelectors;
+const { createUser, editUser, deleteUser } = actions;
+const { selectUser, selectUsers, selectRoles } = selectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -53,29 +48,42 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-interface FormData {
-  name: string;
-  municipalityId: number;
+interface UserData {
+  username: string;
+  fullname: string;
+  password: string;
+  roleId: number;
 }
 
-export default function Parish() {
+export default function User() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<ParishType | null>(null);
+  const [selectedRow, setSelectedRow] = useState<UserType | null>(null);
   const [edit, setEdit] = useState(false);
-  const initialValues: Partial<FormData> = {
-    name: "",
-    municipalityId: 0,
+  const initialValues: Partial<UserData> = {
+    username: "",
+    fullname: "",
+    password: "",
+    roleId: 0,
   };
-  const municipalities = useAppSelector(selectMunicipalities);
-  const parishes = useAppSelector(selectParishes);
+  const user = useAppSelector(selectUser);
+  const users = useAppSelector(selectUsers);
+  const roles = useAppSelector(selectRoles);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
-    municipalityId: Yup.number()
-      .notOneOf([0], "Debe de seleccionar un municipio.")
-      .required("Debe de seleccionar un municipio."),
+    fullname: Yup.string().required("Necesitas escribir un nombre"),
+    username: Yup.string()
+      .min(4, "El nombre de usuario debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "El nombre de usuario no puede contener espacios")
+      .required("Necesitas escribir un nombre de usuario"),
+    password: Yup.string()
+      .min(4, "La contraseña debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "La contraseña no puede contener espacios")
+      .required("Necesitas escribir una contraseña de usuario"),
+    roleId: Yup.number()
+      .notOneOf([0], "Debe de seleccionar un rol de usuario")
+      .required("Debe de seleccionar un rol de usuario"),
   });
 
   const handleChangePage = (event: Event, newPage: number) => {
@@ -93,20 +101,20 @@ export default function Parish() {
   };
 
   const handleSubmit = (
-    values: Partial<FormData>,
-    { setSubmitting, resetForm }: FormikHelpers<FormData>
+    values: UserData,
+    { setSubmitting, resetForm }: FormikHelpers<UserData>
   ) => {
-    dispatch(createParish(values)).then(() => {
+    dispatch(createUser(values)).then(() => {
       setSubmitting(false);
       resetForm();
     });
   };
 
   const handleEdit = (
-    values: ParishType & FormData,
-    { setSubmitting, resetForm }: FormikHelpers<ParishType & FormData>
+    values: UserType & UserData,
+    { setSubmitting, resetForm }: FormikHelpers<UserType & UserData>
   ) => {
-    dispatch(editParish(values)).then(() => {
+    dispatch(editUser(values)).then(() => {
       setSelectedRow(values);
       setSubmitting(false);
       setEdit(false);
@@ -128,15 +136,17 @@ export default function Parish() {
         }}
       >
         <${Paper} sx=${{ p: 4, m: 2 }}>
-          <${Typography} component="h1" variant="h4">
-            Crar una nueva parroquia
+          <${Typography} component="h1" variant="h4"> Crar un nuevo Usuario <//>
+          <${Typography} component="h2" variant="h6">
+            Atención: La contraseña de los usuarios no sera mostrada en la
+            tabla.
           <//>
           <${Formik}
             initialValues=${initialValues}
             validationSchema=${validationSchema}
             onSubmit=${handleSubmit}
           >
-            ${(props: FormikProps<Partial<FormData>>) => html`
+            ${(props: FormikProps<Partial<UserData>>) => html`
               <${Box}
                 component="form"
                 noValidate
@@ -146,48 +156,73 @@ export default function Parish() {
               >
                 <${Field}
                   as=${TextField}
+                  margin="normal"
                   fullWidth
-                  label="Parroquia"
-                  id="name"
-                  name="name"
-                  value=${props.values.name}
+                  label="Nombre"
+                  id="fullname"
+                  fullname="fullname"
+                  value=${props.values.fullname}
                   onChange=${props.handleChange}
-                  error=${props.touched.name && Boolean(props.errors.name)}
-                  helperText=${props.touched.name && props.errors.name}
+                  error=${props.touched.fullname &&
+                  Boolean(props.errors.fullname)}
+                  helperText=${props.touched.fullname && props.errors.fullname}
                 />
-                <${InputLabel} id="municipalityId">Municipio<//>
+                <${Field}
+                  as=${TextField}
+                  margin="normal"
+                  fullWidth
+                  label="Usuario"
+                  id="username"
+                  username="username"
+                  value=${props.values.username}
+                  onChange=${props.handleChange}
+                  error=${props.touched.username &&
+                  Boolean(props.errors.username)}
+                  helperText=${props.touched.username && props.errors.username}
+                />
+                <${Field}
+                  as=${TextField}
+                  margin="normal"
+                  fullWidth
+                  label="Contraseña"
+                  id="password"
+                  name="password"
+                  type="password"
+                  value=${props.values.password}
+                  onChange=${props.handleChange}
+                  error=${props.touched.password &&
+                  Boolean(props.errors.password)}
+                  helperText=${props.touched.password && props.errors.password}
+                />
+                <${InputLabel} id="roleId">Rol de usuario<//>
                 <${Field}
                   as=${Select}
                   fullWidth
-                  id="municipalityId"
-                  name="municipalityId"
-                  disabled=${municipalities.length === 0}
-                  value=${props.values.municipalityId}
+                  id="roleId"
+                  name="roleId"
+                  disabled=${roles.length === 0}
+                  value=${props.values.roleId}
                   onChange=${props.handleChange}
-                  error=${props.touched.municipalityId &&
-                  Boolean(props.errors.municipalityId)}
-                  helperText=${props.touched.municipalityId &&
-                  props.errors.municipalityId}
+                  error=${props.touched.roleId && Boolean(props.errors.roleId)}
+                  helperText=${props.touched.roleId && props.errors.roleId}
                 >
-                  ${municipalities.length > 0
+                  ${roles.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un municipio<//>
-                        ${municipalities.map(
-                          (municipality) => html`
-                            <${MenuItem} value=${municipality.id}>
-                              ${municipality.name}
-                            <//>
+                        <${MenuItem} value=${0}>Selecciona un rol<//>
+                        ${roles.map(
+                          (role) => html`
+                            <${MenuItem} value=${role.id}>${role.name}<//>
                           `
                         )}
                       `
                     : html`
                         <${MenuItem} value=${0} disabled>
-                          No hay Municipios en el sistema
+                          No hay roles en el sistema
                         <//>
                       `}
                 <//>
                 <${Button}
-                  disabled=${props.isSubmitting || municipalities.length === 0}
+                  disabled=${props.isSubmitting}
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -195,7 +230,7 @@ export default function Parish() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Crear Parroquia"}
+                    : "Crear Usuario"}
                 <//>
               <//>
             `}
@@ -211,20 +246,16 @@ export default function Parish() {
                       >
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
-                        <${Typography}>Nombre: ${selectedRow.name}<//>
-                        <${Typography}
-                          >Municipio: ${selectedRow.municipality.name}<//
-                        >
+                        <${Typography}>Nombre: ${selectedRow.fullname}<//>
+                        <${Typography}>Usuario: ${selectedRow.username}<//>
+                        <${Typography}>Rol: ${selectedRow.role.name}<//>
                       <//>
                       <${Box}
                         mt=${1}
                         display="flex"
                         justifyContent="space-between"
                       >
-                        <${Tooltip}
-                          title="Editar Parroquia"
-                          placement="top-end"
-                        >
+                        <${Tooltip} title="Editar Usuario" placement="top-end">
                           <span>
                             <${Button}
                               variant="contained"
@@ -237,18 +268,17 @@ export default function Parish() {
                           </span>
                         <//>
                         <${Tooltip}
-                          title=${selectedRow.ccps.length > 0
-                            ? "No se puede borrar si tiene CCPs asignados"
-                            : "Borrar Parroquia"}
+                          title=${selectedRow.id === user?.id
+                            ? "No se puede borrar el usuario en uso"
+                            : "Borrar Usuario"}
                           placement="top-end"
                         >
                           <span>
                             <${Button}
                               variant="contained"
                               color="error"
-                              disabled=${selectedRow.ccps.length > 0}
-                              onClick=${() =>
-                                dispatch(deleteParish(selectedRow))}
+                              disabled=${selectedRow.id === user?.id}
+                              onClick=${() => dispatch(deleteUser(selectedRow))}
                             >
                               <${DeleteIcon} />
                               Borrar
@@ -259,17 +289,17 @@ export default function Parish() {
                     `
                   : html`
                       <${Typography} component="h1" variant="h4">
-                        Editar Parroquia
+                        Editar Usuario
                       <//>
                       <${Formik}
                         initialValues=${{
                           ...selectedRow,
-                          municipalityId: selectedRow.municipality.id,
+                          roleId: selectedRow.role.id,
                         }}
                         validationSchema=${validationSchema}
                         onSubmit=${handleEdit}
                       >
-                        ${(props: FormikProps<ParishType & FormData>) => html`
+                        ${(props: FormikProps<UserType & UserData>) => html`
                           <${Box}
                             component="form"
                             noValidate
@@ -281,40 +311,77 @@ export default function Parish() {
                               as=${TextField}
                               margin="normal"
                               fullWidth
-                              label="Parroquia"
-                              id="name"
-                              name="name"
-                              value=${props.values.name}
+                              label="Nombre"
+                              id="fullname"
+                              fullname="fullname"
+                              value=${props.values.fullname}
                               onChange=${props.handleChange}
-                              error=${props.touched.name &&
-                              Boolean(props.errors.name)}
-                              helperText=${props.touched.name &&
-                              props.errors.name}
+                              error=${props.touched.fullname &&
+                              Boolean(props.errors.fullname)}
+                              helperText=${props.touched.fullname &&
+                              props.errors.fullname}
                             />
-                            <${InputLabel} id="municipalityId">Municipio<//>
                             <${Field}
-                              as=${Select}
+                              as=${TextField}
                               margin="normal"
                               fullWidth
-                              id="municipalityId"
-                              name="municipalityId"
-                              value=${props.values.municipalityId}
+                              label="Usuario"
+                              id="username"
+                              username="username"
+                              value=${props.values.username}
                               onChange=${props.handleChange}
-                              error=${props.touched.municipalityId &&
-                              Boolean(props.errors.municipalityId)}
-                              helperText=${props.touched.municipalityId &&
-                              props.errors.municipalityId}
+                              error=${props.touched.username &&
+                              Boolean(props.errors.username)}
+                              helperText=${props.touched.username &&
+                              props.errors.username}
+                            />
+                            <${Field}
+                              as=${TextField}
+                              margin="normal"
+                              fullWidth
+                              label="Contraseña"
+                              id="password"
+                              name="password"
+                              type="password"
+                              value=${props.values.password}
+                              onChange=${props.handleChange}
+                              error=${props.touched.password &&
+                              Boolean(props.errors.password)}
+                              helperText=${props.touched.password &&
+                              props.errors.password}
+                            />
+                            <${InputLabel} id="roleId">Rol<//>
+                            <${Field}
+                              as=${Select}
+                              fullWidth
+                              id="roleId"
+                              name="roleId"
+                              disabled=${roles.length === 0}
+                              value=${props.values.roleId}
+                              onChange=${props.handleChange}
+                              error=${props.touched.roleId &&
+                              Boolean(props.errors.roleId)}
+                              helperText=${props.touched.roleId &&
+                              props.errors.roleId}
                             >
-                              <${MenuItem} value=${0}
-                                >Selecciona un municipio<//
-                              >
-                              ${municipalities.map(
-                                (municipality) => html`
-                    <${MenuItem} value=${municipality.id}
-                      >${municipality.name}</${MenuItem}
-                    >
-                  `
-                              )}
+                              ${roles.length > 0
+                                ? html`
+                                    <${MenuItem} value=${0}
+                                      >Selecciona un rol<//
+                                    >
+                                    ${roles.map(
+                                      (role) => html`
+                                        <${MenuItem} value=${role.id}
+                                          >${role.name}<//
+                                        >
+                                      `
+                                    )}
+                                  `
+                                : html`
+                                    <${MenuItem} value=${0} disabled>
+                                      No hay roles en el sistema
+                                    <//>
+                                  `}
                             <//>
                             <${Box}
                               sx=${{
@@ -352,18 +419,19 @@ export default function Parish() {
           : ""}
       <//>
       <${Grid} item xs=${12} md=${6}>
-        <${TableContainer} component=${Paper}>
+        <${TableContainer} component=${Paper} sx=${{ maxHeight: 440 }}>
           <${Table} stickyHeader>
             <${TableHead}>
               <${StyledTableRow}>
-                <${StyledTableCell}>ID<//>
-                <${StyledTableCell}>Parroquia<//>
-                <${StyledTableCell}>Municipio<//>
+                <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
+                <${StyledTableCell}>Nombre<//>
+                <${StyledTableCell}>Usuario<//>
+                <${StyledTableCell}>Rol<//>
               <//>
             <//>
             <${TableBody}>
-              ${parishes.length > 0
-                ? parishes.map(
+              ${users.length > 0
+                ? users.map(
                     (row) => html`
                       <${StyledTableRow}
                         hover
@@ -371,8 +439,9 @@ export default function Parish() {
                         onClick=${() => setSelectedRow(row)}
                       >
                         <${StyledTableCell}>${row.id}<//>
-                        <${StyledTableCell}>${row.name}<//>
-                        <${StyledTableCell}>${row.municipality.name}<//>
+                        <${StyledTableCell}>${row.fullname}<//>
+                        <${StyledTableCell}>${row.username}<//>
+                        <${StyledTableCell}>${row.role.name}<//>
                       <//>
                     `
                   )
@@ -381,6 +450,7 @@ export default function Parish() {
                       <${StyledTableCell}>N/E<//>
                       <${StyledTableCell}>No hay entradas disponibles<//>
                       <${StyledTableCell}><//>
+                      <${StyledTableCell}><//>
                     <//>
                   `}
             <//>
@@ -388,7 +458,7 @@ export default function Parish() {
               <${TablePagination}
                 rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
                 colSpan=${3}
-                count=${parishes.length}
+                count=${users.length}
                 rowsPerPage=${rowsPerPage}
                 page=${page}
                 onPageChange=${handleChangePage}
