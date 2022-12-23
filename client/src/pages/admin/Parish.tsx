@@ -78,6 +78,12 @@ export default function Parish() {
       .required("Debe de seleccionar un municipio."),
   });
 
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - municipalities.length)
+      : 0;
+
   const handleChangePage = (event: Event, newPage: number) => {
     setPage(newPage);
   };
@@ -115,19 +121,19 @@ export default function Parish() {
   };
 
   return html`
-    <${Grid} container spacing=${1}>
+    <${Grid} container spacing=${2} p=${2}>
       <${Grid}
         item
         xs=${12}
         md=${6}
         sx=${{
-          gap: 1,
           display: "flex",
+          gap: "12px",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
-        <${Paper} sx=${{ p: 4, m: 2 }}>
+        <${Paper} sx=${{ p: 3, width: "100%" }}>
           <${Typography} component="h1" variant="h4">
             Crar una nueva parroquia
           <//>
@@ -203,7 +209,7 @@ export default function Parish() {
         <//>
         ${selectedRow
           ? html`
-              <${Paper} sx=${{ p: 4, m: 2 }}>
+              <${Paper} sx=${{ p: 3, width: "100%" }}>
                 ${!edit
                   ? html`
                       <${Typography} variant="h5"
@@ -352,51 +358,69 @@ export default function Parish() {
           : ""}
       <//>
       <${Grid} item xs=${12} md=${6}>
-        <${TableContainer} component=${Paper}>
-          <${Table} stickyHeader>
-            <${TableHead}>
-              <${StyledTableRow}>
-                <${StyledTableCell}>ID<//>
-                <${StyledTableCell}>Parroquia<//>
-                <${StyledTableCell}>Municipio<//>
+        <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
+          <${TableContainer} sx=${{ maxHeight: 440 }}>
+            <${Table} stickyHeader aria-label="sticky table">
+              <${TableHead}>
+                <${StyledTableRow}>
+                  <${StyledTableCell}>ID<//>
+                  <${StyledTableCell}>Parroquia<//>
+                  <${StyledTableCell}>Municipio<//>
+                <//>
+              <//>
+              <${TableBody}>
+                ${parishes.length > 0
+                  ? html`${(rowsPerPage > 0
+                      ? parishes.slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                      : parishes
+                    ).map(
+                      (row) => html`
+                        <${StyledTableRow}
+                          hover
+                          key=${row.id}
+                          onClick=${() => setSelectedRow(row)}
+                        >
+                          <${StyledTableCell}>${row.id}<//>
+                          <${StyledTableCell}>${row.name}<//>
+                          <${StyledTableCell}>${row.municipality.name}<//>
+                        <//>
+                      `
+                    )}
+                    ${emptyRows > 0 &&
+                    html`
+                      <${StyledTableRow} sx=${{ height: 53 * emptyRows }}>
+                        <${StyledTableCell} colSpan=${6} />
+                      <//>
+                    `}`
+                  : html`
+                      <${StyledTableRow}>
+                        <${StyledTableCell}>N/E<//>
+                        <${StyledTableCell}>No hay entradas disponibles<//>
+                        <${StyledTableCell}><//>
+                      <//>
+                    `}
               <//>
             <//>
-            <${TableBody}>
-              ${parishes.length > 0
-                ? parishes.map(
-                    (row) => html`
-                      <${StyledTableRow}
-                        hover
-                        key=${row.id}
-                        onClick=${() => setSelectedRow(row)}
-                      >
-                        <${StyledTableCell}>${row.id}<//>
-                        <${StyledTableCell}>${row.name}<//>
-                        <${StyledTableCell}>${row.municipality.name}<//>
-                      <//>
-                    `
-                  )
-                : html`
-                    <${StyledTableRow}>
-                      <${StyledTableCell}>N/E<//>
-                      <${StyledTableCell}>No hay entradas disponibles<//>
-                      <${StyledTableCell}><//>
-                    <//>
-                  `}
-            <//>
-            <${StyledTableRow}>
-              <${TablePagination}
-                rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
-                colSpan=${3}
-                count=${parishes.length}
-                rowsPerPage=${rowsPerPage}
-                page=${page}
-                onPageChange=${handleChangePage}
-                onRowsPerPageChange=${handleChangeRowsPerPage}
-                ActionsComponent=${TablePaginationActions}
-              />
-            <//>
           <//>
+          <${TablePagination}
+            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
+            colSpan=${3}
+            count=${parishes.length}
+            rowsPerPage=${rowsPerPage}
+            page=${page}
+            SelectProps=${{
+              inputProps: {
+                "aria-label": "rows per page",
+              },
+              native: true,
+            }}
+            onPageChange=${handleChangePage}
+            onRowsPerPageChange=${handleChangeRowsPerPage}
+            ActionsComponent=${TablePaginationActions}
+          />
         <//>
       <//>
     <//>

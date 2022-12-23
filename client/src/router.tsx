@@ -5,8 +5,9 @@ import { useAppSelector } from "./redux/hooks";
 import { selectors } from "./redux/features/user/userSlice";
 import AuthController from "./pages/AuthController";
 import Layout from "./components/admin/Layout";
-import Landing from "./pages/admin/Landing";
 import Login from "./pages/Login";
+import NotFound from "./components/NotFound";
+import Landing from "./pages/admin/Landing";
 import Municipality from "./pages/admin/Municipality";
 import Parish from "./pages/admin/Parish";
 import CCP from "./pages/admin/CCP";
@@ -30,6 +31,7 @@ function Router() {
             ${user && user.role.name === "admin"
               ? html`
                   <${Route} path="dashboard" element=${html`<${Layout} />`}>
+                    <${Route} path="*" element=${html`<${NotFound} />`} />
                     <${Route} index element=${html`<${Landing} />`} />
                     <${Route}
                       path="municipality"

@@ -86,6 +86,9 @@ export default function User() {
       .required("Debe de seleccionar un rol de usuario"),
   });
 
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
+
   const handleChangePage = (event: Event, newPage: number) => {
     setPage(newPage);
   };
@@ -123,19 +126,19 @@ export default function User() {
   };
 
   return html`
-    <${Grid} container spacing=${1}>
+    <${Grid} container spacing=${2} p=${2}>
       <${Grid}
         item
         xs=${12}
         md=${6}
         sx=${{
-          gap: 1,
           display: "flex",
+          gap: "12px",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
-        <${Paper} sx=${{ p: 4, m: 2 }}>
+        <${Paper} sx=${{ p: 3, width: "100%" }}>
           <${Typography} component="h1" variant="h4"> Crar un nuevo Usuario <//>
           <${Typography} component="h2" variant="h6">
             Atención: La contraseña de los usuarios no sera mostrada en la
@@ -238,7 +241,7 @@ export default function User() {
         <//>
         ${selectedRow
           ? html`
-              <${Paper} sx=${{ p: 4, m: 2 }}>
+              <${Paper} sx=${{ p: 3, width: "100%" }}>
                 ${!edit
                   ? html`
                       <${Typography} variant="h5"
@@ -419,54 +422,72 @@ export default function User() {
           : ""}
       <//>
       <${Grid} item xs=${12} md=${6}>
-        <${TableContainer} component=${Paper} sx=${{ maxHeight: 440 }}>
-          <${Table} stickyHeader>
-            <${TableHead}>
-              <${StyledTableRow}>
-                <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
-                <${StyledTableCell}>Nombre<//>
-                <${StyledTableCell}>Usuario<//>
-                <${StyledTableCell}>Rol<//>
+        <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
+          <${TableContainer} sx=${{ maxHeight: 440 }}>
+            <${Table} stickyHeader aria-label="sticky table">
+              <${TableHead}>
+                <${StyledTableRow}>
+                  <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
+                  <${StyledTableCell}>Nombre<//>
+                  <${StyledTableCell}>Usuario<//>
+                  <${StyledTableCell}>Rol<//>
+                <//>
+              <//>
+              <${TableBody}>
+                ${users.length > 0
+                  ? html`${(rowsPerPage > 0
+                      ? users.slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                      : users
+                    ).map(
+                      (row) => html`
+                        <${StyledTableRow}
+                          hover
+                          key=${row.id}
+                          onClick=${() => setSelectedRow(row)}
+                        >
+                          <${StyledTableCell}>${row.id}<//>
+                          <${StyledTableCell}>${row.fullname}<//>
+                          <${StyledTableCell}>${row.username}<//>
+                          <${StyledTableCell}>${row.role.name}<//>
+                        <//>
+                      `
+                    )}
+                    ${emptyRows > 0 &&
+                    html`
+                      <${StyledTableRow} sx=${{ height: 53 * emptyRows }}>
+                        <${StyledTableCell} colSpan=${6} />
+                      <//>
+                    `}`
+                  : html`
+                      <${StyledTableRow}>
+                        <${StyledTableCell}>N/E<//>
+                        <${StyledTableCell}>No hay entradas disponibles<//>
+                        <${StyledTableCell}><//>
+                        <${StyledTableCell}><//>
+                      <//>
+                    `}
               <//>
             <//>
-            <${TableBody}>
-              ${users.length > 0
-                ? users.map(
-                    (row) => html`
-                      <${StyledTableRow}
-                        hover
-                        key=${row.id}
-                        onClick=${() => setSelectedRow(row)}
-                      >
-                        <${StyledTableCell}>${row.id}<//>
-                        <${StyledTableCell}>${row.fullname}<//>
-                        <${StyledTableCell}>${row.username}<//>
-                        <${StyledTableCell}>${row.role.name}<//>
-                      <//>
-                    `
-                  )
-                : html`
-                    <${StyledTableRow}>
-                      <${StyledTableCell}>N/E<//>
-                      <${StyledTableCell}>No hay entradas disponibles<//>
-                      <${StyledTableCell}><//>
-                      <${StyledTableCell}><//>
-                    <//>
-                  `}
-            <//>
-            <${StyledTableRow}>
-              <${TablePagination}
-                rowsPerPageOptions=${[10, 25, 100, { label: "All", value: -1 }]}
-                colSpan=${3}
-                count=${users.length}
-                rowsPerPage=${rowsPerPage}
-                page=${page}
-                onPageChange=${handleChangePage}
-                onRowsPerPageChange=${handleChangeRowsPerPage}
-                ActionsComponent=${TablePaginationActions}
-              />
-            <//>
           <//>
+          <${TablePagination}
+            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
+            colSpan=${3}
+            count=${users.length}
+            rowsPerPage=${rowsPerPage}
+            page=${page}
+            SelectProps=${{
+              inputProps: {
+                "aria-label": "rows per page",
+              },
+              native: true,
+            }}
+            onPageChange=${handleChangePage}
+            onRowsPerPageChange=${handleChangeRowsPerPage}
+            ActionsComponent=${TablePaginationActions}
+          />
         <//>
       <//>
     <//>

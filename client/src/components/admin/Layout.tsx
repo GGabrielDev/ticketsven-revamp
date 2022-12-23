@@ -33,7 +33,7 @@ function Layout() {
 
   return html`
     <${AdminAppBar} />
-    <${Box} sx=${{ m: 1 }}>
+    <${Box} sx=${{ width: 1, height: "calc(100% - 84.5px)" }}>
       <${Outlet} />
     <//>
   `;

@@ -23,7 +23,7 @@ const { logout } = actions;
 const pages = [
   { name: "Municipios", link: "municipality" },
   { name: "Parroquias", link: "parish" },
-  { name: "CCPs", link: "ccp" },
+  { name: "CCP", link: "ccp" },
   { name: "Cuadrantes", link: "quadrant" },
   { name: "Razones", link: "reasons" },
   { name: "Usuarios", link: "users" },
