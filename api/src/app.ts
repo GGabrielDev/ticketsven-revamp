@@ -7,8 +7,6 @@ import errorHandler from "./middleware/error.middleware";
 
 const { CLIENT_URL } = process.env;
 
-require("./db.js");
-
 express.json({ limit: "50mb" });
 const server = express();
 

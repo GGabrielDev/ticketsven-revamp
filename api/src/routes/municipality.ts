@@ -1,12 +1,10 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { Models } from "../db";
-import { Municipality as MunicipalityEntity } from "../models/Municipality";
+import { Municipality } from "../models/Municipality";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Municipality } = Models;
 
 interface IMunicipalityParams {
   municipalityId: number;
@@ -16,7 +14,11 @@ interface IMunicipalityBody {
   name: string;
 }
 
-type RouteRequest = Request<IMunicipalityParams, {}, IMunicipalityBody>;
+type RouteRequest = Request<
+  IMunicipalityParams,
+  Record<string, never>,
+  IMunicipalityBody
+>;
 
 router.get(
   "/",
@@ -71,9 +73,9 @@ router.post(
       if (!name)
         throw new HttpException(400, "The name is missing as the body");
 
-      const result = (await Municipality.create({
+      const result = await Municipality.create({
         name,
-      })) as MunicipalityEntity;
+      });
 
       return res.status(201).send(
         await Municipality.findByPk(result.id, {
@@ -100,9 +102,7 @@ router.put(
         );
       }
 
-      const result = (await Municipality.findByPk(
-        municipalityId
-      )) as MunicipalityEntity | null;
+      const result = await Municipality.findByPk(municipalityId);
 
       if (!result) {
         throw new HttpException(

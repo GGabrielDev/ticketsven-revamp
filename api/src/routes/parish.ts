@@ -1,13 +1,12 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { Models } from "../db";
-import { Municipality as MunicipalityEntity } from "../models/Municipality";
-import { Parish as ParishEntity } from "../models/Parish";
+import { CCP } from "../models/CCP";
+import { Municipality } from "../models/Municipality";
+import { Parish } from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Municipality, Parish, CCP } = Models;
 
 interface IParishParams {
   parishId: number;
@@ -18,7 +17,7 @@ interface IParishBody {
   municipalityId: number;
 }
 
-type RouteRequest = Request<IParishParams, {}, IParishBody>;
+type RouteRequest = Request<IParishParams, Record<string, never>, IParishBody>;
 
 router.get(
   "/",
@@ -125,7 +124,7 @@ router.post(
         );
 
       const municipality = await Municipality.findByPk(municipalityId)
-        .then((value) => value as MunicipalityEntity | null)
+        .then((value) => value)
         .catch((error) => {
           if (error.parent.code === "22P02") {
             throw new HttpException(
@@ -141,7 +140,7 @@ router.post(
         );
       }
 
-      const result = (await Parish.create({ name })) as ParishEntity;
+      const result = await Parish.create({ name });
       await municipality.addParish(result);
 
       return res.status(201).send(
@@ -171,7 +170,7 @@ router.put(
 
       if (!parishId)
         throw new HttpException(400, "The Parish ID is missing as the param");
-      const result = (await Parish.findByPk(parishId, {
+      const result = await Parish.findByPk(parishId, {
         attributes: {
           exclude: ["municipalityId"],
         },
@@ -179,7 +178,7 @@ router.put(
           { model: Municipality, as: "municipality" },
           { model: CCP, as: "ccps" },
         ],
-      })) as ParishEntity | null;
+      });
       if (!result)
         throw new HttpException(404, "The requested Parish doesn't exist");
 

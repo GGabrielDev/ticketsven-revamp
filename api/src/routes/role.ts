@@ -1,7 +1,5 @@
 import { Router, Response, NextFunction } from "express";
-import { Models } from "../db";
-
-const { Role } = Models;
+import { Role } from "../models/Role";
 
 const router = Router();
 

@@ -1,13 +1,11 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { Models } from "../db";
-import { CCP as CCPEntity } from "../models/CCP";
-import { Quadrant as QuadrantEntity } from "../models/Quadrant";
+import { CCP } from "../models/CCP";
+import { Quadrant } from "../models/Quadrant";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { CCP, Quadrant } = Models;
 
 interface IQuadrantParams {
   quadrantId: number;
@@ -18,7 +16,11 @@ interface IQuadrantBody {
   ccpId: number;
 }
 
-type RouteRequest = Request<IQuadrantParams, {}, IQuadrantBody>;
+type RouteRequest = Request<
+  IQuadrantParams,
+  Record<string, never>,
+  IQuadrantBody
+>;
 
 router.get(
   "/",
@@ -111,7 +113,7 @@ router.post(
         );
 
       const ccp = await CCP.findByPk(ccpId)
-        .then((value) => value as CCPEntity | null)
+        .then((value) => value)
         .catch((error) => {
           if (error.parent.code === "22P02") {
             throw new HttpException(
@@ -124,7 +126,7 @@ router.post(
         throw new HttpException(404, "The requested CCP doesn't exist");
       }
 
-      const result = (await Quadrant.create({ name })) as QuadrantEntity;
+      const result = await Quadrant.create({ name });
       await ccp.addQuadrant(result);
 
       return res.status(201).send(
@@ -152,9 +154,7 @@ router.put(
       if (!quadrantId) {
         throw new HttpException(400, "The Quadrant ID is missing as the param");
       }
-      const result = (await Quadrant.findByPk(
-        quadrantId
-      )) as QuadrantEntity | null;
+      const result = await Quadrant.findByPk(quadrantId);
 
       if (!result) {
         throw new HttpException(404, "The requested Quadrant doesn't exist");

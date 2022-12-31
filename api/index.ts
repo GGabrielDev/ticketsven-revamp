@@ -20,30 +20,17 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import server from "./src/app";
-import sequelize, { checkConnection, forceInitializer } from "./src/db";
+import { startDbForce, startDbNormal } from "./src/db/init";
 
 const { API_PORT } = process.env;
 const { SELECT_START } = process.env || null;
 
-const startDbNormal = () => {
-  sequelize.sync().then(() => {
-    server.listen(API_PORT, () => {
-      console.log(`Server listening at ${API_PORT} - Normal Start`); // eslint-disable-line no-console
-    });
-  });
-};
+const startServer = () =>
+  server.listen(
+    API_PORT,
+    () => console.log(`Server listening at ${API_PORT}`) // eslint-disable-line no-console
+  );
 
-const startDbForce = () => {
-  sequelize.sync({ force: true }).then(() => {
-    server.listen(API_PORT, () => {
-      console.log(
-        `Server listening at ${API_PORT} - Force Start, creating default data...`
-      ); // eslint-disable-line no-console
-      forceInitializer();
-    });
-  });
-};
-// Syncing all the models at once.
-checkConnection().then(async () => {
-  SELECT_START === "force" ? startDbForce() : startDbNormal();
-});
+SELECT_START === "force"
+  ? startDbForce().then(startServer)
+  : startDbNormal().then(startServer);

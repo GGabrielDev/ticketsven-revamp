@@ -12,13 +12,14 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   Model,
-  Sequelize,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
 } from "sequelize";
+import sequelize from "../db/config";
 import { Parish } from "./Parish";
+import { Ticket } from "./Ticket";
 
 export class Municipality extends Model<
   InferAttributes<Municipality>,
@@ -42,36 +43,44 @@ export class Municipality extends Model<
   declare removeParishes: HasManyRemoveAssociationsMixin<Parish, Parish["id"]>;
   declare createParish: HasManyCreateAssociationMixin<Parish, "municipalityId">;
 
+  declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
+  declare countTickets: HasManyCountAssociationsMixin;
+  declare hasTicket: HasManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare hasTickets: HasManyHasAssociationsMixin<Ticket, Ticket["id"]>;
+  declare setTickets: HasManySetAssociationsMixin<Ticket, Ticket["id"]>;
+  declare addTicket: HasManyAddAssociationMixin<Ticket, Ticket["id"]>;
+  declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
+  declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
+  declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "municipalityId">;
+
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare parishes?: NonAttribute<Parish[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
     parishes: Association<Municipality, Parish>;
+    tickets: Association<Municipality, Ticket>;
   };
 }
 
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
-module.exports = (sequelize: Sequelize) => {
-  // defino el modelo
-  Municipality.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+Municipality.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      sequelize,
-      tableName: "municipalities",
-      timestamps: false,
-      paranoid: true,
-    }
-  );
-};
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "municipalities",
+    timestamps: false,
+    paranoid: true,
+  }
+);

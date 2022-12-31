@@ -1,12 +1,10 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { Models } from "../db";
-import { Reason as ReasonEntity } from "../models/Reason";
+import { Reason } from "../models/Reason";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Reason } = Models;
 
 interface IReasonParams {
   reasonId: number;
@@ -16,7 +14,7 @@ interface IReasonBody {
   name: string;
 }
 
-type RouteRequest = Request<IReasonParams, {}, IReasonBody>;
+type RouteRequest = Request<IReasonParams, Record<string, never>, IReasonBody>;
 
 router.get(
   "/",
@@ -68,11 +66,11 @@ router.post(
       if (!name)
         throw new HttpException(400, "The name is missing as the body");
 
-      const result = (await Reason.create({
+      const result = await Reason.create({
         name,
-      })) as ReasonEntity;
+      });
 
-      return res.status(201).send(await Reason.findByPk(result.id, {}));
+      return res.status(201).send(await Reason.findByPk(result.id));
     } catch (error) {
       next(error);
     }
@@ -90,7 +88,7 @@ router.put(
         throw new HttpException(400, "The Reason ID is missing as the param");
       }
 
-      const result = (await Reason.findByPk(reasonId)) as ReasonEntity | null;
+      const result = await Reason.findByPk(reasonId);
 
       if (!result) {
         throw new HttpException(404, "The requested Reason doesn't exist");

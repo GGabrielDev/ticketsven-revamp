@@ -3,15 +3,26 @@ import {
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyHasAssociationMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManyRemoveAssociationsMixin,
+  BelongsToManyCountAssociationsMixin,
+  BelongsToManyCreateAssociationMixin,
   DataTypes,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
-  Sequelize,
+  Association,
 } from "sequelize";
 import bcrypt from "bcryptjs";
+import sequelize from "../db/config";
+import { Ticket } from "./Ticket";
 import { Role } from "./Role";
 
 export class User extends Model<
@@ -40,53 +51,85 @@ export class User extends Model<
   declare setRole: BelongsToSetAssociationMixin<Role, Role["id"]>;
   declare createRole: BelongsToCreateAssociationMixin<Role>;
 
-  declare validatePassword: NonAttribute<(password: any) => boolean>;
+  declare getTickets: BelongsToManyGetAssociationsMixin<Ticket>;
+  declare countTickets: BelongsToManyCountAssociationsMixin;
+  declare hasTicket: BelongsToManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare hasTickets: BelongsToManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare setTickets: BelongsToManySetAssociationsMixin<Ticket, Ticket["id"]>;
+  declare addTicket: BelongsToManyAddAssociationMixin<Ticket, Ticket["id"]>;
+  declare addTickets: BelongsToManyAddAssociationsMixin<Ticket, Ticket["id"]>;
+  declare removeTicket: BelongsToManyRemoveAssociationMixin<
+    Ticket,
+    Ticket["id"]
+  >;
+  declare removeTickets: BelongsToManyRemoveAssociationsMixin<
+    Ticket,
+    Ticket["id"]
+  >;
+  declare createTicket: BelongsToManyCreateAssociationMixin<Ticket>;
+
+  // You can also pre-declare possible inclusions, these will only be populated if you
+  // actively include a relation.
+  declare tickets?: NonAttribute<Ticket[]>; // Note this is optional since it's only populated when explicitly requested in code
+
+  public declare static associations: {
+    role: Association<User, Role>;
+    tickets: Association<User, Ticket>;
+  };
+
+  declare validatePassword: NonAttribute<(password: string) => boolean>;
 }
 
 const saltRounds = 10;
 
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
-module.exports = (sequelize: Sequelize) => {
-  // defino el modelo
-  User.init(
-    {
-      id: {
-        type: DataTypes.UUID,
-        primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
-      },
-      username: {
-        type: DataTypes.STRING(64),
-        allowNull: false,
-        validate: {
-          is: /[a-zA-Z0-9]+$/g,
-        },
-      },
-      fullname: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          is: /^[a-zA-Z\s.]+$/g,
-        },
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
+User.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    username: {
+      type: DataTypes.STRING(64),
+      allowNull: false,
+      validate: {
+        is: /[a-zA-Z0-9]+$/g,
       },
     },
-    {
-      sequelize,
-      name: {
-        singular: "user",
-        plural: "users",
+    fullname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        is: /^[a-zA-Z\s.]+$/g,
       },
-      tableName: "users",
-      timestamps: false,
-      paranoid: true,
-    }
-  );
-  User.beforeCreate(async (user) => {
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    name: {
+      singular: "user",
+      plural: "users",
+    },
+    tableName: "users",
+    timestamps: false,
+    paranoid: true,
+  }
+);
+User.beforeCreate(async (user) => {
+  try {
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.setDataValue("password", hash);
+  } catch (error) {
+    console.error(error);
+  }
+});
+User.beforeUpdate(async (user) => {
+  if (user.changed("password")) {
     try {
       const salt = await bcrypt.genSalt(saltRounds);
       const hash = await bcrypt.hash(user.password, salt);
@@ -94,19 +137,8 @@ module.exports = (sequelize: Sequelize) => {
     } catch (error) {
       console.error(error);
     }
-  });
-  User.beforeUpdate(async (user) => {
-    if (user.changed("password")) {
-      try {
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(user.password, salt);
-        user.setDataValue("password", hash);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  });
-  User.prototype.validatePassword = function (password: string) {
-    return bcrypt.compareSync(password, this.password);
-  };
+  }
+});
+User.prototype.validatePassword = function (password: string) {
+  return bcrypt.compareSync(password, this.password);
 };

@@ -12,12 +12,12 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   Model,
-  Sequelize,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
 } from "sequelize";
+import sequelize from "../db/config";
 import { User } from "./User";
 
 export class Role extends Model<
@@ -51,31 +51,26 @@ export class Role extends Model<
   };
 }
 
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
-module.exports = (sequelize: Sequelize) => {
-  // defino el modelo
-  Role.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+Role.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      sequelize,
-      name: {
-        singular: "role",
-        plural: "roles",
-      },
-      tableName: "roles",
-      timestamps: false,
-      paranoid: true,
-    }
-  );
-};
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    name: {
+      singular: "role",
+      plural: "roles",
+    },
+    tableName: "roles",
+    timestamps: false,
+    paranoid: true,
+  }
+);

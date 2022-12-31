@@ -1,13 +1,12 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { Models } from "../db";
-import { Parish as ParishEntity } from "../models/Parish";
-import { CCP as CCPEntity } from "../models/CCP";
+import { CCP } from "../models/CCP";
+import { Parish } from "../models/Parish";
+import { Quadrant } from "../models/Quadrant";
 import HttpException from "../exceptions/HttpException";
 
 const router = Router();
-const { Parish, CCP, Quadrant } = Models;
 
 interface ICCPParams {
   ccpId: number;
@@ -18,7 +17,7 @@ interface ICCPBody {
   parishId: number;
 }
 
-type RouteRequest = Request<ICCPParams, {}, ICCPBody>;
+type RouteRequest = Request<ICCPParams, Record<string, never>, ICCPBody>;
 
 router.get(
   "/",
@@ -117,7 +116,7 @@ router.post(
           }`
         );
       const parish = await Parish.findByPk(parishId)
-        .then((value) => value as ParishEntity | null)
+        .then((value) => value)
         .catch((error) => {
           if (error.parent.code === "22P02") {
             throw new HttpException(
@@ -129,7 +128,7 @@ router.post(
       if (!parish)
         throw new HttpException(404, "The requested Parish doesn't exist");
 
-      const result = (await CCP.create({ name })) as CCPEntity;
+      const result = await CCP.create({ name });
       await parish.addCcp(result);
 
       return res.status(201).send(
@@ -161,7 +160,7 @@ router.put(
         throw new HttpException(400, "The CCP ID is missing as the param");
       }
 
-      const result = (await CCP.findByPk(ccpId)) as CCPEntity;
+      const result = await CCP.findByPk(ccpId);
 
       if (!result) {
         throw new HttpException(404, "The requested CCP doesn't exist");

@@ -1,10 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { sign } from "jsonwebtoken";
 import HttpException from "../exceptions/HttpException";
-import { User as UserEntity } from "../models/User";
-import { Models } from "../db";
+import { User } from "../models/User";
 
-const { User } = Models;
 const { JWT_SECRET, JWT_EXPIRE } = process.env;
 
 const router = Router();
@@ -16,7 +14,11 @@ interface IAuthBody {
   roleId: number;
 }
 
-type RouteRequest = Request<{}, {}, IAuthBody>;
+type RouteRequest = Request<
+  Record<string, never>,
+  Record<string, never>,
+  IAuthBody
+>;
 
 router.post(
   "/login",
@@ -30,12 +32,12 @@ router.post(
         );
       if (!(username && password))
         throw new HttpException(400, "Falta el usuario o contraseña.");
-      const result = (await User.findOne({
+      const result = await User.findOne({
         attributes: ["id", "password"],
         where: {
           username,
         },
-      })) as UserEntity | null;
+      });
       if (!result) throw new HttpException(404, "El usuario no existe.");
       const expiresIn = JWT_EXPIRE || "1h";
       if (!result.validatePassword(password))

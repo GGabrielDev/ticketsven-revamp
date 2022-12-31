@@ -14,13 +14,15 @@ import {
   HasManyAddAssociationsMixin,
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
-  Sequelize,
 } from "sequelize";
+import sequelize from "../db/config";
+import { Ticket } from "./Ticket";
 import { Municipality } from "./Municipality";
 import { CCP } from "./CCP";
 
@@ -59,37 +61,51 @@ export class Parish extends Model<
   declare addCcp: HasManyAddAssociationMixin<CCP, CCP["id"]>;
   declare addCcps: HasManyAddAssociationsMixin<CCP, CCP["id"]>;
   declare removeCcp: HasManyRemoveAssociationMixin<CCP, CCP["id"]>;
+  declare removeCcps: HasManyRemoveAssociationsMixin<CCP, CCP["id"]>;
   declare createCcp: HasManyCreateAssociationMixin<CCP, "parishId">;
+
+  declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
+  declare countTickets: HasManyCountAssociationsMixin;
+  declare hasTicket: HasManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare hasTickets: HasManyHasAssociationsMixin<Ticket, Ticket["id"]>;
+  declare setTickets: HasManySetAssociationsMixin<Ticket, Ticket["id"]>;
+  declare addTicket: HasManyAddAssociationMixin<Ticket, Ticket["id"]>;
+  declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
+  declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
+  declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "parishId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare ccps?: NonAttribute<CCP[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
     ccps: Association<Parish, CCP>;
+    tickets: Association<Parish, Ticket>;
   };
 }
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
-module.exports = (sequelize: Sequelize) => {
-  // defino el modelo
-  Parish.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+
+Parish.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      sequelize,
-      tableName: "parishes",
-      timestamps: false,
-      paranoid: true,
-    }
-  );
-};
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    name: {
+      singular: "parish",
+      plural: "parishes",
+    },
+    tableName: "parishes",
+    timestamps: false,
+    paranoid: true,
+  }
+);

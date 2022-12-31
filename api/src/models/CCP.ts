@@ -20,8 +20,8 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
-  Sequelize,
 } from "sequelize";
+import sequelize from "../db/config";
 import { Parish } from "./Parish";
 import { Quadrant } from "./Quadrant";
 
@@ -75,30 +75,25 @@ export class CCP extends Model<
   };
 }
 
-// Exportamos una funcion que define el modelo
-// Luego le injectamos la conexion a sequelize.
-module.exports = (sequelize: Sequelize) => {
-  // defino el modelo
-  CCP.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          is: /^[a-zA-Z\s]*$/i,
-        },
+CCP.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        is: /^[a-zA-Z\s]*$/i,
       },
     },
-    {
-      sequelize,
-      tableName: "ccps",
-      timestamps: false,
-      paranoid: true,
-    }
-  );
-};
+  },
+  {
+    sequelize,
+    tableName: "ccps",
+    timestamps: false,
+    paranoid: true,
+  }
+);
