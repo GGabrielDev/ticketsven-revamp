@@ -7,17 +7,13 @@ import HttpException from "../exceptions/HttpException";
 
 const router = Router();
 
-interface IQuadrantParams {
-  quadrantId: number;
-}
-
 interface IQuadrantBody {
   name: string;
   ccpId: number;
 }
 
 type RouteRequest = Request<
-  IQuadrantParams,
+  Record<"ccpId" | "quadrantId", string>,
   Record<string, never>,
   IQuadrantBody
 >;
@@ -52,12 +48,12 @@ router.get(
 );
 
 router.get(
-  "/ccp",
+  "/ccp/:ccpId",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { ccpId } = req.body;
+      const { ccpId } = req.params;
 
-      if (!ccpId || ccpId === 0)
+      if (!ccpId || parseInt(ccpId) <= 0)
         throw new HttpException(400, "A valid CCP ID must be provided");
 
       const result = await Quadrant.findAll({
@@ -112,16 +108,7 @@ router.post(
           }`
         );
 
-      const ccp = await CCP.findByPk(ccpId)
-        .then((value) => value)
-        .catch((error) => {
-          if (error.parent.code === "22P02") {
-            throw new HttpException(
-              400,
-              "The format of the request is not UUID"
-            );
-          }
-        });
+      const ccp = await CCP.findByPk(ccpId);
       if (!ccp) {
         throw new HttpException(404, "The requested CCP doesn't exist");
       }
@@ -130,7 +117,7 @@ router.post(
       await ccp.addQuadrant(result);
 
       return res.status(201).send(
-        await CCP.findByPk(result.id, {
+        await Quadrant.findByPk(result.id, {
           attributes: {
             exclude: ["ccpId"],
           },
@@ -168,7 +155,7 @@ router.put(
       if (name) await result.update({ name });
 
       return res.status(200).send(
-        await CCP.findByPk(result.id, {
+        await Quadrant.findByPk(result.id, {
           attributes: {
             exclude: ["ccpId"],
           },

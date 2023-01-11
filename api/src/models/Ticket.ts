@@ -32,15 +32,16 @@ export class Ticket extends Model<
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<string>;
-  declare phone_number: string;
+  declare isOpen: CreationOptional<boolean>;
+  declare phone_number?: string;
   declare caller_name: string;
-  declare id_number: number;
+  declare id_number?: number;
   declare id_type: "V" | "E" | "J"; // enum type
-  declare address?: string;
-  declare reference_point?: string;
-  declare details?: string;
-  declare call_started?: Date;
-  declare call_ended?: Date;
+  declare address: string;
+  declare reference_point: string;
+  declare details: string;
+  declare call_started: Date;
+  declare call_ended: Date;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
   // updatedAt can be undefined during creation
@@ -106,9 +107,14 @@ Ticket.init(
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
+    isOpen: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
     phone_number: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     caller_name: {
       type: DataTypes.STRING,
@@ -116,7 +122,7 @@ Ticket.init(
     },
     id_number: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     id_type: {
       type: DataTypes.ENUM("V", "E", "J"),
@@ -124,23 +130,23 @@ Ticket.init(
     },
     address: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     reference_point: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     details: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     call_started: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
     },
     call_ended: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

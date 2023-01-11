@@ -13,6 +13,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
@@ -80,9 +81,7 @@ export default function Parish() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - municipalities.length)
-      : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - parishes.length) : 0;
 
   const handleChangePage = (event: Event, newPage: number) => {
     setPage(newPage);
@@ -177,10 +176,15 @@ export default function Parish() {
                 >
                   ${municipalities.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un municipio<//>
+                        <${MenuItem} key=${0} value=${0}>
+                          Selecciona un municipio
+                        <//>
                         ${municipalities.map(
                           (municipality) => html`
-                            <${MenuItem} value=${municipality.id}>
+                            <${MenuItem}
+                              key=${municipality.id}
+                              value=${municipality.id}
+                            >
                               ${municipality.name}
                             <//>
                           `
@@ -359,7 +363,7 @@ export default function Parish() {
       <//>
       <${Grid} item xs=${12} md=${6}>
         <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
-          <${TableContainer} sx=${{ maxHeight: 440 }}>
+          <${TableContainer}>
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
@@ -403,24 +407,33 @@ export default function Parish() {
                       <//>
                     `}
               <//>
+              <${TableFooter}>
+                <${TableRow}>
+                  <${TablePagination}
+                    rowsPerPageOptions=${[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan=${3}
+                    count=${parishes.length}
+                    rowsPerPage=${rowsPerPage}
+                    page=${page}
+                    SelectProps=${{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange=${handleChangePage}
+                    onRowsPerPageChange=${handleChangeRowsPerPage}
+                    ActionsComponent=${TablePaginationActions}
+                  />
+                <//>
+              <//>
             <//>
           <//>
-          <${TablePagination}
-            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
-            colSpan=${3}
-            count=${parishes.length}
-            rowsPerPage=${rowsPerPage}
-            page=${page}
-            SelectProps=${{
-              inputProps: {
-                "aria-label": "rows per page",
-              },
-              native: true,
-            }}
-            onPageChange=${handleChangePage}
-            onRowsPerPageChange=${handleChangeRowsPerPage}
-            ActionsComponent=${TablePaginationActions}
-          />
         <//>
       <//>
     <//>

@@ -10,6 +10,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
@@ -272,7 +273,7 @@ export default function Reason() {
       <//>
       <${Grid} item xs=${12} md=${6}>
         <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
-          <${TableContainer} sx=${{ maxHeight: 440 }}>
+          <${TableContainer}>
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
@@ -313,24 +314,33 @@ export default function Reason() {
                       <//>
                     `}
               <//>
+              <${TableFooter}>
+                <${TableRow}>
+                  <${TablePagination}
+                    rowsPerPageOptions=${[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan=${3}
+                    count=${reasons.length}
+                    rowsPerPage=${rowsPerPage}
+                    page=${page}
+                    SelectProps=${{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange=${handleChangePage}
+                    onRowsPerPageChange=${handleChangeRowsPerPage}
+                    ActionsComponent=${TablePaginationActions}
+                  />
+                <//>
+              <//>
             <//>
           <//>
-          <${TablePagination}
-            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
-            colSpan=${3}
-            count=${reasons.length}
-            rowsPerPage=${rowsPerPage}
-            page=${page}
-            SelectProps=${{
-              inputProps: {
-                "aria-label": "rows per page",
-              },
-              native: true,
-            }}
-            onPageChange=${handleChangePage}
-            onRowsPerPageChange=${handleChangeRowsPerPage}
-            ActionsComponent=${TablePaginationActions}
-          />
         <//>
       <//>
     <//>

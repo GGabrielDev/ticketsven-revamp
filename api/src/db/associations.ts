@@ -56,14 +56,13 @@ export default () => {
   // Ticket associations
   Ticket.belongsTo(Municipality, {
     foreignKey: "municipalityId",
-    as: "municicpality",
+    as: "municipality",
   });
   Ticket.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
   Ticket.belongsTo(Reason, { foreignKey: "reasonId", as: "reason" });
   Ticket.belongsToMany(User, {
     sourceKey: "id",
     foreignKey: "ticketId",
-    as: "tickets",
     through: "user_tickets",
   });
 
@@ -72,7 +71,6 @@ export default () => {
   User.belongsToMany(Ticket, {
     sourceKey: "id",
     foreignKey: "userId",
-    as: "users",
     through: "user_tickets",
   });
 };

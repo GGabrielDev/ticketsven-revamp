@@ -7,6 +7,7 @@ import ccpRouter from "./ccp";
 import quadrantRouter from "./quadrant";
 import reasonRouter from "./reason";
 import roleRouter from "./role";
+import ticketRouter from "./ticket";
 import userRouter from "./user";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.use("/parish", parishRouter);
 router.use("/ccp", ccpRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
+router.use("/ticket", ticketRouter);
 
 router.use(authRole("admin"));
 

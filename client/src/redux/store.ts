@@ -4,6 +4,7 @@ import municipalityReducer from "./features/municipality/municipalitySlice";
 import parishReducer from "./features/parish/parishSlice";
 import quadrantReducer from "./features/quadrant/quadrantSlice";
 import reasonReducer from "./features/reason/reasonSlice";
+import ticketReducer from "./features/ticket/ticketSlice";
 import userReducer from "./features/user/userSlice";
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     parish: parishReducer,
     quadrant: quadrantReducer,
     reason: reasonReducer,
+    ticket: ticketReducer,
     user: userReducer,
   },
   devTools: process.env.NODE_ENV !== "production",

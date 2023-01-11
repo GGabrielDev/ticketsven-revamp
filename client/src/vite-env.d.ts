@@ -46,3 +46,19 @@ type RoleType = GenericType;
 type UserType = Record<"id" | "username" | "fullname", string> & {
   role: RoleType;
 };
+
+type TicketType = {
+  id: string;
+  phone_number?: string;
+  caller_name: string;
+  id_number?: number;
+  id_type: "V" | "E" | "J"; // enum type
+  address: string;
+  reference_point: string;
+  details: string;
+  call_started: Date;
+  call_ended: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date;
+};

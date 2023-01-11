@@ -13,6 +13,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
@@ -74,7 +75,7 @@ export default function CCP() {
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
-    municipalityId: Yup.number()
+    parishId: Yup.number()
       .notOneOf([0], "Debe de seleccionar un parroquia.")
       .required("Debe de seleccionar un parroquia."),
   });
@@ -160,7 +161,7 @@ export default function CCP() {
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
-                <${InputLabel} id="municipalityId">Parroquia<//>
+                <${InputLabel} id="parishId">Parroquia<//>
                 <${Field}
                   as=${Select}
                   fullWidth
@@ -175,10 +176,14 @@ export default function CCP() {
                 >
                   ${parishes.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un parroquia<//>
+                        <${MenuItem} key=${0} value=${0}>
+                          Selecciona un parroquia
+                        <//>
                         ${parishes.map(
                           (parish) => html`
-                            <${MenuItem} value=${parish.id}>${parish.name}<//>
+                            <${MenuItem} key=${parish.id} value=${parish.id}>
+                              ${parish.name}
+                            <//>
                           `
                         )}
                       `
@@ -349,7 +354,7 @@ export default function CCP() {
       <//>
       <${Grid} item xs=${12} md=${6}>
         <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
-          <${TableContainer} sx=${{ maxHeight: 440 }}>
+          <${TableContainer}>
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
@@ -393,24 +398,33 @@ export default function CCP() {
                       <//>
                     `}
               <//>
+              <${TableFooter}>
+                <${TableRow}>
+                  <${TablePagination}
+                    rowsPerPageOptions=${[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan=${3}
+                    count=${ccps.length}
+                    rowsPerPage=${rowsPerPage}
+                    page=${page}
+                    SelectProps=${{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange=${handleChangePage}
+                    onRowsPerPageChange=${handleChangeRowsPerPage}
+                    ActionsComponent=${TablePaginationActions}
+                  />
+                <//>
+              <//>
             <//>
           <//>
-          <${TablePagination}
-            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
-            colSpan=${3}
-            count=${ccps.length}
-            rowsPerPage=${rowsPerPage}
-            page=${page}
-            SelectProps=${{
-              inputProps: {
-                "aria-label": "rows per page",
-              },
-              native: true,
-            }}
-            onPageChange=${handleChangePage}
-            onRowsPerPageChange=${handleChangeRowsPerPage}
-            ActionsComponent=${TablePaginationActions}
-          />
         <//>
       <//>
     <//>

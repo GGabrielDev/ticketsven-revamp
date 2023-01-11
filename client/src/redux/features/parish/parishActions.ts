@@ -24,7 +24,7 @@ export const asyncActions = {
       return (
         await axios.get("/parish", {
           ...axiosConfig(getState().user.token),
-          data: {
+          params: {
             name: payload,
           },
         })
@@ -44,7 +44,7 @@ export const asyncActions = {
         return (
           await axios.get("/parish/municipality", {
             ...axiosConfig(getState().user.token),
-            data: {
+            params: {
               municipalityId: payload,
             },
           })

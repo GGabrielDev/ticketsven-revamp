@@ -18,7 +18,7 @@ import { useAppDispatch } from "../../redux/hooks";
 import { actions } from "../../redux/features/user/userSlice";
 import Logo from "../../assets/logo.png";
 
-const { logout } = actions;
+const { logout, toggleColorTheme } = actions;
 
 const pages = [
   { name: "Municipios", link: "municipality" },
@@ -64,7 +64,7 @@ function ResponsiveAppBar() {
   };
 
   return html`
-    <${AppBar} position="static" sx=${{ p: 1, display: "flex" }}>
+    <${AppBar} position="sticky" sx=${{ p: 1, display: "flex" }}>
       <${Container} maxWidth="xl">
         <${Toolbar} disableGutters>
           <${Box}
@@ -178,6 +178,9 @@ function ResponsiveAppBar() {
               open=${Boolean(anchorElUser)}
               onClose=${handleCloseUserMenu}
             >
+              <${MenuItem} onClick=${() => dispatch(toggleColorTheme())}>
+                <${Typography} textAlign="center">Cambiar tema<//>
+              <//>
               <${MenuItem} onClick=${handleLogout}>
                 <${Typography} textAlign="center">Cerrar sesión<//>
               <//>

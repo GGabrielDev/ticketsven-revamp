@@ -12,18 +12,24 @@ interface IParishParams {
   parishId: number;
 }
 
+interface IParishQuery {
+  name: string;
+  municipalityId: number;
+}
+
 interface IParishBody {
   name: string;
   municipalityId: number;
 }
 
-type RouteRequest = Request<IParishParams, Record<string, never>, IParishBody>;
+type RouteRequest = Request<IParishParams, IParishQuery, IParishBody>;
 
 router.get(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { name } = req.body;
+      let name: string | undefined = undefined;
+      if (typeof req.query.name === "string") name = req.query.name;
 
       const result = await Parish.findAll({
         attributes: {
@@ -53,7 +59,9 @@ router.get(
   "/municipality",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { municipalityId } = req.body;
+      let municipalityId: number | undefined = undefined;
+      if (typeof req.query.municipalityId === "string")
+        municipalityId = parseInt(req.query.municipalityId);
 
       if (!municipalityId || municipalityId === 0)
         throw new HttpException(

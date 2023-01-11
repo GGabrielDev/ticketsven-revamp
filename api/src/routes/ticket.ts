@@ -66,18 +66,61 @@ router.get(
 
 router.post(
   "/",
-  authRole(["operator", "dispatcher"]),
+  authRole(["operator"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { phone_number, caller_name, id_number, id_type } = req.body;
-      if (!phone_number || !caller_name || !id_number || !id_type)
-        throw new HttpException(401, "Request is missing arguments");
+      const {
+        call_started,
+        call_ended,
+        phone_number,
+        reasonId,
+        caller_name,
+        id_number,
+        id_type,
+        municipalityId,
+        parishId,
+        address,
+        reference_point,
+        details,
+      } = req.body;
+      const { userId } = req;
+      if (
+        !(
+          call_started &&
+          call_ended &&
+          reasonId &&
+          id_type &&
+          caller_name &&
+          municipalityId &&
+          parishId &&
+          address &&
+          reference_point &&
+          details
+        )
+      )
+        throw new HttpException(401, "Request is missing required arguments");
+      if (!(await Municipality.findByPk(municipalityId)))
+        throw new HttpException(401, "Selected Municipality doesn't exists");
+      if (!(await Parish.findByPk(parishId)))
+        throw new HttpException(401, "Selected Parish doesn't exists");
+      if (!(await Reason.findByPk(reasonId)))
+        throw new HttpException(401, "Selected Reason doesn't exists");
       const result = await Ticket.create({
+        call_started,
+        call_ended,
         phone_number,
         caller_name,
         id_number,
         id_type,
+        address,
+        reference_point,
       });
+      await Promise.all([
+        result.addUser(userId),
+        result.setMunicipality(municipalityId),
+        result.setParish(parishId),
+        result.setReason(reasonId),
+      ]);
       return res.status(201).send(
         await Ticket.findByPk(result.id, {
           attributes: {

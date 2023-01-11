@@ -85,9 +85,6 @@ CCP.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        is: /^[a-zA-Z\s]*$/i,
-      },
     },
   },
   {

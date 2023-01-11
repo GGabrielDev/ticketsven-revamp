@@ -27,6 +27,7 @@ export class Reason extends Model<
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
+  declare priority: number;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -61,15 +62,21 @@ Reason.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        is: /^[a-zA-Z\s]*$/i,
-      },
+    },
+    priority: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 10,
     },
   },
   {
     sequelize,
+    name: {
+      singular: "reason",
+      plural: "reasons",
+    },
+    paranoid: true,
     tableName: "reasons",
     timestamps: false,
-    paranoid: true,
   }
 );

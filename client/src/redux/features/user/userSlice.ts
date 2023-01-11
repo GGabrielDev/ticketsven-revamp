@@ -27,10 +27,9 @@ export const initialState = {
   token: sessionStorage.getItem("user/token"),
   users: [],
   roles: [],
-  theme:
-    sessionStorage.getItem("user/theme") === null
-      ? "light"
-      : sessionStorage.getItem("user/theme"),
+  theme: !sessionStorage.getItem("user/theme")
+    ? "light"
+    : sessionStorage.getItem("user/theme"),
 } as SliceType;
 
 const userSlice = createSlice({
@@ -52,7 +51,9 @@ const userSlice = createSlice({
       sessionStorage.setItem("user/token", "");
     },
     toggleColorTheme: (state) => {
-      state.theme === "light" ? "dark" : "light";
+      const newTheme = state.theme === "light" ? "dark" : "light";
+      state.theme = newTheme;
+      sessionStorage.setItem("user/theme", newTheme);
     },
     sortById: (state) => {
       const arr = [...state.users];

@@ -48,13 +48,14 @@ Quadrant.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        is: /^[a-zA-Z\s]*$/i,
-      },
     },
   },
   {
     sequelize,
+    name: {
+      singular: "quadrant",
+      plural: "quadrants",
+    },
     tableName: "quadrants",
     timestamps: false,
     paranoid: true,

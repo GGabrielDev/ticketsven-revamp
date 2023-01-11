@@ -13,6 +13,7 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
@@ -294,6 +295,10 @@ export default function User() {
                       <${Typography} component="h1" variant="h4">
                         Editar Usuario
                       <//>
+                      <${Typography} component="h2" variant="h6">
+                        Atención: Si se edita el usuario se tiene que escribir
+                        una nueva contraseña
+                      <//>
                       <${Formik}
                         initialValues=${{
                           ...selectedRow,
@@ -423,11 +428,11 @@ export default function User() {
       <//>
       <${Grid} item xs=${12} md=${6}>
         <${Paper} sx=${{ width: "100%", overflow: "hidden" }}>
-          <${TableContainer} sx=${{ maxHeight: 440 }}>
+          <${TableContainer}>
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
-                  <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
+                  <${StyledTableCell}>ID<//>
                   <${StyledTableCell}>Nombre<//>
                   <${StyledTableCell}>Usuario<//>
                   <${StyledTableCell}>Rol<//>
@@ -470,24 +475,33 @@ export default function User() {
                       <//>
                     `}
               <//>
+              <${TableFooter}>
+                <${TableRow}>
+                  <${TablePagination}
+                    rowsPerPageOptions=${[
+                      5,
+                      10,
+                      25,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan=${3}
+                    count=${users.length}
+                    rowsPerPage=${rowsPerPage}
+                    page=${page}
+                    SelectProps=${{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange=${handleChangePage}
+                    onRowsPerPageChange=${handleChangeRowsPerPage}
+                    ActionsComponent=${TablePaginationActions}
+                  />
+                <//>
+              <//>
             <//>
           <//>
-          <${TablePagination}
-            rowsPerPageOptions=${[5, 10, 25, { label: "All", value: -1 }]}
-            colSpan=${3}
-            count=${users.length}
-            rowsPerPage=${rowsPerPage}
-            page=${page}
-            SelectProps=${{
-              inputProps: {
-                "aria-label": "rows per page",
-              },
-              native: true,
-            }}
-            onPageChange=${handleChangePage}
-            onRowsPerPageChange=${handleChangeRowsPerPage}
-            ActionsComponent=${TablePaginationActions}
-          />
         <//>
       <//>
     <//>

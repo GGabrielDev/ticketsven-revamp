@@ -2,6 +2,7 @@ import sequelize from "./config";
 import initAssociations from "./associations";
 import { Role } from "../models/Role";
 import { User } from "../models/User";
+import { Ticket } from "../models/Ticket";
 
 const { ADMIN_USER, ADMIN_PASSWORD } = process.env;
 
