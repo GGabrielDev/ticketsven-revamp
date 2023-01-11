@@ -21,6 +21,9 @@ import OperatorLayout from "./components/operator/Layout";
 import OperatorLanding from "./pages/operator/Landing";
 import Form from "./pages/operator/Form";
 
+import DispatcherLayout from "./components/dispatcher/Layout";
+import DispatcherLanding from "./pages/dispatcher/Landing";
+
 const { selectUser, selectStatus } = selectors;
 
 function Router() {
@@ -34,8 +37,7 @@ function Router() {
             <${Route} index element=${html`<${Login} />`} />
             ${user
               ? [
-                  user &&
-                    user.role.name === "admin" &&
+                  user.role.name === "admin" &&
                     html`
                       <${Route}
                         path="dashboard"
@@ -63,15 +65,33 @@ function Router() {
                         <${Route} path="users" element=${html`<${User} />`} />
                       <//>
                     `,
-                  user &&
-                    user.role.name === "operator" &&
+                  user.role.name === "operator" &&
                     html`
-              <${Route} path="dashboard" element=${html`<${OperatorLayout} />`}>
-                <${Route} path="*" element=${html`<${NotFound} />`} />
-                <${Route} index element=${html`<${OperatorLanding} />`} />
-                <${Route} path="form" element=${html`<${Form} />`} />
-              </${Route}>
-              `,
+                      <${Route}
+                        path="dashboard"
+                        element=${html`<${OperatorLayout} />`}
+                      >
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
+                        <${Route}
+                          index
+                          element=${html`<${OperatorLanding} />`}
+                        />
+                        <${Route} path="form" element=${html`<${Form} />`} />
+                      <//>
+                    `,
+                  user.role.name === "dispatcher" &&
+                    html`
+                      <${Route}
+                        path="dashboard"
+                        element=${html`<${DispatcherLayout} />`}
+                      >
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
+                        <${Route}
+                          index
+                          element=${html`<${DispatcherLanding} />`}
+                        />
+                      <//>
+                    `,
                 ]
               : html`<${Route} path="*" element=${html`<${LoadingBox} />`} />`}
           <//>
