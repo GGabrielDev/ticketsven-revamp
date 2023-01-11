@@ -24,7 +24,7 @@ export default function Landing() {
         height: "100%",
       }}
     >
-      <${Box} mb=${2}>
+      <${Box} sx=${{ mb: 2 }}>
         <${Typography} variant="h4" textAlign="center">
           Bienvenido, Operador:
         <//>
@@ -32,7 +32,7 @@ export default function Landing() {
           ${user?.fullname}
         <//>
       <//>
-      <${Box}>
+      <${Box} sx=${{ mb: 2 }}>
         <${Button}
           variant="contained"
           color="primary"

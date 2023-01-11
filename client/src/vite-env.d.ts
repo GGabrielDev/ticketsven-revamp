@@ -39,7 +39,9 @@ type QuadrantType = GenericType & {
   ccp: GenericType;
 };
 
-type ReasonType = GenericType;
+type ReasonType = GenericType & {
+  priority: number;
+};
 
 type RoleType = GenericType;
 

@@ -114,6 +114,7 @@ router.post(
         id_type,
         address,
         reference_point,
+        details,
       });
       await Promise.all([
         result.addUser(userId),

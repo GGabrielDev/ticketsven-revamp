@@ -12,6 +12,7 @@ interface IReasonParams {
 
 interface IReasonBody {
   name: string;
+  priority: number;
 }
 
 type RouteRequest = Request<IReasonParams, Record<string, never>, IReasonBody>;
@@ -61,13 +62,17 @@ router.post(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { name } = req.body;
+      const { name, priority } = req.body;
 
-      if (!name)
-        throw new HttpException(400, "The name is missing as the body");
+      if (!name && !priority)
+        throw new HttpException(
+          400,
+          "The parameters are missing in the request"
+        );
 
       const result = await Reason.create({
         name,
+        priority,
       });
 
       return res.status(201).send(await Reason.findByPk(result.id));
@@ -82,7 +87,7 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { reasonId } = req.params;
-      const { name } = req.body;
+      const { name, priority } = req.body;
 
       if (!reasonId) {
         throw new HttpException(400, "The Reason ID is missing as the param");
@@ -95,6 +100,7 @@ router.put(
       }
 
       if (name && name !== result.name) result.update({ name });
+      if (priority && priority !== result.priority) result.update({ priority });
 
       res.status(200).send(result);
     } catch (error) {

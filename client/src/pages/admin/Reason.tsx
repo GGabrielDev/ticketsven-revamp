@@ -5,6 +5,7 @@ import {
   Button,
   CircularProgress,
   Grid,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -46,18 +47,14 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-interface ReasonData {
-  id: number;
-  name: string;
-}
-
 export default function Reason() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState<ReasonType | null>(null);
   const [edit, setEdit] = useState(false);
-  const initialValues: Partial<ReasonData> = {
+  const initialValues: Partial<ReasonType> = {
     name: "",
+    priority: 10,
   };
   const reasons = useAppSelector(selectReasons);
   const dispatch = useAppDispatch();
@@ -85,7 +82,7 @@ export default function Reason() {
   };
 
   const handleSubmit = (
-    values: Partial<ReasonData>,
+    values: Partial<ReasonType>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
     dispatch(createReason(values)).then(() => {
@@ -126,7 +123,7 @@ export default function Reason() {
             validationSchema=${validationSchema}
             onSubmit=${handleSubmit}
           >
-            ${(props: FormikProps<Partial<ReasonData>>) => html`
+            ${(props: FormikProps<Partial<ReasonType>>) => html`
               <${Box}
                 component="form"
                 noValidate
@@ -141,11 +138,35 @@ export default function Reason() {
                   label="Razón"
                   id="name"
                   name="name"
+                  sx=${{ mb: 2 }}
                   value=${props.values.name}
                   onChange=${props.handleChange}
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
+                <${Field}
+                  as=${TextField}
+                  select
+                  margin="normal"
+                  fullWidth
+                  label="Prioridad"
+                  id="priority"
+                  name="priority"
+                  value=${props.values.priority}
+                  onChange=${props.handleChange}
+                  error=${props.touched.priority &&
+                  Boolean(props.errors.priority)}
+                  helperText=${props.touched.priority && props.errors.priority}
+                >
+                  ${[...Array(10)].map(
+                    (_, index) => html`<${MenuItem}
+                      key=${index}
+                      value=${index + 1}
+                    >
+                      ${index + 1}
+                    <//>`
+                  )}
+                <//>
                 <${Button}
                   disabled=${props.isSubmitting}
                   type="submit"
@@ -172,6 +193,7 @@ export default function Reason() {
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
                         <${Typography}>Nombre: ${selectedRow.name}<//>
+                        <${Typography}>Prioridad: ${selectedRow.priority}<//>
                       <//>
                       <${Box}
                         mt=${1}
@@ -236,6 +258,30 @@ export default function Reason() {
                               helperText=${props.touched.name &&
                               props.errors.name}
                             />
+                            <${Field}
+                              as=${TextField}
+                              select
+                              margin="normal"
+                              fullWidth
+                              label="Prioridad"
+                              id="priority"
+                              name="priority"
+                              value=${props.values.priority}
+                              onChange=${props.handleChange}
+                              error=${props.touched.priority &&
+                              Boolean(props.errors.priority)}
+                              helperText=${props.touched.priority &&
+                              props.errors.priority}
+                            >
+                              ${[...Array(10)].map(
+                                (_, index) => html`<${MenuItem}
+                                  key=${index}
+                                  value=${index + 1}
+                                >
+                                  ${index + 1}
+                                <//>`
+                              )}
+                            <//>
                             <${Box}
                               sx=${{
                                 mt: 3,
@@ -279,6 +325,7 @@ export default function Reason() {
                 <${StyledTableRow}>
                   <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
                   <${StyledTableCell}>Razón<//>
+                  <${StyledTableCell}>Prioridad<//>
                 <//>
               <//>
               <${TableBody}>
@@ -298,6 +345,7 @@ export default function Reason() {
                         >
                           <${StyledTableCell}>${row.id}<//>
                           <${StyledTableCell}>${row.name}<//>
+                          <${StyledTableCell}>${row.priority}<//>
                         <//>
                       `
                     )}
@@ -311,6 +359,7 @@ export default function Reason() {
                       <${StyledTableRow}>
                         <${StyledTableCell}>N/E<//>
                         <${StyledTableCell}>No hay entradas disponibles<//>
+                        <${StyledTableCell}><//>
                       <//>
                     `}
               <//>

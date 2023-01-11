@@ -156,6 +156,7 @@ export default function Parish() {
                   label="Cuadrante"
                   id="name"
                   name="name"
+                  sx=${{ mb: 2 }}
                   value=${props.values.name}
                   onChange=${props.handleChange}
                   error=${props.touched.name && Boolean(props.errors.name)}
