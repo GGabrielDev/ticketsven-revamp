@@ -107,7 +107,7 @@ router.put(
       if (!user)
         throw new HttpException(404, "The selected user doesn't exists");
       user.update({ username, password, fullname });
-      if (!(user.roleId = roleId)) {
+      if (!(user.roleId === roleId)) {
         const role = await Role.findByPk(roleId);
         if (!role)
           throw new HttpException(404, "The selected role doesn't exists");
