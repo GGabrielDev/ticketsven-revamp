@@ -12,9 +12,13 @@ interface IQuadrantBody {
   ccpId: number;
 }
 
+interface IQuadrantQuery {
+  ccpId: string;
+}
+
 type RouteRequest = Request<
   Record<"ccpId" | "quadrantId", string>,
-  Record<string, never>,
+  IQuadrantQuery,
   IQuadrantBody
 >;
 
@@ -48,19 +52,19 @@ router.get(
 );
 
 router.get(
-  "/ccp/:ccpId",
+  "/ccp",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { ccpId } = req.params;
+      const { ccpId } = req.query;
 
-      if (!ccpId || parseInt(ccpId) <= 0)
+      if (!ccpId || ccpId === "-1")
         throw new HttpException(400, "A valid CCP ID must be provided");
 
       const result = await Quadrant.findAll({
         attributes: {
           exclude: ["ccpId"],
         },
-        where: { ccpId },
+        where: { ccpId: { [Op.eq]: ccpId as string } },
         include: [{ model: CCP, as: "ccp" }],
       });
 

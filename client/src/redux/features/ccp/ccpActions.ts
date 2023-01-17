@@ -41,7 +41,7 @@ export const asyncActions = {
       return (
         await axios.get("/ccp/parish", {
           ...axiosConfig(getState().user.token),
-          data: {
+          params: {
             parishId: payload,
           },
         })

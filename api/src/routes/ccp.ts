@@ -12,12 +12,16 @@ interface ICCPParams {
   ccpId: number;
 }
 
+interface ICCPQuery {
+  parishId: string;
+}
+
 interface ICCPBody {
   name: string;
   parishId: number;
 }
 
-type RouteRequest = Request<ICCPParams, Record<string, never>, ICCPBody>;
+type RouteRequest = Request<ICCPParams, ICCPQuery, ICCPBody>;
 
 router.get(
   "/",
@@ -53,16 +57,16 @@ router.get(
   "/parish",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { parishId } = req.body;
+      const { parishId } = req.query;
 
-      if (!parishId || parishId === 0)
+      if (!parishId || parishId === "-1")
         throw new HttpException(400, "A valid parish ID must be provided");
 
       const result = await CCP.findAll({
         attributes: {
           exclude: ["parishId"],
         },
-        where: { parishId },
+        where: { parishId: { [Op.eq]: parishId as string } },
         include: [
           { model: Parish, as: "parish" },
           { model: Quadrant, as: "quadrants" },

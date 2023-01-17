@@ -25,6 +25,8 @@ import { User } from "./User";
 import { Municipality } from "./Municipality";
 import { Parish } from "./Parish";
 import { Reason } from "./Reason";
+import { Quadrant } from "./Quadrant";
+import { CCP } from "./CCP";
 
 export class Ticket extends Model<
   InferAttributes<Ticket>,
@@ -42,6 +44,17 @@ export class Ticket extends Model<
   declare details: string;
   declare call_started: Date;
   declare call_ended: Date;
+  declare dispatch_time?: Date;
+  declare reaction_time?: Date;
+  declare arrival_time?: Date;
+  declare response_time?: Date;
+  declare finish_time?: Date;
+  declare attention_time?: Date;
+  declare dispatch_details?: string;
+  declare reinforcement_units?: string;
+  declare follow_up?: string;
+  declare closing_state?: "Effective" | "Not Effective" | "Rejected"; // enum type
+  declare closing_details?: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
   // updatedAt can be undefined during creation
@@ -49,22 +62,31 @@ export class Ticket extends Model<
   // deletedAt can be undefined during creation (paranoid table)
   declare deletedAt: CreationOptional<Date>;
 
-  // foreign keys are automatically added by associations methods (like Project.belongsTo)
-  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
-  // display an error if ownerId is missing.
+  // foreign keys are automatically added by associations methods
+  // (like Project.belongsTo) by branding them using the `ForeignKey` type,
+  // `Project.init` will know it does not need to display an error if
+  // ownerId is missing.
+  declare ccpId: ForeignKey<CCP["id"]>;
   declare municipalityId: ForeignKey<Municipality["id"]>;
   declare parishId: ForeignKey<Parish["id"]>;
+  declare quadrantId: ForeignKey<Quadrant["id"]>;
   declare reasonId: ForeignKey<Reason["id"]>;
 
   // `municipality` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
+  declare ccp?: NonAttribute<CCP>;
   declare municipality?: NonAttribute<Municipality>;
   declare parish?: NonAttribute<Parish>;
+  declare quadrant?: NonAttribute<Quadrant>;
   declare reason?: NonAttribute<Reason>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
+  declare createCCP: BelongsToCreateAssociationMixin<CCP>;
+  declare getCCP: BelongsToGetAssociationMixin<CCP>;
+  declare setCCP: BelongsToSetAssociationMixin<CCP, CCP["id"]>;
+
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
   declare setMunicipality: BelongsToSetAssociationMixin<
@@ -75,6 +97,10 @@ export class Ticket extends Model<
   declare createParish: BelongsToCreateAssociationMixin<Parish>;
   declare getParish: BelongsToGetAssociationMixin<Parish>;
   declare setParish: BelongsToSetAssociationMixin<Parish, Parish["id"]>;
+
+  declare createQuadrant: BelongsToCreateAssociationMixin<Quadrant>;
+  declare getQuadrant: BelongsToGetAssociationMixin<Quadrant>;
+  declare setQuadrant: BelongsToSetAssociationMixin<Quadrant, Quadrant["id"]>;
 
   declare createReason: BelongsToCreateAssociationMixin<Reason>;
   declare getReason: BelongsToGetAssociationMixin<Reason>;
@@ -147,6 +173,50 @@ Ticket.init(
     call_ended: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    dispatch_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    reaction_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    arrival_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    response_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    finish_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    attention_time: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    dispatch_details: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    reinforcement_units: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    follow_up: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    closing_state: {
+      type: DataTypes.ENUM("Effective", "Not Effective", "Rejcted"),
+      allowNull: true,
+    },
+    closing_details: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

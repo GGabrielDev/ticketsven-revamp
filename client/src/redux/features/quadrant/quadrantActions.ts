@@ -42,7 +42,7 @@ export const asyncActions = {
       return (
         await axios.get("/quadrant/ccp", {
           ...axiosConfig(getState().user.token),
-          data: {
+          params: {
             ccpId: payload,
           },
         })

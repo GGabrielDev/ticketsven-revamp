@@ -46,6 +46,7 @@ type ReasonType = GenericType & {
 type RoleType = GenericType;
 
 type UserType = Record<"id" | "username" | "fullname", string> & {
+  roleId?: number;
   role: RoleType;
 };
 
@@ -58,9 +59,20 @@ type TicketType = {
   address: string;
   reference_point: string;
   details: string;
-  call_started: Date;
-  call_ended: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date;
+  call_started: string | Date;
+  call_ended: string | Date;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  deletedAt?: string | Date;
+  municipality: GenericType;
+  parish: GenericType;
+  reason: ReasonType;
+  users: UserType[];
+};
+
+type MiniTicket = {
+  id: string;
+  municipality: GenericType;
+  parish: GenericType;
+  reason: ReasonType;
 };

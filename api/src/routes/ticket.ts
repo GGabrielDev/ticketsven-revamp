@@ -1,4 +1,5 @@
 import { Request, Response, Router, NextFunction } from "express";
+import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
 import { Municipality } from "../models/Municipality";
 import { Parish } from "../models/Parish";
@@ -14,7 +15,11 @@ const ticketInclude = [
   { model: Municipality, as: "municipality" },
   { model: Parish, as: "parish" },
   { model: Reason, as: "reason" },
-  { model: User, as: "users" },
+  {
+    model: User,
+    as: "users",
+    attributes: { exclude: ["password"] },
+  },
 ];
 
 type RouteRequest = Request<
@@ -24,14 +29,13 @@ type RouteRequest = Request<
 >;
 
 router.get(
-  "/",
-  authRole(["dispatcher", "supervisor"]),
+  "/open",
+  authRole(["dispatcher"]),
   async (_, res: Response, next: NextFunction) => {
     try {
       const result = await Ticket.findAll({
-        attributes: {
-          exclude: ticketAttrExclude,
-        },
+        attributes: ["id"],
+        where: { isOpen: { [Op.eq]: true } },
         include: ticketInclude,
       });
       return res.status(200).send(result);
@@ -130,6 +134,55 @@ router.post(
           include: ticketInclude,
         })
       );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/edit/:ticketId",
+  authRole("dispatcher"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { ticketId } = req.params;
+      const {
+        ccpId,
+        quadrantId,
+        dispatch_time,
+        reaction_time,
+        arrival_time,
+        response_time,
+        finish_time,
+        attention_time,
+        dispatch_details,
+        reinforcement_units,
+        follow_up,
+      } = req.body;
+
+      if (!ticketId)
+        throw new HttpException(400, "A ticket id must be provided");
+      const ticket = await Ticket.findByPk(ticketId, {
+        attributes: { exclude: ticketAttrExclude },
+        include: ticketInclude,
+      });
+      if (!ticket)
+        throw new HttpException(400, "The requested ticket doesn't exists");
+      if (ccpId) ticket.setCCP(ccpId);
+      if (quadrantId) ticket.setQuadrant(quadrantId);
+      await ticket.update({
+        dispatch_time,
+        reaction_time,
+        arrival_time,
+        response_time,
+        finish_time,
+        attention_time,
+        dispatch_details,
+        reinforcement_units,
+        follow_up,
+      });
+      return res.status(200).send("Updated!");
     } catch (error) {
       console.log(error);
       next(error);

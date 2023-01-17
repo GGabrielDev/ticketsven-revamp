@@ -24,6 +24,7 @@ import {
 import sequelize from "../db/config";
 import { Parish } from "./Parish";
 import { Quadrant } from "./Quadrant";
+import { Ticket } from "./Ticket";
 
 export class CCP extends Model<
   InferAttributes<CCP>,
@@ -66,12 +67,25 @@ export class CCP extends Model<
   >;
   declare createQuadrant: HasManyCreateAssociationMixin<Quadrant, "ccpId">;
 
+  declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
+  declare countTickets: HasManyCountAssociationsMixin;
+  declare hasTicket: HasManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare hasTickets: HasManyHasAssociationsMixin<Ticket, Ticket["id"]>;
+  declare setTickets: HasManySetAssociationsMixin<Ticket, Ticket["id"]>;
+  declare addTicket: HasManyAddAssociationMixin<Ticket, Ticket["id"]>;
+  declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
+  declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
+  declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "parishId">;
+
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare quadrants?: NonAttribute<Quadrant[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    quadrants: Association<Parish, Quadrant>;
+    quadrants: Association<CCP, Quadrant>;
+    tickets: Association<CCP, Ticket>;
   };
 }
 

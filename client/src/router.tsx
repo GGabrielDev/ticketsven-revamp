@@ -19,12 +19,13 @@ import User from "./pages/admin/User";
 
 import OperatorLayout from "./components/operator/Layout";
 import OperatorLanding from "./pages/operator/Landing";
-import Form from "./pages/operator/Form";
+import OperatorForm from "./pages/operator/Form";
 
 import DispatcherLayout from "./components/dispatcher/Layout";
 import DispatcherLanding from "./pages/dispatcher/Landing";
+import DispatcherForm from "./pages/dispatcher/Form";
 
-const { selectUser, selectStatus } = selectors;
+const { selectUser } = selectors;
 
 function Router() {
   const user = useAppSelector(selectUser);
@@ -76,7 +77,10 @@ function Router() {
                           index
                           element=${html`<${OperatorLanding} />`}
                         />
-                        <${Route} path="form" element=${html`<${Form} />`} />
+                        <${Route}
+                          path="form"
+                          element=${html`<${OperatorForm} />`}
+                        />
                       <//>
                     `,
                   user.role.name === "dispatcher" &&
@@ -85,12 +89,16 @@ function Router() {
                         path="dashboard"
                         element=${html`<${DispatcherLayout} />`}
                       >
-                        <${Route} path="*" element=${html`<${NotFound} />`} />
                         <${Route}
                           index
                           element=${html`<${DispatcherLanding} />`}
                         />
-                      <//>
+                        <${Route}
+                          path=":ticketId"
+                          element=${html`<${DispatcherForm} />`}
+                        >
+                        <//>
+                      </${Route}>
                     `,
                 ]
               : html`<${Route} path="*" element=${html`<${LoadingBox} />`} />`}

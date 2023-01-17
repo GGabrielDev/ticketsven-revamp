@@ -29,7 +29,7 @@ const pages = [
   { name: "Usuarios", link: "users" },
 ];
 
-function ResponsiveAppBar() {
+export default function ResponsiveAppBar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [anchorElNav, setAnchorElNav] = useState<null | EventTarget>(null);
@@ -46,7 +46,6 @@ function ResponsiveAppBar() {
     e.stopPropagation();
     setAnchorElNav(null);
   };
-
   const handleRedirection = (link: string) => (e: Event) => {
     e.stopPropagation();
     setAnchorElNav(null);
@@ -191,4 +190,3 @@ function ResponsiveAppBar() {
     <//>
   `;
 }
-export default ResponsiveAppBar;
