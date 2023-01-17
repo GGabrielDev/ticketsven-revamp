@@ -1,6 +1,7 @@
 import { html } from "htm/preact";
 import { ChangeEvent } from "react";
 import { useEffect, useState } from "preact/hooks";
+import dayjs, { Dayjs } from "dayjs";
 import {
   Alert,
   Box,
@@ -8,13 +9,15 @@ import {
   CircularProgress,
   Container,
   Divider,
-  IconButton,
+  Fab,
   InputAdornment,
   MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
-import { CallEndRounded, CallMadeRounded } from "@mui/icons-material";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { styled } from "@mui/material/styles";
+import { SaveAlt, CheckCircle, Error } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,19 +38,16 @@ import { selectors as userSelectors } from "../../redux/features/user/userSlice"
 
 const { getCCPsByParish } = ccpActions;
 const { getQuadrantsByCCP } = quadrantActions;
-const { clearStatus, postTicketOperator, getTicket } = ticketActions;
+const { putTicketUpdateDispatcher, getTicket, clearStatusUpdate } =
+  ticketActions;
 
 const { selectCCPs } = ccpSelectors;
 const { selectQuadrants } = quadrantSelectors;
-const { selectStatus, selectError, selectTicket } = ticketSelectors;
+const { selectStatus, selectStatusUpdate, selectError, selectTicket } =
+  ticketSelectors;
 const { selectUser } = userSelectors;
 
 type DisplayProps = Record<"key" | "value", string>;
-
-type FormData = {
-  ccpId: number;
-  quadrantId: number;
-};
 
 const validationSchema = yup.object().shape({
   ccpId: yup
@@ -58,6 +58,14 @@ const validationSchema = yup.object().shape({
     .number()
     .required("Selecciona un elemento")
     .notOneOf([-1], "Selecciona un elemento"),
+});
+
+const SaveButton = styled(Fab)({
+  position: "absolute",
+  zIndex: 1,
+  bottom: 32,
+  right: 32,
+  margin: "0 auto",
 });
 
 const singleDisplay = (first: DisplayProps) => html`
@@ -104,15 +112,25 @@ export default function Form() {
   const error = useAppSelector(selectError);
   const quadrants = useAppSelector(selectQuadrants);
   const status = useAppSelector(selectStatus);
+  const statusUpdate = useAppSelector(selectStatusUpdate);
   const ticket = useAppSelector(selectTicket);
   const user = useAppSelector(selectUser);
 
   const navigate = useNavigate();
   const { ticketId } = useParams();
 
-  const initialValues: FormData = {
+  const initialValues: DispatchTicket = {
     ccpId: -1,
     quadrantId: -1,
+    dispatch_time: new Date(),
+    reaction_time: new Date(),
+    arrival_time: new Date(),
+    response_time: new Date(),
+    finish_time: new Date(),
+    attention_time: new Date(),
+    dispatch_details: "",
+    reinforcement_units: "",
+    follow_up: "",
   };
 
   const callQuadrants = (e: ChangeEvent<any>) => {
@@ -121,10 +139,10 @@ export default function Form() {
   };
 
   const handleSubmit = (
-    values: Partial<FormData>,
+    values: Partial<DispatchTicket>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
-    // dispatch(postTicketOperator(values)).then(() => {
+    // dispatch(postTicketOperator({id: ticket.id, ...values})).then(() => {
     //   setSubmitting(false);
     //   resetForm();
     //   navigate("/dashboard");
@@ -140,6 +158,13 @@ export default function Form() {
       dispatch(getCCPsByParish(ticket.parish.id));
     }
   }, [ticket]);
+
+  useEffect(() => {
+    if (statusUpdate !== "Idle")
+      new Promise((r) => setTimeout(r, 2000)).then(() => {
+        dispatch(clearStatusUpdate());
+      });
+  }, [statusUpdate]);
 
   return (
     ticket &&
@@ -258,15 +283,69 @@ export default function Form() {
           onSubmit=${handleSubmit}
           validationSchema=${validationSchema}
         >
-          ${(props: FormikProps<Partial<FormData>>) => {
-            const { touched, setFieldValue } = props;
-            // useEffect(() => {
-            //   if (ticket) {
-            //     setFieldValue("details", ticket.details);
-            //   }
-            // }, [ticket]);
+          ${(props: FormikProps<DispatchTicket>) => {
+            const { isValid, isSubmitting, values, setFieldValue } = props;
+            useEffect(() => {
+              if (ticket) {
+                if (ticket.dispatch_time)
+                  setFieldValue(
+                    "dispatch_time",
+                    new Date(ticket.dispatch_time)
+                  );
+                if (ticket.reaction_time)
+                  setFieldValue(
+                    "reaction_time",
+                    new Date(ticket.reaction_time)
+                  );
+                if (ticket.arrival_time)
+                  setFieldValue("arrival_time", new Date(ticket.arrival_time));
+                if (ticket.response_time)
+                  setFieldValue(
+                    "response_time",
+                    new Date(ticket.response_time)
+                  );
+                if (ticket.finish_time)
+                  setFieldValue("finish_time", new Date(ticket.finish_time));
+                if (ticket.attention_time)
+                  setFieldValue(
+                    "attention_time",
+                    new Date(ticket.attention_time)
+                  );
+                if (ticket.dispatch_details)
+                  setFieldValue("dispatch_details", ticket.dispatch_details);
+                if (ticket.reinforcement_units)
+                  setFieldValue(
+                    "reinforcement_units",
+                    ticket.reinforcement_units
+                  );
+                if (ticket.follow_up)
+                  setFieldValue("follow_up", ticket.follow_up);
+              }
+
+              if (ticket.ccp && ticket.ccp.id) {
+                setFieldValue("ccpId", ticket.ccp.id);
+                dispatch(getQuadrantsByCCP(ticket.ccp.id)).then(() => {
+                  if (ticket.quadrant && ticket.quadrant.id)
+                    setFieldValue("quadrantId", ticket.quadrant.id);
+                });
+              }
+            }, [ticket, ccps]);
+
+            const hardUpdate = (e: Event) => {
+              e.preventDefault();
+              dispatch(putTicketUpdateDispatcher({ id: ticket.id, ...values }));
+            };
 
             return html`
+              <${SaveButton} size="large" onClick=${hardUpdate}>
+                ${statusUpdate === "Idle"
+                  ? html`<${SaveAlt} />`
+                  : statusUpdate === "Success"
+                  ? html`<${CheckCircle} />`
+                  : statusUpdate === "Error"
+                  ? html`<${Error} />`
+                  : null}
+              <//>
               <${Box}
                 component="form"
                 noValidate
@@ -345,7 +424,7 @@ export default function Form() {
                     ${quadrants.length > 0
                       ? html`
                           <${MenuItem} key=${-1} value=${-1}>
-                            Selecciona un quadrante
+                            Seleccione un cuadrante
                           <//>
                           ${quadrants.map(
                             (quadrant) => html`
@@ -362,6 +441,26 @@ export default function Form() {
                           <${MenuItem} value=${-1} disabled> Escoja un CCP <//>
                         `}
                   <//>
+                <//>
+                <${Box}
+                  sx=${{
+                    display: "flex",
+                    flexFlow: "row wrap",
+                    width: 1,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <${DateTimePicker} margin="normal" label="Hora de despacho"
+                  id="dispatch_time" name="dispatch_time" variant="outlined"
+                  InputLabelProps={{ shrink: true, }}
+                  sx=${{ width: { xs: 1, md: 0.49 } }}
+                  value=${props.values.dispatch_time}
+                  onChange=${props.handleChange}
+                  error=${props.touched.dispatch_time &&
+                  Boolean(props.errors.dispatch_time)}
+                  helperText=${props.touched.dispatch_time &&
+                  props.errors.dispatch_time}
+                  />
                 <//>
               <//>
             `;

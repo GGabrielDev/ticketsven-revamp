@@ -42,8 +42,6 @@ router.get(
         include: [{ model: CCP, as: "ccp" }],
       });
 
-      console.log(result);
-
       return res.status(200).send(result);
     } catch (error) {
       next(error);

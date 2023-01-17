@@ -2,7 +2,6 @@ import sequelize from "./config";
 import initAssociations from "./associations";
 import { Role } from "../models/Role";
 import { User } from "../models/User";
-import { Ticket } from "../models/Ticket";
 
 const { ADMIN_USER, ADMIN_PASSWORD } = process.env;
 
@@ -43,6 +42,6 @@ export const startDbForce = async () => {
 export const startDbNormal = async () => {
   checkConnection().then(async () => {
     console.log("Normal DB start scheduled");
-    await sequelize.sync();
+		await sequelize.sync();
   });
 };

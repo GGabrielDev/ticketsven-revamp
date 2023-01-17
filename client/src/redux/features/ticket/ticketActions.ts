@@ -17,7 +17,7 @@ export const asyncActions = {
     }
   }),
   getTicket: createAsyncThunk<
-    TicketType,
+    TicketType & Partial<DispatchTicket>,
     string,
     { state: RootState; rejectValue: ErrorType }
   >("ticket/get", async (id, { rejectWithValue, getState }) => {
@@ -30,8 +30,8 @@ export const asyncActions = {
     }
   }),
   postTicketOperator: createAsyncThunk<
-    TicketType,
-    Partial<TicketType>,
+    string,
+    { id: string } & Partial<DispatchTicket>,
     { state: RootState; rejectValue: ErrorType }
   >("ticket/postOperator", async (payload, { rejectWithValue, getState }) => {
     try {

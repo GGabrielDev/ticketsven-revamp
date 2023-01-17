@@ -15,6 +15,11 @@ export default () => {
     foreignKey: "ccpId",
     as: "quadrants",
   });
+	CCP.hasMany(Ticket, {
+		sourceKey: "id",
+		foreignKey: "ccpId",
+		as: "tickets"
+	})
 
   // Municipality associations
   Municipality.hasMany(Parish, {
@@ -42,6 +47,11 @@ export default () => {
 
   // Quadrant associations
   Quadrant.belongsTo(CCP, { foreignKey: "ccpId", as: "ccp" });
+  Quadrant.hasMany(Ticket, {
+    sourceKey: "id",
+    foreignKey: "quadrantId",
+    as: "tickets",
+  });
 
   // Reason associations
   Reason.hasMany(Ticket, {
@@ -54,11 +64,13 @@ export default () => {
   Role.hasMany(User, { sourceKey: "id", foreignKey: "roleId", as: "users" });
 
   // Ticket associations
+	Ticket.belongsTo(CCP, { foreignKey: "ccpId", as: "ccp" })
   Ticket.belongsTo(Municipality, {
     foreignKey: "municipalityId",
     as: "municipality",
   });
   Ticket.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
+	Ticket.belongsTo(Quadrant, { foreignKey: "quadrantId", as: "quadrant" })
   Ticket.belongsTo(Reason, { foreignKey: "reasonId", as: "reason" });
   Ticket.belongsToMany(User, {
     sourceKey: "id",

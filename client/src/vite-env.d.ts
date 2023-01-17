@@ -64,9 +64,11 @@ type TicketType = {
   createdAt: string | Date;
   updatedAt: string | Date;
   deletedAt?: string | Date;
+  ccp?: GenericType;
   municipality: GenericType;
   parish: GenericType;
   reason: ReasonType;
+  quadrant?: GenericType;
   users: UserType[];
 };
 
@@ -75,4 +77,20 @@ type MiniTicket = {
   municipality: GenericType;
   parish: GenericType;
   reason: ReasonType;
+};
+
+type DispatchTicket = {
+  ccpId?: number;
+  quadrantId?: number;
+  dispatch_time?: Date;
+  reaction_time?: Date;
+  arrival_time?: Date;
+  response_time?: Date;
+  finish_time?: Date;
+  attention_time?: Date;
+  dispatch_details?: string;
+  reinforcement_units?: string;
+  follow_up?: string;
+  closing_state?: "Effective" | "Not Effective" | "Rejected"; // enum type
+  closing_details?: string;
 };

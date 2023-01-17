@@ -83,9 +83,9 @@ export class Ticket extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare createCCP: BelongsToCreateAssociationMixin<CCP>;
-  declare getCCP: BelongsToGetAssociationMixin<CCP>;
-  declare setCCP: BelongsToSetAssociationMixin<CCP, CCP["id"]>;
+  declare createCcp: BelongsToCreateAssociationMixin<CCP>;
+  declare getCcp: BelongsToGetAssociationMixin<CCP>;
+  declare setCcp: BelongsToSetAssociationMixin<CCP, CCP["id"]>;
 
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;

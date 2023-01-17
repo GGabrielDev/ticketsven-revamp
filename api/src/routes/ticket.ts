@@ -1,8 +1,10 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
+import { CCP } from "../models/CCP";
 import { Municipality } from "../models/Municipality";
 import { Parish } from "../models/Parish";
+import { Quadrant } from "../models/Quadrant";
 import { Reason } from "../models/Reason";
 import { Ticket } from "../models/Ticket";
 import { User } from "../models/User";
@@ -10,10 +12,12 @@ import HttpException from "../exceptions/HttpException";
 
 const router = Router();
 
-const ticketAttrExclude = ["municipalityId", "parishId", "reasonId"];
+const ticketAttrExclude = ["municipalityId", "parishId", "reasonId", "ccpId", "quadrantId"];
 const ticketInclude = [
+	{ model: CCP, as: "ccp" },
   { model: Municipality, as: "municipality" },
   { model: Parish, as: "parish" },
+	{ model: Quadrant, as: "quadrant" },
   { model: Reason, as: "reason" },
   {
     model: User,
@@ -169,8 +173,9 @@ router.put(
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
-      if (ccpId) ticket.setCCP(ccpId);
-      if (quadrantId) ticket.setQuadrant(quadrantId);
+			console.log(ticket)
+      if (ccpId && ccpId > 0) await ticket.setCcp(ccpId);
+      if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
       await ticket.update({
         dispatch_time,
         reaction_time,

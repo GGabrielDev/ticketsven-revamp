@@ -4,7 +4,8 @@ import { asyncActions } from "./ticketActions";
 
 export type SliceType = {
   status: "Idle" | "Loading" | "Success" | "Error";
-  ticket?: TicketType;
+  statusUpdate: "Idle" | "Loading" | "Success" | "Error";
+  ticket?: TicketType & Partial<DispatchTicket>;
   tickets: MiniTicket[];
   error?: ErrorType;
 };
@@ -12,6 +13,7 @@ export type SliceType = {
 export const initialState: SliceType = {
   error: undefined,
   status: "Idle",
+  statusUpdate: "Idle",
   ticket: undefined,
   tickets: [],
 };
@@ -22,6 +24,9 @@ const ticketSlice = createSlice({
   reducers: {
     clearStatus: (state) => {
       state.status = "Idle";
+    },
+    clearStatusUpdate: (state) => {
+      state.statusUpdate = "Idle";
     },
   },
   extraReducers: (builder) => {
@@ -38,16 +43,16 @@ const ticketSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(asyncActions.putTicketUpdateDispatcher.pending, (state) => {
-        state.status = "Loading";
+        state.statusUpdate = "Loading";
       })
       .addCase(asyncActions.putTicketUpdateDispatcher.fulfilled, (state) => {
-        state.status = "Success";
+        state.statusUpdate = "Success";
         state.error = undefined;
       })
       .addCase(
         asyncActions.putTicketUpdateDispatcher.rejected,
         (state, action) => {
-          state.status = "Error";
+          state.statusUpdate = "Error";
           state.error = action.payload;
         }
       )
@@ -85,6 +90,7 @@ export const actions = {
 export const selectors = {
   selectError: (state: RootState) => state.ticket.error,
   selectStatus: (state: RootState) => state.ticket.status,
+  selectStatusUpdate: (state: RootState) => state.ticket.statusUpdate,
   selectTicket: (state: RootState) => state.ticket.ticket,
   selectTickets: (state: RootState) => state.ticket.tickets,
 };
