@@ -40,7 +40,6 @@ function Layout() {
       sx=${{
         width: { md: `calc(100% - ${drawerWidth}px)` },
         ml: { md: `${drawerWidth}px` },
-        height: "calc(100% - 84.5px)",
       }}
     >
       <${Outlet} />

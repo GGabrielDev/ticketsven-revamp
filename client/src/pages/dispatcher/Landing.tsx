@@ -17,7 +17,7 @@ export default function Landing() {
         flexFlow: "column wrap",
         alignItems: "center",
         justifyContent: "center",
-        height: "100%",
+        height: "calc(100vh - 84.5px)",
       }}
     >
       <${Box} sx=${{ mb: 2 }}>
