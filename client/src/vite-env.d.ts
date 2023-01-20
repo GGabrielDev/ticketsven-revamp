@@ -82,12 +82,12 @@ type MiniTicket = {
 type DispatchTicket = {
   ccpId?: number;
   quadrantId?: number;
-  dispatch_time?: Dayjs;
-  reaction_time?: Dayjs;
-  arrival_time?: Dayjs;
-  response_time?: Dayjs;
-  finish_time?: Dayjs;
-  attention_time?: Dayjs;
+  dispatch_time?: Date;
+  reaction_time?: Date;
+  arrival_time?: Date;
+  response_time?: Date;
+  finish_time?: Date;
+  attention_time?: Date;
   dispatch_details?: string;
   reinforcement_units?: string;
   follow_up?: string;

@@ -15,8 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "types": ["vite/client"]
+    "jsxImportSource": "preact"
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
