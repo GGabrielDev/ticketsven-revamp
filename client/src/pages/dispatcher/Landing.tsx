@@ -1,13 +1,16 @@
 import { html } from "htm/preact";
-import { Box, Container, Typography } from "@mui/material";
+import { Alert, Box, Container, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { useAppSelector } from "../../redux/hooks";
-import { selectors } from "../../redux/features/user/userSlice";
+import { selectors as ticketSelectors } from "../../redux/features/ticket/ticketSlice";
+import { selectors as userSelectors } from "../../redux/features/user/userSlice";
 
-const { selectUser } = selectors;
+const { selectUser } = userSelectors;
+const { selectStatus } = ticketSelectors;
 
 export default function Landing() {
   const user = useAppSelector(selectUser);
+  const status = useAppSelector(selectStatus);
 
   return html`
     <${Container}
@@ -33,6 +36,10 @@ export default function Landing() {
           Seleccione una de las solicitudes de la lista para comenzar
         <//>
       <//>
+      ${status === "Success" &&
+      html`<${Alert} severity="success">
+        La solicitud ha sido finalizada exitosamente
+      <//>`}
     <//>
   `;
 }

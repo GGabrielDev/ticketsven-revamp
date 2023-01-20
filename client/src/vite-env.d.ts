@@ -82,15 +82,15 @@ type MiniTicket = {
 type DispatchTicket = {
   ccpId?: number;
   quadrantId?: number;
-  dispatch_time?: Date;
-  reaction_time?: Date;
-  arrival_time?: Date;
-  response_time?: Date;
-  finish_time?: Date;
-  attention_time?: Date;
+  dispatch_time?: Dayjs;
+  //  reaction_time?: Date;
+  arrival_time?: Dayjs;
+  //  response_time?: Date;
+  finish_time?: Dayjs;
+  //  attention_time?: Date;
   dispatch_details?: string;
   reinforcement_units?: string;
   follow_up?: string;
-  closing_state?: "Effective" | "Not Effective" | "Rejected"; // enum type
+  closing_state?: "Efectiva" | "No Efectiva" | "Rechazada"; // enum type
   closing_details?: string;
 };

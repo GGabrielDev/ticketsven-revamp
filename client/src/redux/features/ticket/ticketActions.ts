@@ -31,7 +31,7 @@ export const asyncActions = {
   }),
   postTicketOperator: createAsyncThunk<
     string,
-    { id: string } & Partial<DispatchTicket>,
+    Partial<TicketType>,
     { state: RootState; rejectValue: ErrorType }
   >("ticket/postOperator", async (payload, { rejectWithValue, getState }) => {
     try {
@@ -46,13 +46,30 @@ export const asyncActions = {
   }),
   putTicketUpdateDispatcher: createAsyncThunk<
     string,
-    Partial<TicketType>,
+    { id: string } & Partial<DispatchTicket>,
     { state: RootState; rejectValue: ErrorType }
   >("ticket/putUpdate", async (payload, { rejectWithValue, getState }) => {
     try {
       return (
         await axios.put(
           `/ticket/edit/${payload.id}`,
+          payload,
+          axiosConfig(getState().user.token)
+        )
+      ).data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }),
+  putTicketCloseDispatcher: createAsyncThunk<
+    string,
+    { id: string } & DispatchTicket,
+    { state: RootState; rejectValue: ErrorType }
+  >("ticket/putClose", async (payload, { rejectWithValue, getState }) => {
+    try {
+      return (
+        await axios.put(
+          `/ticket/close/${payload.id}`,
           payload,
           axiosConfig(getState().user.token)
         )

@@ -12,12 +12,18 @@ import HttpException from "../exceptions/HttpException";
 
 const router = Router();
 
-const ticketAttrExclude = ["municipalityId", "parishId", "reasonId", "ccpId", "quadrantId"];
+const ticketAttrExclude = [
+  "municipalityId",
+  "parishId",
+  "reasonId",
+  "ccpId",
+  "quadrantId",
+];
 const ticketInclude = [
-	{ model: CCP, as: "ccp" },
+  { model: CCP, as: "ccp" },
   { model: Municipality, as: "municipality" },
   { model: Parish, as: "parish" },
-	{ model: Quadrant, as: "quadrant" },
+  { model: Quadrant, as: "quadrant" },
   { model: Reason, as: "reason" },
   {
     model: User,
@@ -155,11 +161,8 @@ router.put(
         ccpId,
         quadrantId,
         dispatch_time,
-        reaction_time,
         arrival_time,
-        response_time,
         finish_time,
-        attention_time,
         dispatch_details,
         reinforcement_units,
         follow_up,
@@ -173,21 +176,83 @@ router.put(
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
-			console.log(ticket)
       if (ccpId && ccpId > 0) await ticket.setCcp(ccpId);
       if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
       await ticket.update({
         dispatch_time,
-        reaction_time,
         arrival_time,
-        response_time,
         finish_time,
-        attention_time,
         dispatch_details,
         reinforcement_units,
         follow_up,
       });
       return res.status(200).send("Updated!");
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+
+router.put(
+  "/close/:ticketId",
+  authRole("dispatcher"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { ticketId } = req.params;
+      const {
+        ccpId,
+        quadrantId,
+        dispatch_time,
+        arrival_time,
+        finish_time,
+        dispatch_details,
+        reinforcement_units,
+        follow_up,
+        closing_state,
+        closing_details,
+      } = req.body;
+
+      if (!ticketId)
+        throw new HttpException(400, "A ticket id must be provided");
+      if (
+        !(
+          ccpId &&
+          quadrantId &&
+          dispatch_time &&
+          arrival_time &&
+          finish_time &&
+          dispatch_details &&
+          closing_state &&
+          closing_details
+        )
+      )
+        throw new HttpException(
+          400,
+          "There's required values missing in the request"
+        );
+
+      const ticket = await Ticket.findByPk(ticketId, {
+        attributes: { exclude: ticketAttrExclude },
+        include: ticketInclude,
+      });
+      if (!ticket)
+        throw new HttpException(400, "The requested ticket doesn't exists");
+      if (ccpId && ccpId > 0) await ticket.setCcp(ccpId);
+      if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
+      await ticket.update({
+        dispatch_time,
+        arrival_time,
+        finish_time,
+        dispatch_details,
+        reinforcement_units,
+        follow_up,
+        closing_state,
+        closing_details,
+        isOpen: false,
+      });
+
+      return res.status(200).send("Updated and closed!");
     } catch (error) {
       console.log(error);
       next(error);

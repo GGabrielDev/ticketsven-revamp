@@ -23,13 +23,13 @@ export type SliceType = {
 
 export const initialState = {
   status: "Idle",
-  // Set the token of the initialState as the one present in the session storage
-  token: sessionStorage.getItem("user/token"),
+  // Set the token of the initialState as the one present in the local storage
+  token: localStorage.getItem("user/token"),
   users: [],
   roles: [],
-  theme: !sessionStorage.getItem("user/theme")
+  theme: !localStorage.getItem("user/theme")
     ? "light"
-    : sessionStorage.getItem("user/theme"),
+    : localStorage.getItem("user/theme"),
 } as SliceType;
 
 const userSlice = createSlice({
@@ -37,8 +37,8 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      // Set the token to an empty string in session storage
-      sessionStorage.setItem("user/token", "");
+      // Set the token to an empty string in local storage
+      localStorage.setItem("user/token", "");
 
       // Then, reload the page to clear everything in the store
       location.reload();
@@ -47,13 +47,13 @@ const userSlice = createSlice({
       // Set the token to an empty string in the store
       state.token = "";
 
-      // Set the token to an empty string in session storage
-      sessionStorage.setItem("user/token", "");
+      // Set the token to an empty string in local storage
+      localStorage.setItem("user/token", "");
     },
     toggleColorTheme: (state) => {
       const newTheme = state.theme === "light" ? "dark" : "light";
       state.theme = newTheme;
-      sessionStorage.setItem("user/theme", newTheme);
+      localStorage.setItem("user/theme", newTheme);
     },
     sortById: (state) => {
       const arr = [...state.users];
@@ -106,7 +106,7 @@ const userSlice = createSlice({
         state.status = "Loading";
       })
       .addCase(asyncActions.loginUser.fulfilled, (state, action) => {
-        sessionStorage.setItem("user/token", action.payload);
+        localStorage.setItem("user/token", action.payload);
         state.token = action.payload;
         state.status = "Login";
         state.error = undefined;

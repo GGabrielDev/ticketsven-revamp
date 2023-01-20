@@ -45,15 +45,12 @@ export class Ticket extends Model<
   declare call_started: Date;
   declare call_ended: Date;
   declare dispatch_time?: Date;
-  declare reaction_time?: Date;
   declare arrival_time?: Date;
-  declare response_time?: Date;
   declare finish_time?: Date;
-  declare attention_time?: Date;
   declare dispatch_details?: string;
   declare reinforcement_units?: string;
   declare follow_up?: string;
-  declare closing_state?: "Effective" | "Not Effective" | "Rejected"; // enum type
+  declare closing_state?: "Efectiva" | "No Efectiva" | "Rechazada"; // enum type
   declare closing_details?: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
@@ -178,23 +175,11 @@ Ticket.init(
       type: DataTypes.DATE,
       allowNull: true,
     },
-    reaction_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     arrival_time: {
       type: DataTypes.DATE,
       allowNull: true,
     },
-    response_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     finish_time: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    attention_time: {
       type: DataTypes.DATE,
       allowNull: true,
     },
@@ -211,7 +196,7 @@ Ticket.init(
       allowNull: true,
     },
     closing_state: {
-      type: DataTypes.ENUM("Effective", "Not Effective", "Rejcted"),
+      type: DataTypes.ENUM("Efectiva", "No Efectiva", "Rechazada"),
       allowNull: true,
     },
     closing_details: {
