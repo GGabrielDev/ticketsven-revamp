@@ -36,7 +36,7 @@ export class Ticket extends Model<
   declare id: CreationOptional<string>;
   declare isOpen: CreationOptional<boolean>;
   declare phone_number?: string;
-  declare caller_name: string;
+  declare caller_name?: string;
   declare id_number?: number;
   declare id_type: "V" | "E" | "J"; // enum type
   declare address: string;
@@ -141,7 +141,7 @@ Ticket.init(
     },
     caller_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     id_number: {
       type: DataTypes.INTEGER,
