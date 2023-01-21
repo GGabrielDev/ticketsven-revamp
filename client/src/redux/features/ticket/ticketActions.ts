@@ -62,7 +62,7 @@ export const asyncActions = {
     }
   }),
   putTicketCloseDispatcher: createAsyncThunk<
-    string,
+    { id: string },
     { id: string } & DispatchTicket,
     { state: RootState; rejectValue: ErrorType }
   >("ticket/putClose", async (payload, { rejectWithValue, getState }) => {

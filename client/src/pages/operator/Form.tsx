@@ -74,7 +74,7 @@ const validationSchema = yup.object().shape({
     .number()
     .required("Selecciona un elemento")
     .notOneOf([-1], "Selecciona un elemento"),
-  caller_name: yup.string().required("Este campo es requerido"),
+  caller_name: yup.string().nullable(),
   id_number: yup.number().nullable(),
   id_type: yup
     .string()
@@ -298,7 +298,7 @@ export default function Form() {
               <${Field}
                 as=${TextField}
                 margin="normal"
-                label="N° de Teléfono Entrante"
+                label="N° de Teléfono Entrante (Opcional)"
                 id="phone_number"
                 name="phone_number"
                 variant="outlined"
@@ -358,7 +358,7 @@ export default function Form() {
               <${Field}
                 as=${TextField}
                 margin="normal"
-                label="Nombre del Solicitante"
+                label="Nombre del Solicitante (Opcional)"
                 id="caller_name"
                 name="caller_name"
                 variant="outlined"

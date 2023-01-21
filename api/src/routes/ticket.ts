@@ -252,7 +252,7 @@ router.put(
         isOpen: false,
       });
 
-      return res.status(200).send("Updated and closed!");
+      return res.status(200).send({ id: ticket.id });
     } catch (error) {
       console.log(error);
       next(error);

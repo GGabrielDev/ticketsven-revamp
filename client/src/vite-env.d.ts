@@ -53,7 +53,7 @@ type UserType = Record<"id" | "username" | "fullname", string> & {
 type TicketType = {
   id: string;
   phone_number?: string;
-  caller_name: string;
+  caller_name?: string;
   id_number?: number;
   id_type: "V" | "E" | "J"; // enum type
   address: string;

@@ -13,7 +13,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Fab,
   MenuItem,
   TextField,
   Typography,
@@ -23,7 +22,7 @@ import {
   DateTimePicker,
   DateTimePickerProps,
 } from "@mui/x-date-pickers/DateTimePicker";
-import { styled, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { SaveAlt, CheckCircle, Error } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps } from "formik";
 import * as yup from "yup";
@@ -42,6 +41,11 @@ import {
   selectors as ticketSelectors,
 } from "../../redux/features/ticket/ticketSlice";
 import { selectors as userSelectors } from "../../redux/features/user/userSlice";
+import {
+  SaveButton,
+  SingleInfoDisplay,
+  DoubleInfoDisplay,
+} from "../../components/InfoDisplay";
 import { convertMsToTime } from "../../helpers/Time";
 
 const { getCCPsByParish } = ccpActions;
@@ -59,8 +63,6 @@ const { selectStatus, selectStatusUpdate, selectError, selectTicket } =
   ticketSelectors;
 const { selectUser } = userSelectors;
 
-type DisplayProps = Record<"key" | "value", string>;
-
 const validationSchema = yup.object().shape({
   ccpId: yup
     .number()
@@ -73,52 +75,6 @@ const validationSchema = yup.object().shape({
   dispatch_details: yup.string().required("Este campo es requerido"),
   closing_details: yup.string().required("Este campo es requerido"),
 });
-
-const SaveButton = styled(Fab)({
-  position: "fixed",
-  zIndex: 1,
-  bottom: 32,
-  right: 32,
-  margin: "0 auto",
-});
-
-const singleDisplay = (first: DisplayProps) => html`
-  <${Box}
-    sx=${{
-      display: "flex",
-      flexFlow: "row wrap",
-      width: 1,
-      mb: 2,
-      justifyContent: "center",
-    }}
-  >
-    <${Box}>
-      <${Typography} variant="h6" align="center">${first.key}<//>
-      <${Typography} variant="body1" align="center"> ${first.value} <//>
-    <//>
-  <//>
-`;
-
-const doubleDisplay = (first: DisplayProps, second: DisplayProps) => html`
-  <${Box}
-    sx=${{
-      display: "flex",
-      flexFlow: "row wrap",
-      width: 1,
-      mb: 2,
-      justifyContent: "space-evenly",
-    }}
-  >
-    <${Box}>
-      <${Typography} variant="h6" align="center">${first.key}<//>
-      <${Typography} variant="body1" align="center"> ${first.value} <//>
-    <//>
-    <${Box}>
-      <${Typography} variant="h6" align="center">${second.key}<//>
-      <${Typography} variant="body1" align="center"> ${second.value} <//>
-    <//>
-  <//>
-`;
 
 export default function Form() {
   const [open, setOpen] = useState(false);
@@ -269,7 +225,7 @@ export default function Form() {
             width: 1,
           }}
         >
-          ${doubleDisplay(
+          ${DoubleInfoDisplay(
             {
               key: "Fecha de la solicitud",
               value: new Date(ticket?.createdAt as string).toLocaleDateString(
@@ -286,28 +242,40 @@ export default function Form() {
               ).toLocaleTimeString()}`,
             }
           )}
-          ${doubleDisplay(
+          ${DoubleInfoDisplay(
+            {
+              key: "Nombre del solicitante",
+              value: ticket.caller_name || "Sin Especificar",
+            },
+            {
+              key: "Cédula de Identidad",
+              value: ticket.id_number
+                ? `${ticket.id_type}-${ticket.id_number}`
+                : "Sin Especificar",
+            }
+          )}
+          ${DoubleInfoDisplay(
             {
               key: "N° de teléfono entrante",
               value: ticket.phone_number
                 ? ticket.phone_number.toString()
-                : "Sin determinar",
+                : "Sin Especificar",
             },
             { key: "Razón de llamada", value: ticket.reason.name }
           )}
-          ${singleDisplay({
+          ${SingleInfoDisplay({
             key: "Dirección de la solicitud",
             value: ticket.address,
           })}
-          ${singleDisplay({
+          ${SingleInfoDisplay({
             key: "Punto de referencia",
             value: ticket.reference_point,
           })}
-          ${doubleDisplay(
+          ${DoubleInfoDisplay(
             { key: "Municipio", value: ticket.municipality.name },
             { key: "Parroquia", value: ticket.parish.name }
           )}
-          ${singleDisplay({
+          ${SingleInfoDisplay({
             key: "Detalles de la solicitud",
             value: ticket.details,
           })}
@@ -360,6 +328,8 @@ export default function Form() {
               <${SaveButton} size="large" onClick=${hardUpdate}>
                 ${statusUpdate === "Idle"
                   ? html`<${SaveAlt} />`
+                  : statusUpdate === "Loading"
+                  ? html`<${CircularProgress} size=${24} />`
                   : statusUpdate === "Success"
                   ? html`<${CheckCircle} />`
                   : statusUpdate === "Error"
@@ -667,52 +637,6 @@ export default function Form() {
                     onClick=${handleOpen("Rechazada")}
                   >
                     Rechazada
-                  <//>
-                <//>
-                <${Dialog}
-                  maxWidth="md"
-                  fullWidth
-                  fullScreen=${fullScreen}
-                  open=${open}
-                  onClose=${handleClose}
-                  aria-labelledby="responsive-dialog-title"
-                >
-                  <${DialogTitle}>
-                    Solicitud marcada como ${closing_state || "Sin definir"}
-                  <//>
-                  <${DialogContent}>
-                    <${TextField}
-                      multiline
-                      fullWidth
-                      autoFocus
-                      margin="normal"
-                      label="Observaciones de cierre"
-                      id="closing_details"
-                      name="closing_details"
-                      variant="outlined"
-                      value=${props.values.closing_details}
-                      onChange=${props.handleChange}
-                      error=${props.touched.closing_details &&
-                      Boolean(props.errors.closing_details)}
-                      helperText=${props.touched.closing_details &&
-                      props.errors.closing_details}
-                    />
-                  <//>
-                  <${DialogActions}>
-                    <${Button}
-                      variant="contained"
-                      color="error"
-                      onClick=${handleClose}
-                    >
-                      Cancelar
-                    <//>
-                    <${Button}
-                      variant="contained"
-                      onClick=${props.handleSubmit}
-                      disabled=${isSubmitting}
-                    >
-                      Confirmar
-                    <//>
                   <//>
                 <//>
               <//>
