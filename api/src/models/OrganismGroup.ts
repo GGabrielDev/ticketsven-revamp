@@ -1,11 +1,6 @@
 import {
   Association,
-  CreationOptional,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToCreateAssociationMixin,
   DataTypes,
-  ForeignKey,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -16,38 +11,46 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
+  Model,
   InferAttributes,
   InferCreationAttributes,
-  Model,
+  CreationOptional,
   NonAttribute,
 } from "sequelize";
 import sequelize from "../db/config";
-import { Parish } from "./Parish";
+import { Organism } from "./Organism";
 import { Ticket } from "./Ticket";
 
-export class Quadrant extends Model<
-  InferAttributes<Quadrant>,
-  InferCreationAttributes<Quadrant>
+export class OrganismGroup extends Model<
+  InferAttributes<OrganismGroup>,
+  InferCreationAttributes<OrganismGroup>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
 
-  // foreign keys are automatically added by associations methods (like Project.belongsTo)
-  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
-  // display an error if ownerId is missing.
-  declare parishId: ForeignKey<Parish["id"]>;
-
-  // `parish` is an eagerly-loaded association.
-  // We tag it as `NonAttribute`
-  declare parish?: NonAttribute<Parish>;
-
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getParish: BelongsToGetAssociationMixin<Parish>;
-  declare setParish: BelongsToSetAssociationMixin<Parish, Parish["id"]>;
-  declare createParish: BelongsToCreateAssociationMixin<Parish>;
+  declare getOrganisms: HasManyGetAssociationsMixin<Organism>; // Note the null assertions!
+  declare countOrganisms: HasManyCountAssociationsMixin;
+  declare hasOrganism: HasManyHasAssociationMixin<Organism, Organism["id"]>;
+  declare hasOrganisms: HasManyHasAssociationsMixin<Organism, Organism["id"]>;
+  declare setOrganisms: HasManySetAssociationsMixin<Organism, Organism["id"]>;
+  declare addOrganism: HasManyAddAssociationMixin<Organism, Organism["id"]>;
+  declare addOrganisms: HasManyAddAssociationsMixin<Organism, Organism["id"]>;
+  declare removeOrganism: HasManyRemoveAssociationMixin<
+    Organism,
+    Organism["id"]
+  >;
+  declare removeOrganisms: HasManyRemoveAssociationsMixin<
+    Organism,
+    Organism["id"]
+  >;
+  declare createOrganism: HasManyCreateAssociationMixin<
+    Organism,
+    "organismGroupId"
+  >;
 
   declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
   declare countTickets: HasManyCountAssociationsMixin;
@@ -58,18 +61,20 @@ export class Quadrant extends Model<
   declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
   declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
   declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
-  declare createTicket: HasManyCreateAssociationMixin<Ticket, "parishId">;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "municipalityId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
+  declare organisms?: NonAttribute<Organism[]>; // Note this is optional since it's only populated when explicitly requested in code
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    tickets: Association<Quadrant, Ticket>;
+    organisms: Association<OrganismGroup, Organism>;
+    tickets: Association<OrganismGroup, Ticket>;
   };
 }
 
-Quadrant.init(
+OrganismGroup.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -84,10 +89,10 @@ Quadrant.init(
   {
     sequelize,
     name: {
-      singular: "quadrant",
-      plural: "quadrants",
+      singular: "organismGroup",
+      plural: "organismGroups",
     },
-    tableName: "quadrants",
+    tableName: "organismGroups",
     timestamps: false,
     paranoid: true,
   }

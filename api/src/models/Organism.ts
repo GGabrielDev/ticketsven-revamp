@@ -5,7 +5,6 @@ import {
   BelongsToCreateAssociationMixin,
   CreationOptional,
   DataTypes,
-  ForeignKey,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -16,19 +15,19 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
 } from "sequelize";
 import sequelize from "../db/config";
-import { Parish } from "./Parish";
-import { Quadrant } from "./Quadrant";
 import { Ticket } from "./Ticket";
+import { OrganismGroup } from "./OrganismGroup";
 
-export class CCP extends Model<
-  InferAttributes<CCP>,
-  InferCreationAttributes<CCP>
+export class Organism extends Model<
+  InferAttributes<Organism>,
+  InferCreationAttributes<Organism>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
@@ -37,35 +36,21 @@ export class CCP extends Model<
   // foreign keys are automatically added by associations methods (like Project.belongsTo)
   // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
   // display an error if ownerId is missing.
-  declare parishId: ForeignKey<Parish["id"]>;
+  declare organismGroupId: ForeignKey<OrganismGroup["id"]>;
 
-  // `municipality` is an eagerly-loaded association.
+  // `organismGroup` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
-  declare parish?: NonAttribute<Parish>;
+  declare organismGroup?: NonAttribute<OrganismGroup>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getParish: BelongsToGetAssociationMixin<Parish>;
-  declare setParish: BelongsToSetAssociationMixin<Parish, Parish["id"]>;
-  declare createParish: BelongsToCreateAssociationMixin<Parish>;
-
-  declare getQuadrants: HasManyGetAssociationsMixin<Quadrant>; // Note the null assertions!
-  declare countQuadrants: HasManyCountAssociationsMixin;
-  declare hasQuadrant: HasManyHasAssociationMixin<Quadrant, Quadrant["id"]>;
-  declare hasQuadrants: HasManyHasAssociationsMixin<Quadrant, Quadrant["id"]>;
-  declare setQuadrants: HasManySetAssociationsMixin<Quadrant, Quadrant["id"]>;
-  declare addQuadrant: HasManyAddAssociationMixin<Quadrant, Quadrant["id"]>;
-  declare addQuadrants: HasManyAddAssociationsMixin<Quadrant, Quadrant["id"]>;
-  declare removeQuadrant: HasManyRemoveAssociationMixin<
-    Quadrant,
-    Quadrant["id"]
+  declare getOrganismGroup: BelongsToGetAssociationMixin<OrganismGroup>;
+  declare setOrganismGroup: BelongsToSetAssociationMixin<
+    OrganismGroup,
+    OrganismGroup["id"]
   >;
-  declare removeQuadrants: HasManyRemoveAssociationsMixin<
-    Quadrant,
-    Quadrant["id"]
-  >;
-  declare createQuadrant: HasManyCreateAssociationMixin<Quadrant, "ccpId">;
+  declare createOrganismGroup: BelongsToCreateAssociationMixin<OrganismGroup>;
 
   declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
   declare countTickets: HasManyCountAssociationsMixin;
@@ -80,16 +65,14 @@ export class CCP extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare quadrants?: NonAttribute<Quadrant[]>; // Note this is optional since it's only populated when explicitly requested in code
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    quadrants: Association<CCP, Quadrant>;
-    tickets: Association<CCP, Ticket>;
+    tickets: Association<Organism, Ticket>;
   };
 }
 
-CCP.init(
+Organism.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -103,7 +86,11 @@ CCP.init(
   },
   {
     sequelize,
-    tableName: "ccps",
+    name: {
+      singular: "organism",
+      plural: "organisms",
+    },
+    tableName: "organisms",
     timestamps: false,
     paranoid: true,
   }

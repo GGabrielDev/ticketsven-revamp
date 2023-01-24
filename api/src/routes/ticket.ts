@@ -1,7 +1,6 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { CCP } from "../models/CCP";
 import { Municipality } from "../models/Municipality";
 import { Parish } from "../models/Parish";
 import { Quadrant } from "../models/Quadrant";
@@ -16,11 +15,9 @@ const ticketAttrExclude = [
   "municipalityId",
   "parishId",
   "reasonId",
-  "ccpId",
   "quadrantId",
 ];
 const ticketInclude = [
-  { model: CCP, as: "ccp" },
   { model: Municipality, as: "municipality" },
   { model: Parish, as: "parish" },
   { model: Quadrant, as: "quadrant" },
@@ -158,7 +155,6 @@ router.put(
     try {
       const { ticketId } = req.params;
       const {
-        ccpId,
         quadrantId,
         dispatch_time,
         arrival_time,
@@ -176,7 +172,6 @@ router.put(
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
-      if (ccpId && ccpId > 0) await ticket.setCcp(ccpId);
       if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
       await ticket.update({
         dispatch_time,
@@ -201,7 +196,6 @@ router.put(
     try {
       const { ticketId } = req.params;
       const {
-        ccpId,
         quadrantId,
         dispatch_time,
         arrival_time,
@@ -217,7 +211,6 @@ router.put(
         throw new HttpException(400, "A ticket id must be provided");
       if (
         !(
-          ccpId &&
           quadrantId &&
           dispatch_time &&
           arrival_time &&
@@ -238,7 +231,6 @@ router.put(
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
-      if (ccpId && ccpId > 0) await ticket.setCcp(ccpId);
       if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
       await ticket.update({
         dispatch_time,

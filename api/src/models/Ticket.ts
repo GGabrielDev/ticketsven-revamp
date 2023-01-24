@@ -23,11 +23,11 @@ import {
 import sequelize from "../db/config";
 import { User } from "./User";
 import { Municipality } from "./Municipality";
+import { Organism } from "./Organism";
+import { OrganismGroup } from "./OrganismGroup";
 import { Parish } from "./Parish";
 import { Reason } from "./Reason";
 import { Quadrant } from "./Quadrant";
-import { CCP } from "./CCP";
-
 export class Ticket extends Model<
   InferAttributes<Ticket>,
   InferCreationAttributes<Ticket>
@@ -38,19 +38,24 @@ export class Ticket extends Model<
   declare phone_number?: string;
   declare caller_name?: string;
   declare id_number?: number;
-  declare id_type: "V" | "E" | "J"; // enum type
-  declare address: string;
-  declare reference_point: string;
-  declare details: string;
-  declare call_started: Date;
-  declare call_ended: Date;
+  declare id_type?: "V" | "E" | "J"; // enum type
+  declare address?: string;
+  declare reference_point?: string;
+  declare details?: string;
+  declare call_started?: Date;
+  declare call_ended?: Date;
   declare dispatch_time?: Date;
   declare arrival_time?: Date;
   declare finish_time?: Date;
   declare dispatch_details?: string;
   declare reinforcement_units?: string;
   declare follow_up?: string;
-  declare closing_state?: "Efectiva" | "No Efectiva" | "Rechazada"; // enum type
+  declare closing_state?:
+    | "Efectiva"
+    | "No Efectiva"
+    | "Rechazada"
+    | "Sabotaje"
+    | "Abandonada"; // enum type
   declare closing_details?: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
@@ -63,16 +68,18 @@ export class Ticket extends Model<
   // (like Project.belongsTo) by branding them using the `ForeignKey` type,
   // `Project.init` will know it does not need to display an error if
   // ownerId is missing.
-  declare ccpId: ForeignKey<CCP["id"]>;
   declare municipalityId: ForeignKey<Municipality["id"]>;
+  declare organismId: ForeignKey<Organism["id"]>;
+  declare organismGroupId: ForeignKey<OrganismGroup["id"]>;
   declare parishId: ForeignKey<Parish["id"]>;
   declare quadrantId: ForeignKey<Quadrant["id"]>;
   declare reasonId: ForeignKey<Reason["id"]>;
 
   // `municipality` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
-  declare ccp?: NonAttribute<CCP>;
   declare municipality?: NonAttribute<Municipality>;
+  declare organism?: NonAttribute<Organism>;
+  declare organismGroup?: NonAttribute<OrganismGroup>;
   declare parish?: NonAttribute<Parish>;
   declare quadrant?: NonAttribute<Quadrant>;
   declare reason?: NonAttribute<Reason>;
@@ -80,15 +87,22 @@ export class Ticket extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare createCcp: BelongsToCreateAssociationMixin<CCP>;
-  declare getCcp: BelongsToGetAssociationMixin<CCP>;
-  declare setCcp: BelongsToSetAssociationMixin<CCP, CCP["id"]>;
-
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
   declare setMunicipality: BelongsToSetAssociationMixin<
     Municipality,
     Municipality["id"]
+  >;
+
+  declare createOrganism: BelongsToCreateAssociationMixin<Organism>;
+  declare getOrganism: BelongsToGetAssociationMixin<Organism>;
+  declare setOrganism: BelongsToSetAssociationMixin<Organism, Organism["id"]>;
+
+  declare createOrganismGroup: BelongsToCreateAssociationMixin<OrganismGroup>;
+  declare getOrganismGroup: BelongsToGetAssociationMixin<OrganismGroup>;
+  declare setOrganismGroup: BelongsToSetAssociationMixin<
+    OrganismGroup,
+    OrganismGroup["id"]
   >;
 
   declare createParish: BelongsToCreateAssociationMixin<Parish>;
