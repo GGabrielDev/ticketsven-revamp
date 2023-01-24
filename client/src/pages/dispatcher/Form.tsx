@@ -639,6 +639,52 @@ export default function Form() {
                     Rechazada
                   <//>
                 <//>
+                <${Dialog}
+                  maxWidth="md"
+                  fullWidth
+                  fullScreen=${fullScreen}
+                  open=${open}
+                  onClose=${handleClose}
+                  aria-labelledby="responsive-dialog-title"
+                >
+                  <${DialogTitle}>
+                    Solicitud marcada como ${closing_state || "Sin definir"}
+                  <//>
+                  <${DialogContent}>
+                    <${TextField}
+                      multiline
+                      fullWidth
+                      autoFocus
+                      margin="normal"
+                      label="Observaciones de cierre"
+                      id="closing_details"
+                      name="closing_details"
+                      variant="outlined"
+                      value=${props.values.closing_details}
+                      onChange=${props.handleChange}
+                      error=${props.touched.closing_details &&
+                      Boolean(props.errors.closing_details)}
+                      helperText=${props.touched.closing_details &&
+                      props.errors.closing_details}
+                    />
+                  <//>
+                  <${DialogActions}>
+                    <${Button}
+                      variant="contained"
+                      color="error"
+                      onClick=${handleClose}
+                    >
+                      Cancelar
+                    <//>
+                    <${Button}
+                      variant="contained"
+                      onClick=${props.handleSubmit}
+                      disabled=${isSubmitting}
+                    >
+                      Confirmar
+                    <//>
+                  <//>
+                <//>
               <//>
             `;
           }}
