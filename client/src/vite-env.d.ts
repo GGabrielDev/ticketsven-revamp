@@ -30,13 +30,22 @@ type ParishType = GenericType & {
   ccps: GenericType[];
 };
 
+type OrganismGroupType = GenericType & {
+  organisms: GenericType[];
+};
+
+type OrganismType = GenericType & {
+  organismGroup: GenericType;
+};
+
 type CCPType = GenericType & {
   parish: GenericType;
   quadrants: GenericType[];
 };
 
 type QuadrantType = GenericType & {
-  ccp: GenericType;
+  ccp?: GenericType;
+  parish: GenericType;
 };
 
 type ReasonType = GenericType & {
@@ -64,10 +73,11 @@ type TicketType = {
   createdAt: string | Date;
   updatedAt: string | Date;
   deletedAt?: string | Date;
-  ccp?: GenericType;
   municipality: GenericType;
   parish: GenericType;
   reason: ReasonType;
+  organismGroup?: GenericType;
+  organism?: GenericType;
   quadrant?: GenericType;
   users: UserType[];
 };
@@ -80,8 +90,9 @@ type MiniTicket = {
 };
 
 type DispatchTicket = {
-  ccpId?: number;
   quadrantId?: number;
+  organismId?: number;
+  organismGroupId?: number;
   dispatch_time?: Dayjs;
   //  reaction_time?: Date;
   arrival_time?: Dayjs;

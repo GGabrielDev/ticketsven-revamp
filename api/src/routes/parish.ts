@@ -1,7 +1,7 @@
 import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
-import { CCP } from "../models/CCP";
+import { Quadrant } from "../models/Quadrant";
 import { Municipality } from "../models/Municipality";
 import { Parish } from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
@@ -44,7 +44,7 @@ router.get(
           : {},
         include: [
           { model: Municipality, as: "municipality" },
-          { model: CCP, as: "ccps" },
+          { model: Quadrant, as: "quadrants" },
         ],
       });
 
@@ -76,7 +76,7 @@ router.get(
         where: { municipalityId },
         include: [
           { model: Municipality, as: "municipality" },
-          { model: CCP, as: "ccps" },
+          { model: Quadrant, as: "quadrants" },
         ],
       });
 
@@ -99,7 +99,7 @@ router.get(
         },
         include: [
           { model: Municipality, as: "municipality" },
-          { model: CCP, as: "ccps" },
+          { model: Quadrant, as: "quadrants" },
         ],
       });
 
@@ -158,7 +158,7 @@ router.post(
           },
           include: [
             { model: Municipality, as: "municipality" },
-            { model: CCP, as: "ccps" },
+            { model: Quadrant, as: "quadrants" },
           ],
         })
       );
@@ -184,7 +184,7 @@ router.put(
         },
         include: [
           { model: Municipality, as: "municipality" },
-          { model: CCP, as: "ccps" },
+          { model: Quadrant, as: "quadrants" },
         ],
       });
       if (!result)
@@ -203,7 +203,7 @@ router.put(
           },
           include: [
             { model: Municipality, as: "municipality" },
-            { model: CCP, as: "ccps" },
+            { model: Quadrant, as: "quadrants" },
           ],
         })
       );

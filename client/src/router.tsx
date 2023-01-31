@@ -1,4 +1,3 @@
-import { useEffect } from "preact/hooks";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { html } from "htm/preact";
 import { useAppSelector } from "./redux/hooks";
@@ -11,8 +10,9 @@ import LoadingBox from "./components/LoadingBox";
 import AdminLayout from "./components/admin/Layout";
 import AdminLanding from "./pages/admin/Landing";
 import Municipality from "./pages/admin/Municipality";
+import OrganismGroup from "./pages/admin/OrganismGroups";
+import Organism from "./pages/admin/Organism";
 import Parish from "./pages/admin/Parish";
-import CCP from "./pages/admin/CCP";
 import Quadrant from "./pages/admin/Quadrant";
 import Reason from "./pages/admin/Reason";
 import User from "./pages/admin/User";
@@ -51,10 +51,17 @@ function Router() {
                           element=${html`<${Municipality} />`}
                         />
                         <${Route}
+                          path="organismGroup"
+                          element=${html`<${OrganismGroup} />`}
+                        />
+                        <${Route}
+                          path="organism"
+                          element=${html`<${Organism} />`}
+                        />
+                        <${Route}
                           path="parish"
                           element=${html`<${Parish} />`}
                         />
-                        <${Route} path="ccp" element=${html`<${CCP} />`} />
                         <${Route}
                           path="quadrant"
                           element=${html`<${Quadrant} />`}

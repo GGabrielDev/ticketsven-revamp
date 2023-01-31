@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   IconButton,
   Menu,
   MenuItem,
@@ -23,8 +24,9 @@ const { logout, toggleColorTheme } = actions;
 const pages = [
   { name: "Municipios", link: "municipality" },
   { name: "Parroquias", link: "parish" },
-  { name: "CCP", link: "ccp" },
   { name: "Cuadrantes", link: "quadrant" },
+  { name: "Grupos", link: "organismGroup" },
+  { name: "Organismos", link: "organism" },
   { name: "Razones", link: "reasons" },
   { name: "Usuarios", link: "users" },
 ];
@@ -140,7 +142,7 @@ export default function ResponsiveAppBar() {
           <//>
           <${Box} sx=${{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             ${pages.map(
-              (page) => html`
+              (page, index) => html`
                 <${Button}
                   key=${page.name}
                   onClick=${handleRedirection(page.link)}
@@ -148,6 +150,14 @@ export default function ResponsiveAppBar() {
                 >
                   ${page.name}
                 <//>
+                ${index !== pages.length - 1 &&
+                html`
+                  <${Divider}
+                    orientation="vertical"
+                    variant="middle"
+                    flexItem
+                  />
+                `}
               `
             )}
           <//>

@@ -29,9 +29,13 @@ import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  actions as ccpActions,
-  selectors as ccpSelectors,
-} from "../../redux/features/ccp/ccpSlice";
+  actions as organismActions,
+  selectors as organismSelectors,
+} from "../../redux/features/organism/slice";
+import {
+  actions as organismGroupActions,
+  selectors as organismGroupSelectors,
+} from "../../redux/features/organismGroup/slice";
 import {
   actions as quadrantActions,
   selectors as quadrantSelectors,
@@ -48,8 +52,9 @@ import {
 } from "../../components/InfoDisplay";
 import { convertMsToTime } from "../../helpers/Time";
 
-const { getCCPsByParish } = ccpActions;
-const { getQuadrantsByCCP } = quadrantActions;
+const { getOrganismsByGroup } = organismActions;
+const { getAllOrganismGroups } = organismGroupActions;
+const { getQuadrantsByParish } = quadrantActions;
 const {
   putTicketUpdateDispatcher,
   putTicketCloseDispatcher,
@@ -57,18 +62,23 @@ const {
   clearStatusUpdate,
 } = ticketActions;
 
-const { selectCCPs } = ccpSelectors;
+const { selectOrganisms } = organismSelectors;
+const { selectOrganismGroups } = organismGroupSelectors;
 const { selectQuadrants } = quadrantSelectors;
 const { selectStatus, selectStatusUpdate, selectError, selectTicket } =
   ticketSelectors;
 const { selectUser } = userSelectors;
 
 const validationSchema = yup.object().shape({
-  ccpId: yup
+  quadrantId: yup
     .number()
     .required("Selecciona un elemento")
     .notOneOf([-1], "Selecciona un elemento"),
-  quadrantId: yup
+  organismId: yup
+    .number()
+    .required("Selecciona un elemento")
+    .notOneOf([-1], "Selecciona un elemento"),
+  organismGroupId: yup
     .number()
     .required("Selecciona un elemento")
     .notOneOf([-1], "Selecciona un elemento"),
@@ -84,8 +94,9 @@ export default function Form() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
-  const ccps = useAppSelector(selectCCPs);
   const error = useAppSelector(selectError);
+  const organisms = useAppSelector(selectOrganisms);
+  const organismGroups = useAppSelector(selectOrganismGroups);
   const quadrants = useAppSelector(selectQuadrants);
   const status = useAppSelector(selectStatus);
   const statusUpdate = useAppSelector(selectStatusUpdate);
@@ -96,8 +107,9 @@ export default function Form() {
   const { ticketId } = useParams();
 
   const initialValues: DispatchTicket = {
-    ccpId: -1,
     quadrantId: -1,
+    organismId: -1,
+    organismGroupId: -1,
     dispatch_time: dayjs(),
     //  reaction_time: dayjs(),
     arrival_time: dayjs(),
@@ -110,11 +122,6 @@ export default function Form() {
     closing_details: "",
   };
 
-  const callQuadrants = (e: ChangeEvent<any>) => {
-    const ccpId = parseInt(e.target.value);
-    if (ccpId !== -1 && ccpId !== 0) dispatch(getQuadrantsByCCP(ccpId));
-  };
-
   const handleOpen = (closing_state: DispatchTicket["closing_state"]) => () => {
     setOpen(true);
     setClosingState(closing_state);
@@ -123,6 +130,11 @@ export default function Form() {
   const handleClose = () => {
     setOpen(false);
     setClosingState(null);
+  };
+
+  const callOrganisms = (e: ChangeEvent<any>) => {
+    const organismGroupId = parseInt(e.target.value);
+    if (organismGroupId > 0) dispatch(getOrganismsByGroup(organismGroupId));
   };
 
   const handleSubmit = (
@@ -148,7 +160,8 @@ export default function Form() {
 
   useEffect(() => {
     if (ticket) {
-      dispatch(getCCPsByParish(ticket.parish.id));
+      dispatch(getQuadrantsByParish(ticket.parish.id));
+      dispatch(getAllOrganismGroups());
     }
   }, [ticket]);
 
@@ -309,14 +322,22 @@ export default function Form() {
                   setFieldValue("follow_up", ticket.follow_up);
               }
 
-              if (ticket.ccp && ticket.ccp.id) {
-                setFieldValue("ccpId", ticket.ccp.id);
-                dispatch(getQuadrantsByCCP(ticket.ccp.id)).then(() => {
+              if (ticket.parish && ticket.parish.id) {
+                dispatch(getQuadrantsByParish(ticket.parish.id)).then(() => {
                   if (ticket.quadrant && ticket.quadrant.id)
                     setFieldValue("quadrantId", ticket.quadrant.id);
                 });
               }
-            }, [ticket, ccps]);
+              if (ticket.organismGroup && ticket.organismGroup.id) {
+                setFieldValue("organismGroupId", ticket.organismGroup.id);
+                dispatch(getOrganismsByGroup(ticket.organismGroup.id)).then(
+                  () => {
+                    if (ticket.organism && ticket.organism.id)
+                      setFieldValue("organismId", ticket.organism.id);
+                  }
+                );
+              }
+            }, [ticket]);
 
             const hardUpdate = (e: Event) => {
               e.preventDefault();
@@ -354,45 +375,9 @@ export default function Form() {
                     display: "flex",
                     flexFlow: "row wrap",
                     width: 1,
-                    justifyContent: "space-between",
+                    justifyContent: "center",
                   }}
                 >
-                  <${TextField}
-                    select
-                    margin="normal"
-                    label="Centro de Coordinación Polical"
-                    id="ccpId"
-                    name="ccpId"
-                    variant="outlined"
-                    disabled=${ccps.length === 0}
-                    sx=${{ width: { xs: 1, md: 0.49 } }}
-                    value=${props.values.ccpId}
-                    onChange=${(e: ChangeEvent<any>) => {
-                      props.handleChange(e);
-                      callQuadrants(e);
-                    }}
-                    error=${props.touched.ccpId && Boolean(props.errors.ccpId)}
-                    helperText=${props.touched.ccpId && props.errors.ccpId}
-                  >
-                    ${ccps.length > 0
-                      ? html`
-                          <${MenuItem} key=${-1} value=${-1}>
-                            Selecciona un CCP
-                          <//>
-                          ${ccps.map(
-                            (ccp) => html`
-                              <${MenuItem} key=${ccp.id} value=${ccp.id}>
-                                ${ccp.name}
-                              <//>
-                            `
-                          )}
-                        `
-                      : html`
-                          <${MenuItem} value=${-1} disabled>
-                            No hay CCPs en el sistema
-                          <//>
-                        `}
-                  <//>
                   <${TextField}
                     select
                     margin="normal"
@@ -427,6 +412,94 @@ export default function Form() {
                         `
                       : html`
                           <${MenuItem} value=${-1} disabled> Escoja un CCP <//>
+                        `}
+                  <//>
+                <//>
+                <${Box}
+                  sx=${{
+                    display: "flex",
+                    flexFlow: "row wrap",
+                    width: 1,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <${TextField}
+                    select
+                    margin="normal"
+                    label="Grupo de Organismos"
+                    id="organismGroupId"
+                    name="organismGroupId"
+                    variant="outlined"
+                    disabled=${organismGroups.length === 0}
+                    sx=${{ width: { xs: 1, md: 0.49 } }}
+                    value=${props.values.organismGroupId}
+                    onChange=${(e: ChangeEvent<any>) => {
+                      props.handleChange(e);
+                      callOrganisms(e);
+                    }}
+                    error=${props.touched.organismGroupId &&
+                    Boolean(props.errors.organismGroupId)}
+                    helperText=${props.touched.organismGroupId &&
+                    props.errors.organismGroupId}
+                  >
+                    ${organismGroups.length > 0
+                      ? html`
+                          <${MenuItem} key=${-1} value=${-1}>
+                            Seleccione un grupo
+                          <//>
+                          ${organismGroups.map(
+                            (organismGroup) => html`
+                              <${MenuItem}
+                                key=${organismGroup.id}
+                                value=${organismGroup.id}
+                              >
+                                ${organismGroup.name}
+                              <//>
+                            `
+                          )}
+                        `
+                      : html`
+                          <${MenuItem} value=${-1} disabled>
+                            No hay Grupos en el sistema
+                          <//>
+                        `}
+                  <//>
+                  <${TextField}
+                    select
+                    margin="normal"
+                    label="Organismo"
+                    id="organismId"
+                    name="organismId"
+                    variant="outlined"
+                    disabled=${organisms.length === 0}
+                    sx=${{ width: { xs: 1, md: 0.49 } }}
+                    value=${props.values.organismId}
+                    onChange=${props.handleChange}
+                    error=${props.touched.organismId &&
+                    Boolean(props.errors.organismId)}
+                    helperText=${props.touched.organismId &&
+                    props.errors.organismId}
+                  >
+                    ${organisms.length > 0
+                      ? html`
+                          <${MenuItem} key=${-1} value=${-1}>
+                            Seleccione un organismo
+                          <//>
+                          ${organisms.map(
+                            (organism) => html`
+                              <${MenuItem}
+                                key=${organism.id}
+                                value=${organism.id}
+                              >
+                                ${organism.name}
+                              <//>
+                            `
+                          )}
+                        `
+                      : html`
+                          <${MenuItem} value=${-1} disabled>
+                            Seleccione un organismo
+                          <//>
                         `}
                   <//>
                 <//>

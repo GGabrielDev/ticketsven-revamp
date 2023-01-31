@@ -27,17 +27,16 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectors as parishSelectors } from "../../redux/features/parish/parishSlice";
+import { selectors as organismGroupSelectors } from "../../redux/features/organismGroup/slice";
 import {
-  actions as quadrantActions,
-  selectors as quadrantSelectors,
-} from "../../redux/features/quadrant/quadrantSlice";
+  actions as organismActions,
+  selectors as organismSelectors,
+} from "../../redux/features/organism/slice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createQuadrant, editQuadrant, deleteQuadrant } = quadrantActions;
-
-const { selectParishes } = parishSelectors;
-const { selectQuadrants } = quadrantSelectors;
+const { createOrganism, editOrganism, deleteOrganism } = organismActions;
+const { selectOrganismGroups } = organismGroupSelectors;
+const { selectOrganisms } = organismSelectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -56,34 +55,33 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 interface FormData {
-  id: number;
   name: string;
-  parishId: number;
+  organismGroupId: number;
 }
 
 export default function Parish() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<QuadrantType | null>(null);
+  const [selectedRow, setSelectedRow] = useState<OrganismType | null>(null);
   const [edit, setEdit] = useState(false);
   const initialValues: Partial<FormData> = {
     name: "",
-    parishId: 0,
+    organismGroupId: 0,
   };
-  const quadrants = useAppSelector(selectQuadrants);
-  const parishes = useAppSelector(selectParishes);
+  const organismGroups = useAppSelector(selectOrganismGroups);
+  const organisms = useAppSelector(selectOrganisms);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Necesitas escribir un nombre de Cuadrante."),
-    parishId: Yup.number()
-      .notOneOf([0], "Debe de seleccionar un CCP.")
-      .required("Debe de seleccionar un CCP."),
+    name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
+    organismGroupId: Yup.number()
+      .notOneOf([0], "Debe de seleccionar un municipio.")
+      .required("Debe de seleccionar un municipio."),
   });
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - quadrants.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - organisms.length) : 0;
 
   const handleChangePage = (event: Event, newPage: number) => {
     setPage(newPage);
@@ -103,17 +101,17 @@ export default function Parish() {
     values: Partial<FormData>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
-    dispatch(createQuadrant(values)).then(() => {
+    dispatch(createOrganism(values)).then(() => {
       setSubmitting(false);
       resetForm();
     });
   };
 
   const handleEdit = (
-    values: QuadrantType & FormData,
-    { setSubmitting, resetForm }: FormikHelpers<QuadrantType & FormData>
+    values: OrganismType & FormData,
+    { setSubmitting, resetForm }: FormikHelpers<OrganismType & FormData>
   ) => {
-    dispatch(editQuadrant(values)).then(() => {
+    dispatch(editOrganism(values)).then(() => {
       setSelectedRow(values);
       setSubmitting(false);
       setEdit(false);
@@ -136,7 +134,7 @@ export default function Parish() {
       >
         <${Paper} sx=${{ p: 3, width: "100%" }}>
           <${Typography} component="h1" variant="h4">
-            Crar una nuevo Cuadrante
+            Crar un nuevo Organismo
           <//>
           <${Formik}
             initialValues=${initialValues}
@@ -154,7 +152,7 @@ export default function Parish() {
                 <${Field}
                   as=${TextField}
                   fullWidth
-                  label="Cuadrante"
+                  label="Organismo"
                   id="name"
                   name="name"
                   sx=${{ mb: 2 }}
@@ -163,37 +161,44 @@ export default function Parish() {
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
-                <${InputLabel} id="parishId">Parroquia<//>
+                <${InputLabel} id="organismGroupId">Grupo de Organismos<//>
                 <${Field}
                   as=${Select}
                   fullWidth
-                  id="parishId"
-                  name="parishId"
-                  disabled=${parishes.length === 0}
-                  value=${props.values.parishId}
+                  id="organismGroupId"
+                  name="organismGroupId"
+                  disabled=${organismGroups.length === 0}
+                  value=${props.values.organismGroupId}
                   onChange=${props.handleChange}
-                  error=${props.touched.parishId &&
-                  Boolean(props.errors.parishId)}
-                  helperText=${props.touched.parishId && props.errors.parishId}
+                  error=${props.touched.organismGroupId &&
+                  Boolean(props.errors.organismGroupId)}
+                  helperText=${props.touched.organismGroupId &&
+                  props.errors.organismGroupId}
                 >
-                  ${parishes.length > 0
+                  ${organismGroups.length > 0
                     ? html`
-                        <${MenuItem} value=${0}>Selecciona un Parroquia<//>
-                        ${parishes.map(
-                          (parish) =>
-                            html`<${MenuItem} value=${parish.id}
-                              >${parish.name}<//
-                            >`
+                        <${MenuItem} key=${0} value=${0}>
+                          Selecciona un grupo
+                        <//>
+                        ${organismGroups.map(
+                          (organismGroup) => html`
+                            <${MenuItem}
+                              key=${organismGroup.id}
+                              value=${organismGroup.id}
+                            >
+                              ${organismGroup.name}
+                            <//>
+                          `
                         )}
                       `
                     : html`
                         <${MenuItem} value=${0} disabled>
-                          No hay Parroquias en el sistema
+                          No hay grupos en el sistema
                         <//>
                       `}
                 <//>
                 <${Button}
-                  disabled=${props.isSubmitting || parishes.length === 0}
+                  disabled=${props.isSubmitting || organismGroups.length === 0}
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -201,7 +206,7 @@ export default function Parish() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Crear Cuadrante"}
+                    : "Crear Organismo"}
                 <//>
               <//>
             `}
@@ -218,7 +223,9 @@ export default function Parish() {
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
                         <${Typography}>Nombre: ${selectedRow.name}<//>
-                        <${Typography}>Parroquia: ${selectedRow.parish.name}<//>
+                        <${Typography}
+                          >Grupo: ${selectedRow.organismGroup.name}<//
+                        >
                       <//>
                       <${Box}
                         mt=${1}
@@ -226,7 +233,7 @@ export default function Parish() {
                         justifyContent="space-between"
                       >
                         <${Tooltip}
-                          title="Editar Parroquia"
+                          title="Editar Organismo"
                           placement="top-end"
                         >
                           <span>
@@ -241,7 +248,7 @@ export default function Parish() {
                           </span>
                         <//>
                         <${Tooltip}
-                          title="Borrar Cuadrante"
+                          title="Borrar Organismo"
                           placement="top-end"
                         >
                           <span>
@@ -249,7 +256,7 @@ export default function Parish() {
                               variant="contained"
                               color="error"
                               onClick=${() =>
-                                dispatch(deleteQuadrant(selectedRow))}
+                                dispatch(deleteOrganism(selectedRow))}
                             >
                               <${DeleteIcon} />
                               Borrar
@@ -260,12 +267,12 @@ export default function Parish() {
                     `
                   : html`
                       <${Typography} component="h1" variant="h4">
-                        Editar Parroquia
+                        Editar Organismo
                       <//>
                       <${Formik}
                         initialValues=${{
                           ...selectedRow,
-                          parishId: selectedRow.parish.id,
+                          organismGroupId: selectedRow.organismGroup.id,
                         }}
                         validationSchema=${validationSchema}
                         onSubmit=${handleEdit}
@@ -282,7 +289,7 @@ export default function Parish() {
                               as=${TextField}
                               margin="normal"
                               fullWidth
-                              label="Cuadrante"
+                              label="Organismo"
                               id="name"
                               name="name"
                               value=${props.values.name}
@@ -292,28 +299,30 @@ export default function Parish() {
                               helperText=${props.touched.name &&
                               props.errors.name}
                             />
-                            <${InputLabel} id="parishId">Parroquia<//>
+                            <${InputLabel} id="organismGroupId"
+                              >Grupo de Organismos<//
+                            >
                             <${Field}
                               as=${Select}
                               margin="normal"
                               fullWidth
-                              id="parishId"
-                              name="parishId"
-                              value=${props.values.parishId}
+                              id="organismGroupId"
+                              name="organismGroupId"
+                              value=${props.values.organismGroupId}
                               onChange=${props.handleChange}
-                              error=${props.touched.parishId &&
-                              Boolean(props.errors.parishId)}
-                              helperText=${props.touched.parishId &&
-                              props.errors.parishId}
+                              error=${props.touched.organismGroupId &&
+                              Boolean(props.errors.organismGroupId)}
+                              helperText=${props.touched.organismGroupId &&
+                              props.errors.organismGroupId}
                             >
-                              <${MenuItem} value=${0}>
-                                Selecciona un municipio
-                              <//>
-                              ${parishes.map(
-                                (parish) => html`
-                                  <${MenuItem} value=${parish.id}
-                                    >${parish.name}<//
-                                  >
+                              <${MenuItem} value=${0}
+                                >Selecciona un municipio<//
+                              >
+                              ${organismGroups.map(
+                                (organismGroup) => html`
+                                  <${MenuItem} value=${organismGroup.id}>
+                                    ${organismGroup.name}
+                                  <//>
                                 `
                               )}
                             <//>
@@ -359,18 +368,18 @@ export default function Parish() {
               <${TableHead}>
                 <${StyledTableRow}>
                   <${StyledTableCell}>ID<//>
-                  <${StyledTableCell}>Cuadrante<//>
-                  <${StyledTableCell}>Parroquia<//>
+                  <${StyledTableCell}>Organismo<//>
+                  <${StyledTableCell}>Grupo de Organismo<//>
                 <//>
               <//>
               <${TableBody}>
-                ${quadrants.length > 0
+                ${organisms.length > 0
                   ? html`${(rowsPerPage > 0
-                      ? quadrants.slice(
+                      ? organisms.slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
-                      : quadrants
+                      : organisms
                     ).map(
                       (row) => html`
                         <${StyledTableRow}
@@ -380,7 +389,7 @@ export default function Parish() {
                         >
                           <${StyledTableCell}>${row.id}<//>
                           <${StyledTableCell}>${row.name}<//>
-                          <${StyledTableCell}>${row.parish.name}<//>
+                          <${StyledTableCell}>${row.organismGroup.name}<//>
                         <//>
                       `
                     )}
@@ -408,7 +417,7 @@ export default function Parish() {
                       { label: "All", value: -1 },
                     ]}
                     colSpan=${3}
-                    count=${quadrants.length}
+                    count=${organisms.length}
                     rowsPerPage=${rowsPerPage}
                     page=${page}
                     SelectProps=${{

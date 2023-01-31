@@ -79,6 +79,10 @@ Municipality.init(
   },
   {
     sequelize,
+    name: {
+      singular: "municipality",
+      plural: "municipalities",
+    },
     tableName: "municipalities",
     timestamps: false,
     paranoid: true,

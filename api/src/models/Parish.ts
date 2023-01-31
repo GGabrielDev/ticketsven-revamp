@@ -24,7 +24,7 @@ import {
 import sequelize from "../db/config";
 import { Ticket } from "./Ticket";
 import { Municipality } from "./Municipality";
-import { CCP } from "./CCP";
+import { Quadrant } from "./Quadrant";
 
 export class Parish extends Model<
   InferAttributes<Parish>,
@@ -49,20 +49,26 @@ export class Parish extends Model<
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
   declare setMunicipality: BelongsToSetAssociationMixin<
     Municipality,
-    CCP["id"]
+    Municipality["id"]
   >;
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
 
-  declare getCcps: HasManyGetAssociationsMixin<CCP>; // Note the null assertions!
-  declare countCcps: HasManyCountAssociationsMixin;
-  declare hasCcp: HasManyHasAssociationMixin<CCP, CCP["id"]>;
-  declare hasCcps: HasManyHasAssociationsMixin<CCP, CCP["id"]>;
-  declare setCcps: HasManySetAssociationsMixin<CCP, CCP["id"]>;
-  declare addCcp: HasManyAddAssociationMixin<CCP, CCP["id"]>;
-  declare addCcps: HasManyAddAssociationsMixin<CCP, CCP["id"]>;
-  declare removeCcp: HasManyRemoveAssociationMixin<CCP, CCP["id"]>;
-  declare removeCcps: HasManyRemoveAssociationsMixin<CCP, CCP["id"]>;
-  declare createCcp: HasManyCreateAssociationMixin<CCP, "parishId">;
+  declare getQuadrants: HasManyGetAssociationsMixin<Quadrant>; // Note the null assertions!
+  declare countQuadrants: HasManyCountAssociationsMixin;
+  declare hasQuadrant: HasManyHasAssociationMixin<Quadrant, Quadrant["id"]>;
+  declare hasQuadrants: HasManyHasAssociationsMixin<Quadrant, Quadrant["id"]>;
+  declare setQuadrants: HasManySetAssociationsMixin<Quadrant, Quadrant["id"]>;
+  declare addQuadrant: HasManyAddAssociationMixin<Quadrant, Quadrant["id"]>;
+  declare addQuadrants: HasManyAddAssociationsMixin<Quadrant, Quadrant["id"]>;
+  declare removeQuadrant: HasManyRemoveAssociationMixin<
+    Quadrant,
+    Quadrant["id"]
+  >;
+  declare removeQuadrants: HasManyRemoveAssociationsMixin<
+    Quadrant,
+    Quadrant["id"]
+  >;
+  declare createQuadrant: HasManyCreateAssociationMixin<Quadrant, "parishId">;
 
   declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
   declare countTickets: HasManyCountAssociationsMixin;
@@ -77,11 +83,11 @@ export class Parish extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare ccps?: NonAttribute<CCP[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare quadrants?: NonAttribute<Quadrant[]>; // Note this is optional since it's only populated when explicitly requested in code
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    ccps: Association<Parish, CCP>;
+    quadrants: Association<Parish, Quadrant>;
     tickets: Association<Parish, Ticket>;
   };
 }

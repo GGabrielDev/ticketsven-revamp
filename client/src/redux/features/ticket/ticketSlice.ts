@@ -42,6 +42,20 @@ const ticketSlice = createSlice({
         state.status = "Error";
         state.error = action.payload;
       })
+      .addCase(asyncActions.postTicketCloseOperator.pending, (state) => {
+        state.status = "Loading";
+      })
+      .addCase(asyncActions.postTicketCloseOperator.fulfilled, (state) => {
+        state.status = "Success";
+        state.error = undefined;
+      })
+      .addCase(
+        asyncActions.postTicketCloseOperator.rejected,
+        (state, action) => {
+          state.status = "Error";
+          state.error = action.payload;
+        }
+      )
       .addCase(asyncActions.putTicketUpdateDispatcher.pending, (state) => {
         state.statusUpdate = "Loading";
       })
