@@ -163,19 +163,19 @@ Ticket.init(
     },
     id_type: {
       type: DataTypes.ENUM("V", "E", "J"),
-      allowNull: false,
+      allowNull: true,
     },
     address: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     reference_point: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     details: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     call_started: {
       type: DataTypes.DATE,
@@ -210,7 +210,13 @@ Ticket.init(
       allowNull: true,
     },
     closing_state: {
-      type: DataTypes.ENUM("Efectiva", "No Efectiva", "Rechazada"),
+      type: DataTypes.ENUM(
+        "Efectiva",
+        "No Efectiva",
+        "Rechazada",
+        "Sabotaje",
+        "Abandonada"
+      ),
       allowNull: true,
     },
     closing_details: {

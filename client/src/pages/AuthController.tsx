@@ -32,6 +32,7 @@ export default function AuthController(props: AuthControllerProps) {
   }, [user, status]);
 
   useEffect(() => {
+    dispatch(getUser());
     const interval = setInterval(() => {
       if (token) dispatch(getUser());
     }, 60000);

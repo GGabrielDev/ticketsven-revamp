@@ -6,14 +6,16 @@ import AdminAppBar from "./AppBar";
 import { useAppDispatch } from "../../redux/hooks";
 import { actions as municipalityActions } from "../../redux/features/municipality/municipalitySlice";
 import { actions as parishActions } from "../../redux/features/parish/parishSlice";
-import { actions as ccpActions } from "../../redux/features/ccp/ccpSlice";
+import { actions as organismActions } from "../../redux/features/organism/slice";
+import { actions as organismGroupActions } from "../../redux/features/organismGroup/slice";
 import { actions as quadrantActions } from "../../redux/features/quadrant/quadrantSlice";
 import { actions as reasonActions } from "../../redux/features/reason/reasonSlice";
 import { actions as userActions } from "../../redux/features/user/userSlice";
 
 const { getAllMunicipalities } = municipalityActions;
 const { getAllParishes } = parishActions;
-const { getAllCCPs } = ccpActions;
+const { getAllOrganisms } = organismActions;
+const { getAllOrganismGroups } = organismGroupActions;
 const { getAllQuadrants } = quadrantActions;
 const { getAllReasons } = reasonActions;
 const { getAllUsers, getRoles } = userActions;
@@ -24,7 +26,8 @@ function Layout() {
   useEffect(() => {
     dispatch(getAllMunicipalities());
     dispatch(getAllParishes());
-    dispatch(getAllCCPs());
+    dispatch(getAllOrganisms());
+    dispatch(getAllOrganismGroups());
     dispatch(getAllQuadrants());
     dispatch(getAllReasons());
     dispatch(getAllUsers());

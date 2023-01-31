@@ -51,6 +51,24 @@ export const asyncActions = {
       return rejectWithValue(error.response.data);
     }
   }),
+  getQuadrantsByParish: createAsyncThunk<
+    QuadrantType[],
+    number,
+    { state: RootState; rejectValue: ErrorType }
+  >("quadrant/getByParish", async (payload, { rejectWithValue, getState }) => {
+    try {
+      return (
+        await axios.get("/quadrant/parish", {
+          ...axiosConfig(getState().user.token),
+          params: {
+            parishId: payload,
+          },
+        })
+      ).data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }),
   getQuadrantById: createAsyncThunk<
     QuadrantType,
     number,

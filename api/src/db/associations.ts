@@ -83,6 +83,11 @@ export default () => {
     foreignKey: "municipalityId",
     as: "municipality",
   });
+  Ticket.belongsTo(Organism, { foreignKey: "organismId", as: "organism" });
+  Ticket.belongsTo(OrganismGroup, {
+    foreignKey: "organismGroupId",
+    as: "organismGroup",
+  });
   Ticket.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
   Ticket.belongsTo(Quadrant, { foreignKey: "quadrantId", as: "quadrant" });
   Ticket.belongsTo(Reason, { foreignKey: "reasonId", as: "reason" });

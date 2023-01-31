@@ -44,23 +44,6 @@ router.get(
   }
 );
 
-router.get(
-  "/:organismGroupId",
-  async (req: RouteRequest, res: Response, next: NextFunction) => {
-    try {
-      const { organismGroupId } = req.params;
-
-      const result = await OrganismGroup.findByPk(organismGroupId, {
-        include: [OrganismGroup.associations.organisms],
-      });
-
-      return res.status(200).send(result);
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
 // From this point, only users with the "admin" role can use the following routes.
 router.use(authRole("admin"));
 

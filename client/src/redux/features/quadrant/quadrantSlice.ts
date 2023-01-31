@@ -108,6 +108,18 @@ const quadrantSlice = createSlice({
         state.status = "Error";
         state.error = action.payload;
       })
+      .addCase(asyncActions.getQuadrantsByParish.pending, (state) => {
+        state.status = "Loading";
+      })
+      .addCase(asyncActions.getQuadrantsByParish.fulfilled, (state, action) => {
+        state.status = "Idle";
+        state.error = undefined;
+        state.quadrants = action.payload;
+      })
+      .addCase(asyncActions.getQuadrantsByParish.rejected, (state, action) => {
+        state.status = "Error";
+        state.error = action.payload;
+      })
       .addCase(asyncActions.createQuadrant.pending, (state) => {
         state.status = "Loading";
       })

@@ -5,10 +5,8 @@ import {
   Button,
   CircularProgress,
   Grid,
-  InputLabel,
   MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -27,16 +25,11 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { selectors as parishSelectors } from "../../redux/features/parish/parishSlice";
-import {
-  actions as ccpActions,
-  selectors as ccpSelectors,
-} from "../../redux/features/ccp/ccpSlice";
+import { actions, selectors } from "../../redux/features/organismGroup/slice";
 import TablePaginationActions from "../../components/admin/TablePagination";
 
-const { createCCP, editCCP, deleteCCP } = ccpActions;
-const { selectCCPs } = ccpSelectors;
-const { selectParishes } = parishSelectors;
+const { createOrganismGroup, editOrganismGroup, deleteOrganismGroup } = actions;
+const { selectOrganismGroups } = selectors;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -54,35 +47,28 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-interface FormData {
-  id: number;
-  name: string;
-  parishId: number;
-}
-
-export default function CCP() {
+export default function OrganismGroup() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState<CCPType | null>(null);
+  const [selectedRow, setSelectedRow] = useState<OrganismGroupType | null>(
+    null
+  );
   const [edit, setEdit] = useState(false);
-  const initialValues: Partial<FormData> = {
+  const initialValues: Partial<OrganismGroupType> = {
     name: "",
-    parishId: 0,
   };
-  const parishes = useAppSelector(selectParishes);
-  const ccps = useAppSelector(selectCCPs);
+  const organismGroups = useAppSelector(selectOrganismGroups);
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Necesitas escribir un nombre de Parroquia."),
-    parishId: Yup.number()
-      .notOneOf([0], "Debe de seleccionar un parroquia.")
-      .required("Debe de seleccionar un parroquia."),
+    name: Yup.string().required("Necesitas escribir un nombre de Razón"),
   });
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ccps.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - organismGroups.length)
+      : 0;
 
   const handleChangePage = (event: Event, newPage: number) => {
     setPage(newPage);
@@ -99,20 +85,20 @@ export default function CCP() {
   };
 
   const handleSubmit = (
-    values: Partial<FormData>,
+    values: Partial<OrganismGroupType>,
     { setSubmitting, resetForm }: FormikHelpers<FormData>
   ) => {
-    dispatch(createCCP(values)).then(() => {
+    dispatch(createOrganismGroup(values)).then(() => {
       setSubmitting(false);
       resetForm();
     });
   };
 
   const handleEdit = (
-    values: CCPType & FormData,
-    { setSubmitting, resetForm }: FormikHelpers<CCPType & FormData>
+    values: OrganismGroupType,
+    { setSubmitting, resetForm }: FormikHelpers<OrganismGroupType>
   ) => {
-    dispatch(editCCP(values)).then(() => {
+    dispatch(editOrganismGroup(values)).then(() => {
       setSelectedRow(values);
       setSubmitting(false);
       setEdit(false);
@@ -134,15 +120,15 @@ export default function CCP() {
         }}
       >
         <${Paper} sx=${{ p: 3, width: "100%" }}>
-          <${Typography} component="h1" variant="h4">
-            Crar una nuevo Centro de Coordinación Policial
-          <//>
+          <${Typography} component="h1" variant="h4"
+            >Crear un Grupo de Organismos<//
+          >
           <${Formik}
             initialValues=${initialValues}
             validationSchema=${validationSchema}
             onSubmit=${handleSubmit}
           >
-            ${(props: FormikProps<Partial<FormData>>) => html`
+            ${(props: FormikProps<Partial<OrganismGroupType>>) => html`
               <${Box}
                 component="form"
                 noValidate
@@ -152,8 +138,9 @@ export default function CCP() {
               >
                 <${Field}
                   as=${TextField}
+                  margin="normal"
                   fullWidth
-                  label="Centro de Coordinación Policial"
+                  label="Grupo de Organismos"
                   id="name"
                   name="name"
                   sx=${{ mb: 2 }}
@@ -162,40 +149,8 @@ export default function CCP() {
                   error=${props.touched.name && Boolean(props.errors.name)}
                   helperText=${props.touched.name && props.errors.name}
                 />
-                <${InputLabel} id="parishId">Parroquia<//>
-                <${Field}
-                  as=${Select}
-                  fullWidth
-                  id="parishId"
-                  name="parishId"
-                  disabled=${parishes.length === 0}
-                  value=${props.values.parishId}
-                  onChange=${props.handleChange}
-                  error=${props.touched.parishId &&
-                  Boolean(props.errors.parishId)}
-                  helperText=${props.touched.parishId && props.errors.parishId}
-                >
-                  ${parishes.length > 0
-                    ? html`
-                        <${MenuItem} key=${0} value=${0}>
-                          Selecciona un parroquia
-                        <//>
-                        ${parishes.map(
-                          (parish) => html`
-                            <${MenuItem} key=${parish.id} value=${parish.id}>
-                              ${parish.name}
-                            <//>
-                          `
-                        )}
-                      `
-                    : html`
-                        <${MenuItem} value=${0} disabled>
-                          No hay Parroquias en el sistema
-                        <//>
-                      `}
-                <//>
                 <${Button}
-                  disabled=${props.isSubmitting || parishes.length === 0}
+                  disabled=${props.isSubmitting}
                   type="submit"
                   fullWidth
                   variant="contained"
@@ -203,7 +158,7 @@ export default function CCP() {
                 >
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
-                    : "Crear CCP"}
+                    : "Crear Grupo de Organismos"}
                 <//>
               <//>
             `}
@@ -220,14 +175,16 @@ export default function CCP() {
                       <${Box} mt=${1}>
                         <${Typography}>ID: ${selectedRow.id}<//>
                         <${Typography}>Nombre: ${selectedRow.name}<//>
-                        <${Typography}>Parroquia: ${selectedRow.parish.name}<//>
                       <//>
                       <${Box}
                         mt=${1}
                         display="flex"
                         justifyContent="space-between"
                       >
-                        <${Tooltip} title="Editar CCP" placement="top-end">
+                        <${Tooltip}
+                          title="Editar Grupo de Organismos"
+                          placement="top-end"
+                        >
                           <span>
                             <${Button}
                               variant="contained"
@@ -239,18 +196,14 @@ export default function CCP() {
                             <//>
                           </span>
                         <//>
-                        <${Tooltip}
-                          title=${selectedRow.quadrants.length > 0
-                            ? "No se puede borrar si tiene Cuadrantes asignados"
-                            : "Borrar CCP"}
-                          placement="top-end"
-                        >
+                        <${Tooltip} title="Borrar " placement="top-end">
                           <span>
                             <${Button}
+                              disabled=${selectedRow.organisms.length > 0}
                               variant="contained"
                               color="error"
-                              disabled=${selectedRow.quadrants.length > 0}
-                              onClick=${() => dispatch(deleteCCP(selectedRow))}
+                              onClick=${() =>
+                                dispatch(deleteOrganismGroup(selectedRow))}
                             >
                               <${DeleteIcon} />
                               Borrar
@@ -261,17 +214,14 @@ export default function CCP() {
                     `
                   : html`
                       <${Typography} component="h1" variant="h4">
-                        Editar Centro de Coordinación Policial
+                        Editar Grupo de Organismos
                       <//>
                       <${Formik}
-                        initialValues=${{
-                          ...selectedRow,
-                          parishId: selectedRow.parish.id,
-                        }}
+                        initialValues=${selectedRow}
                         validationSchema=${validationSchema}
                         onSubmit=${handleEdit}
                       >
-                        ${(props: FormikProps<CCPType & FormData>) => html`
+                        ${(props: FormikProps<OrganismGroupType>) => html`
                           <${Box}
                             component="form"
                             noValidate
@@ -283,7 +233,7 @@ export default function CCP() {
                               as=${TextField}
                               margin="normal"
                               fullWidth
-                              label="Centro de Coordinación Policial;"
+                              label="Razón"
                               id="name"
                               name="name"
                               value=${props.values.name}
@@ -293,31 +243,6 @@ export default function CCP() {
                               helperText=${props.touched.name &&
                               props.errors.name}
                             />
-                            <${InputLabel} id="municipalityId">Parroquia<//>
-                            <${Field}
-                              as=${Select}
-                              margin="normal"
-                              fullWidth
-                              id="parishId"
-                              name="parishId"
-                              value=${props.values.parishId}
-                              onChange=${props.handleChange}
-                              error=${props.touched.parishId &&
-                              Boolean(props.errors.parishId)}
-                              helperText=${props.touched.parishId &&
-                              props.errors.parishId}
-                            >
-                              <${MenuItem} value=${0}
-                                >Selecciona un parroquia<//
-                              >
-                              ${parishes.map(
-                                (parish) => html`
-                    <${MenuItem} value=${parish.id}
-                      >${parish.name}</${MenuItem}
-                    >
-                  `
-                              )}
-                            <//>
                             <${Box}
                               sx=${{
                                 mt: 3,
@@ -359,19 +284,18 @@ export default function CCP() {
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
-                  <${StyledTableCell}>ID<//>
-                  <${StyledTableCell}>CCP<//>
-                  <${StyledTableCell}>Parroquia<//>
+                  <${StyledTableCell} sx=${{ maxWidth: 20 }}>ID<//>
+                  <${StyledTableCell}>Razón<//>
                 <//>
               <//>
               <${TableBody}>
-                ${ccps.length > 0
+                ${organismGroups.length > 0
                   ? html`${(rowsPerPage > 0
-                      ? ccps.slice(
+                      ? organismGroups.slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
-                      : ccps
+                      : organismGroups
                     ).map(
                       (row) => html`
                         <${StyledTableRow}
@@ -381,7 +305,6 @@ export default function CCP() {
                         >
                           <${StyledTableCell}>${row.id}<//>
                           <${StyledTableCell}>${row.name}<//>
-                          <${StyledTableCell}>${row.parish.name}<//>
                         <//>
                       `
                     )}
@@ -395,7 +318,6 @@ export default function CCP() {
                       <${StyledTableRow}>
                         <${StyledTableCell}>N/E<//>
                         <${StyledTableCell}>No hay entradas disponibles<//>
-                        <${StyledTableCell}><//>
                       <//>
                     `}
               <//>
@@ -409,7 +331,7 @@ export default function CCP() {
                       { label: "All", value: -1 },
                     ]}
                     colSpan=${3}
-                    count=${ccps.length}
+                    count=${organismGroups.length}
                     rowsPerPage=${rowsPerPage}
                     page=${page}
                     SelectProps=${{

@@ -20,7 +20,7 @@ router.use(authJWT);
 router.use("/user", userRouter);
 router.use("/municipality", municipalityRouter);
 router.use("/organism", organismRouter);
-router.use("/organismGroups", organismGroupRouter);
+router.use("/organismGroup", organismGroupRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);

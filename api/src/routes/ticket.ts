@@ -2,6 +2,8 @@ import { Request, Response, Router, NextFunction } from "express";
 import { Op } from "sequelize";
 import { authRole } from "../middleware/auth.middleware";
 import { Municipality } from "../models/Municipality";
+import { Organism } from "../models/Organism";
+import { OrganismGroup } from "../models/OrganismGroup";
 import { Parish } from "../models/Parish";
 import { Quadrant } from "../models/Quadrant";
 import { Reason } from "../models/Reason";
@@ -19,6 +21,8 @@ const ticketAttrExclude = [
 ];
 const ticketInclude = [
   { model: Municipality, as: "municipality" },
+  { model: Organism, as: "organism" },
+  { model: OrganismGroup, as: "organismGroup" },
   { model: Parish, as: "parish" },
   { model: Quadrant, as: "quadrant" },
   { model: Reason, as: "reason" },
@@ -148,6 +152,43 @@ router.post(
   }
 );
 
+router.post(
+  "/close",
+  authRole("operator"),
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const {
+        call_started,
+        call_ended,
+        caller_name,
+        closing_state,
+        phone_number,
+      } = req.body;
+      const { userId } = req;
+      const result = await Ticket.create({
+        call_started,
+        call_ended,
+        caller_name,
+        closing_state,
+        phone_number,
+        isOpen: false,
+      });
+      await result.addUser(userId);
+      return res.status(201).send(
+        await Ticket.findByPk(result.id, {
+          attributes: {
+            exclude: ticketAttrExclude,
+          },
+          include: ticketInclude,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
+
 router.put(
   "/edit/:ticketId",
   authRole("dispatcher"),
@@ -156,6 +197,8 @@ router.put(
       const { ticketId } = req.params;
       const {
         quadrantId,
+        organismId,
+        organismGroupId,
         dispatch_time,
         arrival_time,
         finish_time,
@@ -173,6 +216,9 @@ router.put(
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
       if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
+      if (organismId && organismId > 0) await ticket.setOrganism(organismId);
+      if (organismGroupId && organismGroupId > 0)
+        await ticket.setOrganismGroup(organismGroupId);
       await ticket.update({
         dispatch_time,
         arrival_time,

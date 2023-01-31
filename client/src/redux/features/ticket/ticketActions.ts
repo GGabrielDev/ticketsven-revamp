@@ -44,6 +44,24 @@ export const asyncActions = {
       return rejectWithValue(error.response.data);
     }
   }),
+  postTicketCloseOperator: createAsyncThunk<
+    string,
+    Partial<TicketType> & { closing_state: "Sabotaje" | "Abandonada" },
+    { state: RootState; rejectValue: ErrorType }
+  >(
+    "ticket/postCloseOperator",
+    async (payload, { rejectWithValue, getState }) => {
+      try {
+        return await axios.post(
+          "/ticket/close",
+          payload,
+          axiosConfig(getState().user.token)
+        );
+      } catch (error: any) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  ),
   putTicketUpdateDispatcher: createAsyncThunk<
     string,
     { id: string } & Partial<DispatchTicket>,
