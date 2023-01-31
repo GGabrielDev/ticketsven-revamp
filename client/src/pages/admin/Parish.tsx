@@ -248,7 +248,7 @@ export default function Parish() {
                           </span>
                         <//>
                         <${Tooltip}
-                          title=${selectedRow.ccps.length > 0
+                          title=${selectedRow.quadrants.length > 0
                             ? "No se puede borrar si tiene CCPs asignados"
                             : "Borrar Parroquia"}
                           placement="top-end"
@@ -257,7 +257,7 @@ export default function Parish() {
                             <${Button}
                               variant="contained"
                               color="error"
-                              disabled=${selectedRow.ccps.length > 0}
+                              disabled=${selectedRow.quadrants.length > 0}
                               onClick=${() =>
                                 dispatch(deleteParish(selectedRow))}
                             >

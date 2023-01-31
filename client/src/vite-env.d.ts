@@ -27,7 +27,7 @@ type MunicipalityType = GenericType & {
 
 type ParishType = GenericType & {
   municipality: GenericType;
-  ccps: GenericType[];
+  quadrants: GenericType[];
 };
 
 type OrganismGroupType = GenericType & {
