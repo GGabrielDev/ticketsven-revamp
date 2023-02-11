@@ -103,9 +103,8 @@ function Router() {
                         <${Route}
                           path=":ticketId"
                           element=${html`<${DispatcherForm} />`}
-                        >
-                        <//>
-                      </${Route}>
+                        />
+                      <//>
                     `,
                 ]
               : html`<${Route} path="*" element=${html`<${LoadingBox} />`} />`}
