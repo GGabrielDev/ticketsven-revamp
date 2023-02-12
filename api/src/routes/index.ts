@@ -8,6 +8,7 @@ import parishRouter from "./parish";
 import quadrantRouter from "./quadrant";
 import reasonRouter from "./reason";
 import roleRouter from "./role";
+import supervisorRouter from "./supervisor";
 import ticketRouter from "./ticket";
 import userRouter from "./user";
 
@@ -24,6 +25,7 @@ router.use("/organismGroup", organismGroupRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
+router.use("/supervisor", supervisorRouter); // All of this ones require the "supervisor" role
 router.use("/ticket", ticketRouter);
 
 router.use(authRole("admin"));
