@@ -5,7 +5,7 @@ import { Ticket } from "../models/Ticket";
 
 type RouteRequest = Request<
   Record<string, never>, // Params
-  Record<string, never>, // Query
+  Record<"startDate" | "endDate", string>, // Query
   Record<string, never> // Body
 >;
 
@@ -71,6 +71,38 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
   }
 });
 
-router.get("/tickets", async (req: RouteRequest, res: Response) => {});
+router.get(
+  "/tickets",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { startDate, endDate } = req.query;
+      if (!startDate || !endDate)
+        throw new HttpException(400, "A date range wasn't provided");
+      if (!(typeof startDate == "string" && typeof endDate == "string"))
+        throw new HttpException(400, "The provided dates are not strings");
+
+      const tickets = await Ticket.findAll({
+        where: {
+          [Op.and]: {
+            isOpen: false,
+            [Op.or]: [
+              { closing_state: { [Op.eq]: "Efectiva" } },
+              { closing_state: { [Op.eq]: "No Efectiva" } },
+              { closing_state: { [Op.eq]: "Rechazada" } },
+            ],
+            createdAt: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
+        },
+        order: [["createdAt", "DESC"]],
+      });
+
+      res.status(200).json({ tickets });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default router;
