@@ -1,7 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Op } from "sequelize";
 import HttpException from "../exceptions/HttpException";
-import { authRole } from "../middleware/auth.middleware";
 import { Ticket } from "../models/Ticket";
 
 type RouteRequest = Request<
@@ -11,8 +10,6 @@ type RouteRequest = Request<
 >;
 
 const router = Router();
-
-router.use(authRole("supervisor"));
 
 router.get("/dates", async (_, res: Response, next: NextFunction) => {
   try {

@@ -25,7 +25,8 @@ router.use("/organismGroup", organismGroupRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
-router.use("/supervisor", supervisorRouter); // All of this ones require the "supervisor" role
+// All of this ones require the "supervisor" role
+router.use(authRole("supervisor"), "/supervisor", supervisorRouter);
 router.use("/ticket", ticketRouter);
 
 router.use(authRole("admin"));
