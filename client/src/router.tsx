@@ -25,6 +25,9 @@ import DispatcherLayout from "./components/dispatcher/Layout";
 import DispatcherLanding from "./pages/dispatcher/Landing";
 import DispatcherForm from "./pages/dispatcher/Form";
 
+import SupervisorLayout from "./components/supervisor/Layout";
+import SupervisorLanding from "./pages/supervisor/Landing";
+
 const { selectUser } = selectors;
 
 function Router() {
@@ -103,6 +106,18 @@ function Router() {
                         <${Route}
                           path=":ticketId"
                           element=${html`<${DispatcherForm} />`}
+                        />
+                      <//>
+                    `,
+                  user.role.name === "supervisor" &&
+                    html`
+                      <${Route}
+                        path="dashboard"
+                        element=${html`<${SupervisorLayout} />`}
+                      >
+                        <${Route}
+                          index
+                          element=${html`<${SupervisorLanding} />`}
                         />
                       <//>
                     `,

@@ -31,6 +31,7 @@ router.get(
               },
             }
           : {},
+        order: [["name", "ASC"]],
       });
 
       return res.status(200).send(result);

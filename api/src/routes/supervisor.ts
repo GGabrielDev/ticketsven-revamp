@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Op } from "sequelize";
 import HttpException from "../exceptions/HttpException";
+import { Reason } from "../models/Reason";
 import { Ticket } from "../models/Ticket";
 
 type RouteRequest = Request<
@@ -56,13 +57,15 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
     let year = oldestDate.getFullYear();
     const dates = [];
     do {
-      dates.push([new Date(`${month + 1}/1/${year}`)]);
+      dates.push([new Date(`${month + 1}/1/${year}`).getTime()]);
       month++;
       if (month === 12) {
         month = 0;
         year++;
       }
-      dates[dates.length - 1].push(new Date(`${month + 1}/1/${year}`));
+      dates[dates.length - 1].push(
+        new Date(`${month + 1}/1/${year}`).getTime()
+      );
     } while (month <= newestDate.getMonth() || year < newestDate.getFullYear());
 
     res.status(200).json({ dates });
@@ -81,7 +84,11 @@ router.get(
       if (!(typeof startDate == "string" && typeof endDate == "string"))
         throw new HttpException(400, "The provided dates are not strings");
 
+      const start = new Date(parseInt(startDate));
+      const end = new Date(parseInt(endDate));
+
       const tickets = await Ticket.findAll({
+        attributes: ["id", "createdAt"],
         where: {
           [Op.and]: {
             isOpen: false,
@@ -91,10 +98,11 @@ router.get(
               { closing_state: { [Op.eq]: "Rechazada" } },
             ],
             createdAt: {
-              [Op.between]: [startDate, endDate],
+              [Op.between]: [start, end],
             },
           },
         },
+        include: [{ as: "reason", model: Reason }],
         order: [["createdAt", "DESC"]],
       });
 
