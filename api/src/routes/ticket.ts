@@ -194,6 +194,7 @@ router.put(
   authRole("dispatcher"),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
+      const { userId } = req;
       const { ticketId } = req.params;
       const {
         quadrantId,
@@ -227,6 +228,9 @@ router.put(
         reinforcement_units,
         follow_up,
       });
+
+      await ticket.addUser(userId);
+
       return res.status(200).send("Updated!");
     } catch (error) {
       console.log(error);

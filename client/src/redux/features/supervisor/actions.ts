@@ -16,4 +16,26 @@ export const asyncActions = {
       return rejectWithValue(error.response.data);
     }
   }),
+  getTickets: createAsyncThunk<
+    {
+      tickets: MiniTicketSupervisor[];
+      count: { closing_state: string; count: number }[];
+    },
+    number[],
+    { state: RootState; rejectValue: ErrorType }
+  >("supervisor/tickets", async (dates, { rejectWithValue, getState }) => {
+    try {
+      return (
+        await axios.get("/supervisor/tickets", {
+          params: {
+            startDate: dates[0],
+            endDate: dates[1],
+          },
+          ...axiosConfig(getState().user.token),
+        })
+      ).data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }),
 };

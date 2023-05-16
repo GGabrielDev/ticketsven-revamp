@@ -89,6 +89,12 @@ type MiniTicket = {
   reason: ReasonType;
 };
 
+type MiniTicketSupervisor = {
+  id: string;
+  createdAt: string;
+  reason: ReasonType;
+};
+
 type DispatchTicket = {
   quadrantId?: number;
   organismId?: number;

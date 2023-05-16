@@ -7,6 +7,8 @@ export type SliceType = {
   statusUpdate: "Idle" | "Loading" | "Success" | "Error";
   error?: ErrorType;
   dates: number[][];
+  tickets: MiniTicketSupervisor[];
+  count: { closing_state: string; count: number }[];
 };
 
 export const initialState: SliceType = {
@@ -14,6 +16,8 @@ export const initialState: SliceType = {
   status: "Idle",
   statusUpdate: "Idle",
   dates: [],
+  tickets: [],
+  count: [],
 };
 
 const supervisorSlice = createSlice({
@@ -39,6 +43,18 @@ const supervisorSlice = createSlice({
       .addCase(actions.getDates.rejected, (state, action) => {
         state.status = "Error";
         state.error = action.payload;
+      })
+      .addCase(actions.getTickets.pending, (state) => {
+        state.status = "Loading";
+      })
+      .addCase(actions.getTickets.fulfilled, (state, action) => {
+        state.status = "Success";
+        state.tickets = action.payload.tickets;
+        state.count = action.payload.count;
+      })
+      .addCase(actions.getTickets.rejected, (state, action) => {
+        state.status = "Error";
+        state.error = action.payload;
       });
   },
 });
@@ -52,6 +68,8 @@ export const selectors = {
   selectStatus: (state: RootState) => state.supervisor.status,
   selectStatusUpdate: (state: RootState) => state.supervisor.statusUpdate,
   selectDates: (state: RootState) => state.supervisor.dates,
+  selectTickets: (state: RootState) => state.supervisor.tickets,
+  selectCount: (state: RootState) => state.supervisor.count,
 };
 
 export default supervisorSlice.reducer;

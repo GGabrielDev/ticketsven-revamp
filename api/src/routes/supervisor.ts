@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import sequelize from "sequelize";
 import { Op } from "sequelize";
 import HttpException from "../exceptions/HttpException";
 import { Reason } from "../models/Reason";
@@ -55,7 +56,7 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
 
     let month = oldestDate.getMonth();
     let year = oldestDate.getFullYear();
-    const dates = [];
+    const dates: number[][] = [];
     do {
       dates.push([new Date(`${month + 1}/1/${year}`).getTime()]);
       month++;
@@ -67,6 +68,18 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
         new Date(`${month + 1}/1/${year}`).getTime()
       );
     } while (month <= newestDate.getMonth() || year < newestDate.getFullYear());
+
+    let left = 0;
+    let right = dates.length - 1;
+
+    while (left < right) {
+      const temp = dates[left];
+      dates[left] = dates[right];
+      dates[right] = temp;
+
+      left++;
+      right--;
+    }
 
     res.status(200).json({ dates });
   } catch (error) {
@@ -105,8 +118,29 @@ router.get(
         include: [{ as: "reason", model: Reason }],
         order: [["createdAt", "DESC"]],
       });
+      const count = await Ticket.findAll({
+        attributes: [
+          "closing_state",
+          [sequelize.fn("COUNT", sequelize.col("closing_state")), "count"],
+        ],
+        where: {
+          closing_state: {
+            [Op.in]: [
+              "Efectiva",
+              "No Efectiva",
+              "Rechazada",
+              "Abandonada",
+              "Sabotaje",
+            ],
+          },
+          createdAt: {
+            [Op.between]: [start, end],
+          },
+        },
+        group: ["closing_state"],
+      });
 
-      res.status(200).json({ tickets });
+      res.status(200).json({ tickets, count });
     } catch (error) {
       next(error);
     }
