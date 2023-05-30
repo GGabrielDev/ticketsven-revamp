@@ -27,9 +27,6 @@ type Props = {
 function ResponsiveAppBar({ mobileOpen = false, setMobileOpen }: Props) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString()
-  );
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
 
   const handleOpenNavMenu = (event: MouseEvent) => {
@@ -49,13 +46,6 @@ function ResponsiveAppBar({ mobileOpen = false, setMobileOpen }: Props) {
     setAnchorElUser(null);
     dispatch(logout());
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return html`
     <${AppBar}
@@ -95,25 +85,6 @@ function ResponsiveAppBar({ mobileOpen = false, setMobileOpen }: Props) {
           src=${Logo}
           onClick=${() => navigate("/dashboard")}
         />
-        <${Box}
-          sx=${{
-            display: { xs: "none", md: "flex" },
-            flexFlow: "column wrap",
-            flexGrow: 1,
-            justifyContent: "flex-start",
-          }}
-        >
-          <${Typography} variant="subtitle2"
-            ><strong>Fecha:</strong> ${new Date().toLocaleDateString("es-ES", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}<//
-          >
-          <${Typography} variant="subtitle2"
-            ><strong>Hora:</strong> ${currentTime}<//
-          >
-        <//>
         <${Typography}
           component="h1"
           variant="h6"

@@ -29,6 +29,7 @@ const pages = [
   { name: "Organismos", link: "organism" },
   { name: "Razones", link: "reasons" },
   { name: "Usuarios", link: "users" },
+  { name: "Supervisión", link: "supervisor" },
 ];
 
 export default function ResponsiveAppBar() {

@@ -1,5 +1,6 @@
 import { html } from "htm/preact";
 import { useEffect, useState } from "preact/hooks";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -39,6 +40,7 @@ const { getDates, getTickets } = supervisorActions;
 export default function Landing() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const navigate = useNavigate();
   const count = useAppSelector(selectCount);
   const dates = useAppSelector(selectDates);
   const tickets = useAppSelector(selectTickets);
@@ -161,7 +163,7 @@ export default function Landing() {
                           <${StyledTableRow}
                             hover
                             key=${row.id}
-                            onClick=${() => console.log(row)}
+                            onClick=${() => navigate(`${row.id}`)}
                           >
                             <${StyledTableCell}
                               >${new Intl.DateTimeFormat("es-ES", {
@@ -174,7 +176,7 @@ export default function Landing() {
                               }).format(new Date(row.createdAt))}<//
                             >
                             <${StyledTableCell}>${row.reason.name}<//>
-                          <//>
+                          <//}>
                         `
                       )}
                       ${emptyRows > 0 &&

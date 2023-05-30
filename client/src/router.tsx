@@ -27,6 +27,7 @@ import DispatcherForm from "./pages/dispatcher/Form";
 
 import SupervisorLayout from "./components/supervisor/Layout";
 import SupervisorLanding from "./pages/supervisor/Landing";
+import SupervisorDisplay from "./pages/supervisor/Display";
 
 const { selectUser } = selectors;
 
@@ -47,7 +48,6 @@ function Router() {
                         path="dashboard"
                         element=${html`<${AdminLayout} />`}
                       >
-                        <${Route} path="*" element=${html`<${NotFound} />`} />
                         <${Route} index element=${html`<${AdminLanding} />`} />
                         <${Route}
                           path="municipality"
@@ -74,6 +74,21 @@ function Router() {
                           element=${html`<${Reason} />`}
                         />
                         <${Route} path="users" element=${html`<${User} />`} />
+                        <${Route}
+                          path="supervisor"
+                          element=${html`<${SupervisorLayout} />`}
+                        >
+                          <${Route}
+                            index
+                            element=${html`<${SupervisorLanding} />`}
+                          />
+                          <${Route}
+                            path=":ticketId"
+                            element=${html`<${SupervisorDisplay} />`}
+                          />
+                          <${Route} path="*" element=${html`<${NotFound} />`} />
+                        <//>
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
                       <//>
                     `,
                   user.role.name === "operator" &&
@@ -82,7 +97,6 @@ function Router() {
                         path="dashboard"
                         element=${html`<${OperatorLayout} />`}
                       >
-                        <${Route} path="*" element=${html`<${NotFound} />`} />
                         <${Route}
                           index
                           element=${html`<${OperatorLanding} />`}
@@ -91,6 +105,7 @@ function Router() {
                           path="form"
                           element=${html`<${OperatorForm} />`}
                         />
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
                       <//>
                     `,
                   user.role.name === "dispatcher" &&
@@ -107,6 +122,7 @@ function Router() {
                           path=":ticketId"
                           element=${html`<${DispatcherForm} />`}
                         />
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
                       <//>
                     `,
                   user.role.name === "supervisor" &&
@@ -119,6 +135,11 @@ function Router() {
                           index
                           element=${html`<${SupervisorLanding} />`}
                         />
+                        <${Route}
+                          path=":ticketId"
+                          element=${html`<${SupervisorDisplay} />`}
+                        />
+                        <${Route} path="*" element=${html`<${NotFound} />`} />
                       <//>
                     `,
                 ]

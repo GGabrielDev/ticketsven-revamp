@@ -22,9 +22,6 @@ const { logout, toggleColorTheme } = actions;
 function ResponsiveAppBar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [currentTime, setCurrentTime] = useState(
-    new Date().toLocaleTimeString()
-  );
   const [anchorElUser, setAnchorElUser] = useState<null | EventTarget>(null);
 
   const handleOpenUserMenu = (event: MouseEvent) => {
@@ -40,13 +37,6 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
     dispatch(logout());
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return html`
     <${AppBar} position="sticky" sx=${{ p: 1, display: "flex" }}>
@@ -68,28 +58,6 @@ function ResponsiveAppBar() {
             src=${Logo}
             onClick=${() => navigate("/dashboard")}
           />
-          <${Box}
-            sx=${{
-              display: { xs: "none", sm: "flex" },
-              flexFlow: "column wrap",
-              flexGrow: 1,
-              justifyContent: "flex-start",
-            }}
-          >
-            <${Typography} variant="subtitle2"
-              ><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                "es-ES",
-                {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                }
-              )}<//
-            >
-            <${Typography} variant="subtitle2"
-              ><strong>Hora:</strong> ${currentTime}<//
-            >
-          <//>
           <${Typography}
             component="h1"
             variant="h6"
