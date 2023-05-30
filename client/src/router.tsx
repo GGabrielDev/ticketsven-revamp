@@ -74,10 +74,7 @@ function Router() {
                           element=${html`<${Reason} />`}
                         />
                         <${Route} path="users" element=${html`<${User} />`} />
-                        <${Route}
-                          path="supervisor"
-                          element=${html`<${SupervisorLayout} />`}
-                        >
+                        <${Route} path="supervisor">
                           <${Route}
                             index
                             element=${html`<${SupervisorLanding} />`}
