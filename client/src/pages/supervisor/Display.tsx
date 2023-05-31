@@ -7,9 +7,10 @@ import {
   Button,
   Container,
   Divider,
+  Fab,
   Typography,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   actions as ticketActions,
@@ -22,6 +23,7 @@ import {
 } from "../../components/InfoDisplay";
 import { convertMsToTime } from "../../helpers/Time";
 import LoadingBox from "../../components/LoadingBox";
+import { ArrowBack } from "@mui/icons-material";
 
 const { getTicket } = ticketActions;
 
@@ -29,6 +31,7 @@ const { selectStatus, selectError, selectTicket } = ticketSelectors;
 const { selectUser } = userSelectors;
 
 export default function Display() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const error = useAppSelector(selectError);
   const status = useAppSelector(selectStatus);
@@ -102,6 +105,13 @@ export default function Display() {
             width: 1,
           }}
         >
+          <${Fab}
+            color="primary"
+            sx=${{ position: "absolute", top: 96, left: 32 }}
+            onClick=${() => navigate(-1)}
+          >
+            <${ArrowBack} />
+          <//>
           ${status === "Error" &&
           html`<${Alert} severity="error">${error?.message}<//>`}
           <${Typography}
@@ -141,17 +151,12 @@ export default function Display() {
             sx=${{ fontWeight: "bold" }}
           >
             Despachador/es:${" "}
-            ${ticket?.users.find((userTicket) => userTicket.id === user?.id)
+            ${ticket?.users.find((userTicket) => userTicket.roleId === 3)
               ? ticket?.users
                   .filter((userTicket) => userTicket.roleId === 3)
                   .map((userTicket) => userTicket.fullname)
                   .join(", ")
-              : [
-                  user?.fullname,
-                  ...(ticket?.users
-                    .filter((userTicket) => userTicket.roleId === 3)
-                    .map((userTicket) => userTicket.fullname) || []),
-                ].join(", ")}
+              : "Sin Especificar"}
           <//>
           <${Divider} variant="middle" sx=${{ width: { xs: 1, md: 0.8 } }}>
             Datos de la llamada
@@ -329,7 +334,7 @@ export default function Display() {
               value: ticket.reinforcement_units || "Sin Especificar",
             })}
             ${SingleInfoDisplay({
-              key: "Seguimiento del Solicitante",
+              key: "Seguimiento del Solicitante (Opcional)",
               value: ticket.follow_up || "Sin Especificar",
             })}
             ${SingleInfoDisplay({
