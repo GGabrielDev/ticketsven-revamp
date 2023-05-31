@@ -84,6 +84,7 @@ export default function Landing() {
     e.preventDefault();
     const target = e.target as HTMLButtonElement;
     const array = target.value.split(",").map((value) => parseInt(value));
+    setRange(array);
     dispatch(getTickets(array));
   };
 
