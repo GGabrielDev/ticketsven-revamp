@@ -129,6 +129,7 @@ router.get(
               "Efectiva",
               "No Efectiva",
               "Rechazada",
+              "Informativa",
               "Abandonada",
               "Sabotaje",
             ],

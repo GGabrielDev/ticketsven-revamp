@@ -247,7 +247,7 @@ export default function Form() {
       >
         ${(props: FormikProps<Partial<FormData>>) => {
           const handleCloseSubmit = (
-            closing_state: "Abandonada" | "Sabotaje"
+            closing_state: "Abandonada" | "Sabotaje" | "Informativa"
           ) => {
             props.setSubmitting(true);
             dispatch(
@@ -568,6 +568,15 @@ export default function Form() {
                   ${props.isSubmitting
                     ? html`<${CircularProgress} size=${24} />`
                     : "Confirmar"}
+                <//>
+                <${Button}
+                  disabled=${props.isSubmitting}
+                  variant="contained"
+                  color="secondary"
+                  sx=${{ p: 1, mr: 1 }}
+                  onClick=${() => handleCloseSubmit("Informativa")}
+                >
+                  Informativa
                 <//>
                 <${Button}
                   disabled=${props.isSubmitting}

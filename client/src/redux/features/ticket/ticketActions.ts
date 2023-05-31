@@ -46,7 +46,9 @@ export const asyncActions = {
   }),
   postTicketCloseOperator: createAsyncThunk<
     string,
-    Partial<TicketType> & { closing_state: "Sabotaje" | "Abandonada" },
+    Partial<TicketType> & {
+      closing_state: "Sabotaje" | "Abandonada" | "Informativa";
+    },
     { state: RootState; rejectValue: ErrorType }
   >(
     "ticket/postCloseOperator",

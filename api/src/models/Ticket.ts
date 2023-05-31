@@ -54,6 +54,7 @@ export class Ticket extends Model<
     | "Efectiva"
     | "No Efectiva"
     | "Rechazada"
+    | "Informativa"
     | "Sabotaje"
     | "Abandonada"; // enum type
   declare closing_details?: string;
@@ -214,6 +215,7 @@ Ticket.init(
         "Efectiva",
         "No Efectiva",
         "Rechazada",
+        "Informativa",
         "Sabotaje",
         "Abandonada"
       ),
