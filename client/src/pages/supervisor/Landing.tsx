@@ -40,6 +40,7 @@ const { getDates, getTickets } = supervisorActions;
 export default function Landing() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [range, setRange] = useState<number[]>([]);
   const navigate = useNavigate();
   const count = useAppSelector(selectCount);
   const dates = useAppSelector(selectDates);
@@ -75,6 +76,7 @@ export default function Landing() {
     e.preventDefault();
     const target = e.target as HTMLSelectElement;
     const array = target.value as unknown as number[];
+    setRange(array);
     dispatch(getTickets(array));
   };
 
@@ -88,6 +90,13 @@ export default function Landing() {
   useEffect(() => {
     dispatch(getDates());
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(getTickets(range));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [range]);
 
   return html`
     <${Container}
