@@ -28,6 +28,9 @@ export class Reason extends Model<
   declare id: CreationOptional<number>;
   declare name: string;
   declare priority?: number;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+  declare deletedAt: CreationOptional<Date>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -68,6 +71,13 @@ Reason.init(
       allowNull: true,
       defaultValue: 10,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    },
+    updatedAt: DataTypes.DATE,
+    deletedAt: DataTypes.DATE,
   },
   {
     sequelize,
@@ -77,6 +87,5 @@ Reason.init(
     },
     paranoid: true,
     tableName: "reasons",
-    timestamps: false,
   }
 );

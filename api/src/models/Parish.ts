@@ -33,6 +33,12 @@ export class Parish extends Model<
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
+  // createdAt can be undefined during creation
+  declare createdAt: CreationOptional<Date>;
+  // updatedAt can be undefined during creation
+  declare updatedAt: CreationOptional<Date>;
+  // deletedAt can be undefined during creation (paranoid table)
+  declare deletedAt: CreationOptional<Date>;
 
   // foreign keys are automatically added by associations methods (like Project.belongsTo)
   // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
@@ -103,6 +109,13 @@ Parish.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    },
+    updatedAt: DataTypes.DATE,
+    deletedAt: DataTypes.DATE,
   },
   {
     sequelize,

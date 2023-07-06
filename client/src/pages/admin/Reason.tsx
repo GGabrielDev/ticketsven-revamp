@@ -212,6 +212,8 @@ export default function Reason() {
                             <//>
                           </span>
                         <//>
+                        ${
+                          /*
                         <${Tooltip} title="Borrar Razón" placement="top-end">
                           <span>
                             <${Button}
@@ -224,7 +226,10 @@ export default function Reason() {
                               Borrar
                             <//>
                           </span>
-                        <//>
+                          <//>
+                          */
+                          null
+                        }
                       <//>
                     `
                   : html`

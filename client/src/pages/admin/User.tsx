@@ -4,9 +4,13 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormHelperText,
   Grid,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Paper,
   Select,
   Table,
@@ -23,7 +27,12 @@ import {
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
-import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  VisibilityOff,
+  Visibility,
+} from "@mui/icons-material";
 import { Formik, FormikHelpers, FormikProps, Field } from "formik";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -53,10 +62,15 @@ interface UserData {
   username: string;
   fullname: string;
   password: string;
+  verifyPassword: string;
   roleId: number;
 }
 
 export default function User() {
+  const [viewPassword, setViewPassword] = useState({
+    password: false,
+    verifyPassword: false,
+  });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState<UserType | null>(null);
@@ -65,6 +79,7 @@ export default function User() {
     username: "",
     fullname: "",
     password: "",
+    verifyPassword: "",
     roleId: 0,
   };
   const user = useAppSelector(selectUser);
@@ -82,9 +97,27 @@ export default function User() {
       .min(4, "La contraseña debe de tener al menos 4 caracteres")
       .matches(/^\S*$/, "La contraseña no puede contener espacios")
       .required("Necesitas escribir una contraseña de usuario"),
+    verifyPassword: Yup.string()
+      .min(4, "La contraseña debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "La contraseña no puede contener espacios")
+      .required("Necesitas escribir una contraseña de usuario")
+      .test("match", "Las contraseñas no coinciden", function (value) {
+        return this.parent.password === value;
+      }),
     roleId: Yup.number()
       .notOneOf([0], "Debe de seleccionar un rol de usuario")
       .required("Debe de seleccionar un rol de usuario"),
+  });
+
+  const validationPasswordSchema = Yup.object({
+    password: Yup.string()
+      .min(4, "La contraseña debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "La contraseña no puede contener espacios")
+      .required("Necesitas escribir una contraseña de usuario"),
+    verifyPassword: Yup.string()
+      .min(4, "La contraseña debe de tener al menos 4 caracteres")
+      .matches(/^\S*$/, "La contraseña no puede contener espacios")
+      .required("Necesitas escribir una contraseña de usuario"),
   });
 
   const emptyRows =
@@ -108,7 +141,8 @@ export default function User() {
     values: UserData,
     { setSubmitting, resetForm }: FormikHelpers<UserData>
   ) => {
-    dispatch(createUser(values)).then(() => {
+    const { verifyPassword, ...rest } = values;
+    dispatch(createUser(rest)).then(() => {
       setSubmitting(false);
       resetForm();
     });
@@ -158,46 +192,95 @@ export default function User() {
                 onReset=${props.handleReset}
                 onSubmit=${props.handleSubmit}
               >
+                <${InputLabel} htmlFor="fullname">Nombre<//>
                 <${Field}
-                  as=${TextField}
-                  margin="normal"
+                  as=${OutlinedInput}
                   fullWidth
-                  label="Nombre"
                   id="fullname"
-                  fullname="fullname"
                   value=${props.values.fullname}
                   onChange=${props.handleChange}
                   error=${props.touched.fullname &&
                   Boolean(props.errors.fullname)}
-                  helperText=${props.touched.fullname && props.errors.fullname}
                 />
+                ${props.touched.fullname &&
+                html`<${FormHelperText} error>${props.errors.fullname}<//>`}
+                <${InputLabel} htmlFor="username">Usuario<//>
                 <${Field}
-                  as=${TextField}
-                  margin="normal"
+                  as=${OutlinedInput}
                   fullWidth
-                  label="Usuario"
                   id="username"
-                  username="username"
                   value=${props.values.username}
                   onChange=${props.handleChange}
                   error=${props.touched.username &&
                   Boolean(props.errors.username)}
                   helperText=${props.touched.username && props.errors.username}
                 />
+                ${props.touched.username &&
+                html`<${FormHelperText} error>${props.errors.username}<//>`}
+                <${InputLabel} htmlFor="password">Contraseña<//>
                 <${Field}
-                  as=${TextField}
-                  margin="normal"
+                  as=${OutlinedInput}
                   fullWidth
-                  label="Contraseña"
                   id="password"
-                  name="password"
-                  type="password"
+                  type=${viewPassword.password ? "text" : "password"}
                   value=${props.values.password}
                   onChange=${props.handleChange}
                   error=${props.touched.password &&
                   Boolean(props.errors.password)}
-                  helperText=${props.touched.password && props.errors.password}
+                  endAdornment=${html`<${InputAdornment} position="end">
+                    <${IconButton}
+                      aria-label="toggle password visibility"
+                      onClick=${() =>
+                        setViewPassword({
+                          ...viewPassword,
+                          password: !viewPassword.password,
+                        })}
+                      onMouseDown=${(e: React.MouseEvent<HTMLButtonElement>) =>
+                        e.preventDefault()}
+                      edge="end"
+                    >
+                      ${viewPassword.password
+                        ? html`<${VisibilityOff} />`
+                        : html`<${Visibility} />`}
+                    <//>
+                  <//>`}
                 />
+                ${props.touched.password &&
+                html`<${FormHelperText} error=${true}>
+                  ${props.errors.password}
+                <//>`}
+                <${InputLabel} htmlFor="verifyPassword">Verificar Contraseña<//>
+                <${Field}
+                  as=${OutlinedInput}
+                  fullWidth
+                  id="verifyPassword"
+                  type=${viewPassword.verifyPassword ? "text" : "password"}
+                  value=${props.values.verifyPassword}
+                  onChange=${props.handleChange}
+                  error=${props.touched.verifyPassword &&
+                  Boolean(props.errors.verifyPassword)}
+                  endAdornment=${html`<${InputAdornment} position="end">
+                    <${IconButton}
+                      aria-label="toggle password visibility"
+                      onClick=${() =>
+                        setViewPassword({
+                          ...viewPassword,
+                          verifyPassword: !viewPassword.verifyPassword,
+                        })}
+                      onMouseDown=${(e: React.MouseEvent<HTMLButtonElement>) =>
+                        e.preventDefault()}
+                      edge="end"
+                    >
+                      ${viewPassword.verifyPassword
+                        ? html`<${VisibilityOff} />`
+                        : html`<${Visibility} />`}
+                    <//>
+                  <//>`}
+                />
+                ${props.touched.verifyPassword &&
+                html`<${FormHelperText} error=${true}>
+                  ${props.errors.verifyPassword}
+                <//>`}
                 <${InputLabel} id="roleId">Rol de usuario<//>
                 <${Field}
                   as=${Select}
@@ -271,6 +354,8 @@ export default function User() {
                             <//>
                           </span>
                         <//>
+                        ${
+                          /*
                         <${Tooltip}
                           title=${selectedRow.id === user?.id
                             ? "No se puede borrar el usuario en uso"
@@ -288,7 +373,10 @@ export default function User() {
                               Borrar
                             <//>
                           </span>
-                        <//>
+                          <//>
+                           */
+                          null
+                        }
                       <//>
                     `
                   : html`
@@ -432,7 +520,6 @@ export default function User() {
             <${Table} stickyHeader aria-label="sticky table">
               <${TableHead}>
                 <${StyledTableRow}>
-                  <${StyledTableCell}>ID<//>
                   <${StyledTableCell}>Nombre<//>
                   <${StyledTableCell}>Usuario<//>
                   <${StyledTableCell}>Rol<//>
@@ -453,7 +540,6 @@ export default function User() {
                           key=${row.id}
                           onClick=${() => setSelectedRow(row)}
                         >
-                          <${StyledTableCell}>${row.id}<//>
                           <${StyledTableCell}>${row.fullname}<//>
                           <${StyledTableCell}>${row.username}<//>
                           <${StyledTableCell}>${row.role.name}<//>

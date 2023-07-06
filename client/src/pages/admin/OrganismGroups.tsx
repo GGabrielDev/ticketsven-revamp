@@ -196,6 +196,8 @@ export default function OrganismGroup() {
                             <//>
                           </span>
                         <//>
+                        ${
+                          /*
                         <${Tooltip} title="Borrar " placement="top-end">
                           <span>
                             <${Button}
@@ -209,7 +211,10 @@ export default function OrganismGroup() {
                               Borrar
                             <//>
                           </span>
-                        <//>
+                          <//>
+                          */
+                          null
+                        }
                       <//>
                     `
                   : html`

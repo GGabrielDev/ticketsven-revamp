@@ -28,6 +28,12 @@ export class OrganismGroup extends Model<
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
+  // createdAt can be undefined during creation
+  declare createdAt: CreationOptional<Date>;
+  // updatedAt can be undefined during creation
+  declare updatedAt: CreationOptional<Date>;
+  // deletedAt can be undefined during creation (paranoid table)
+  declare deletedAt: CreationOptional<Date>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -85,6 +91,13 @@ OrganismGroup.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    },
+    updatedAt: DataTypes.DATE,
+    deletedAt: DataTypes.DATE,
   },
   {
     sequelize,
@@ -93,7 +106,6 @@ OrganismGroup.init(
       plural: "organismGroups",
     },
     tableName: "organismGroups",
-    timestamps: false,
     paranoid: true,
   }
 );

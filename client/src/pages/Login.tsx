@@ -1,4 +1,4 @@
-import { useEffect } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { html } from "htm/preact";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,7 +6,12 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormHelperText,
   Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
   Paper,
   SxProps,
   TextField,
@@ -19,7 +24,8 @@ import LoadingBox from "../components/LoadingBox";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { actions, selectors } from "../redux/features/user/userSlice";
 import Logo from "../assets/logo.png";
-import SplashImage from "../assets/ind_user.png";
+import SplashImage from "../assets/ind_user.jpeg";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 type FormData = {
   username: string;
@@ -30,6 +36,7 @@ const { loginUser } = actions;
 const { selectError, selectStatus, selectToken, selectUser } = selectors;
 
 export default function LoginPage() {
+  const [viewPassword, setViewPassword] = useState(false);
   // Define the initial values for the form
   const initialValues: FormData = {
     username: "",
@@ -83,7 +90,7 @@ export default function LoginPage() {
                 theme.palette.mode === "light"
                   ? theme.palette.grey[50]
                   : theme.palette.grey[900],
-              backgroundSize: "cover",
+              backgroundSize: "contain",
               backgroundPosition: "center",
             } as SxProps<typeof theme>}
           />
@@ -116,6 +123,7 @@ export default function LoginPage() {
                 href="/"
                 sx=${{
                   height: 92,
+                  mb: 8,
                 }}
                 alt="Your logo."
                 src=${Logo}
@@ -136,14 +144,11 @@ export default function LoginPage() {
                     onReset=${props.handleReset}
                     onSubmit=${props.handleSubmit}
                   >
+                    <${InputLabel} htmlFor="username">Nombre de Usuario<//>
                     <${Field}
-                      as=${TextField}
-                      margin="normal"
+                      as=${OutlinedInput}
                       fullWidth
-                      label="Nombre de Usuario"
                       id="username"
-                      name="username"
-                      autoComplete="username"
                       value=${props.values.username}
                       onChange=${props.handleChange}
                       error=${props.touched.username &&
@@ -151,22 +156,37 @@ export default function LoginPage() {
                       helperText=${props.touched.username &&
                       props.errors.username}
                     />
+                    ${props.touched.username &&
+                    html`<${FormHelperText} error>${props.errors.username}<//>`}
+                    <${InputLabel} htmlFor="password">Contraseña<//>
                     <${Field}
-                      as=${TextField}
-                      margin="normal"
+                      as=${OutlinedInput}
                       fullWidth
-                      label="Contraseña"
                       id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
+                      type=${viewPassword ? "text" : "password"}
                       value=${props.values.password}
                       onChange=${props.handleChange}
                       error=${props.touched.password &&
                       Boolean(props.errors.password)}
-                      helperText=${props.touched.password &&
-                      props.errors.password}
+                      endAdornment=${html`<${InputAdornment} position="end">
+                        <${IconButton}
+                          aria-label="toggle password visibility"
+                          onClick=${() => setViewPassword(!viewPassword)}
+                          onMouseDown=${(
+                            e: React.MouseEvent<HTMLButtonElement>
+                          ) => e.preventDefault()}
+                          edge="end"
+                        >
+                          ${viewPassword
+                            ? html`<${VisibilityOff} />`
+                            : html`<${Visibility} />`}
+                        <//>
+                      <//>`}
                     />
+                    ${props.touched.password &&
+                    html`<${FormHelperText} error=${true}>
+                      ${props.errors.password}
+                    <//>`}
                     <${Button}
                       disabled=${props.isSubmitting}
                       type="submit"

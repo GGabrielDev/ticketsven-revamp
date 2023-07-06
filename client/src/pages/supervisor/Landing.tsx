@@ -241,12 +241,28 @@ export default function Landing() {
                         >Seleccione un rango de fecha<//
                       >
                     `
-                  : count.map(
-                      (value) => html`
-                        <${Typography} variant="h5">${value.closing_state}<//>
-                        <${Typography} variant="h4">${value.count}<//>
-                      `
-                    )}
+                  : [
+                      ...count.map(
+                        (value) => html`
+                          <${Typography} variant="h6">${value.closing_state}<//>
+                          <${Typography} variant="h5">${value.count}<//>
+                        `
+                      ),
+                      html`
+                        <${Typography} variant="h6" sx=${{ fontWeight: 900 }}
+                          >Total de llamadas<//
+                        >
+                        <${Typography} variant="h5"
+                          >${count.reduce(
+                            (acc, value) =>
+                              (acc += parseInt(
+                                value.count as unknown as string
+                              )),
+                            0
+                          )}<//
+                        >
+                      `,
+                    ]}
               <//>
             <//>
           <//>

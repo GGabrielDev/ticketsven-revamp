@@ -42,6 +42,6 @@ export const startDbForce = async () => {
 export const startDbNormal = async () => {
   checkConnection().then(async () => {
     console.log("Normal DB start scheduled");
-		await sequelize.sync();
+    await sequelize.sync({ alter: true });
   });
 };

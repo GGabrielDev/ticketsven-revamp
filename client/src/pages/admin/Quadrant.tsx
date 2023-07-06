@@ -226,7 +226,7 @@ export default function Parish() {
                         justifyContent="space-between"
                       >
                         <${Tooltip}
-                          title="Editar Parroquia"
+                          title="Editar Cuadrante"
                           placement="top-end"
                         >
                           <span>
@@ -240,6 +240,8 @@ export default function Parish() {
                             <//>
                           </span>
                         <//>
+                        ${
+                          /*
                         <${Tooltip}
                           title="Borrar Cuadrante"
                           placement="top-end"
@@ -255,7 +257,10 @@ export default function Parish() {
                               Borrar
                             <//>
                           </span>
-                        <//>
+                          <//>
+                          */
+                          null
+                        }
                       <//>
                     `
                   : html`
