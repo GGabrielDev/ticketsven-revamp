@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Container,
+  Divider,
   FormControl,
   Grid,
   InputLabel,
@@ -242,26 +243,28 @@ export default function Landing() {
                       >
                     `
                   : [
-                      ...count.map(
-                        (value) => html`
-                          <${Typography} variant="h6">${value.closing_state}<//>
-                          <${Typography} variant="h5">${value.count}<//>
-                        `
-                      ),
                       html`
-                        <${Typography} variant="h6" sx=${{ fontWeight: 900 }}
-                          >Total de llamadas<//
-                        >
-                        <${Typography} variant="h5"
-                          >${count.reduce(
+                        <${Typography} variant="h5" sx=${{ fontWeight: 900 }}>
+                          Total de llamadas:
+                          ${` ` +
+                          count.reduce(
                             (acc, value) =>
                               (acc += parseInt(
                                 value.count as unknown as string
                               )),
                             0
-                          )}<//
-                        >
+                          )}
+                        <//>
                       `,
+                      html`<${Divider} />`,
+                      ...count.map(
+                        (value) => html`
+                          <${Typography} variant="h5"
+                            >${value.closing_state + `: `}
+                            <strong>${value.count}</strong>
+                          <//>
+                        `
+                      ),
                     ]}
               <//>
             <//>
