@@ -1,6 +1,6 @@
-import { useEffect, useState } from "preact/hooks";
-import { html } from "htm/preact";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "preact/hooks";
+import {html} from "htm/preact";
+import {useNavigate} from "react-router-dom";
 import {
   Alert,
   Box,
@@ -17,23 +17,26 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { Formik, FormikHelpers, FormikProps, Field } from "formik";
+import {useTheme} from "@mui/material/styles";
+import {Formik, FormikHelpers, FormikProps, Field} from "formik";
 import * as Yup from "yup";
 import LoadingBox from "../components/LoadingBox";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { actions, selectors } from "../redux/features/user/userSlice";
+import {useAppDispatch, useAppSelector} from "../redux/hooks";
+import {actions, selectors} from "../redux/features/user/userSlice";
 import Logo from "../assets/logo.png";
-import SplashImage from "../assets/ind_user.jpeg";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import SplashImage from "../assets/fon_12.png";
+import SideLogo1 from "../assets/MPPRIJP.png";
+import SideLogo2 from "../assets/GMCDP.png";
+import CompanyLogo from "../assets/big-logo.png";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 type FormData = {
   username: string;
   password: string;
 };
 
-const { loginUser } = actions;
-const { selectError, selectStatus, selectToken, selectUser } = selectors;
+const {loginUser} = actions;
+const {selectError, selectStatus, selectToken, selectUser} = selectors;
 
 export default function LoginPage() {
   const [viewPassword, setViewPassword] = useState(false);
@@ -65,7 +68,7 @@ export default function LoginPage() {
   // Define the submit handler for the form
   const handleSubmit = (
     values: FormData,
-    { setSubmitting }: FormikHelpers<FormData>
+    {setSubmitting}: FormikHelpers<FormData>
   ) => {
     dispatch(loginUser(values)).then(() => setSubmitting(false));
   };
@@ -77,23 +80,55 @@ export default function LoginPage() {
   // Define the render method for the form component
   return !((!user && token) || status === "Loading" || user)
     ? html`
-        <${Grid} container component="main" sx=${{ height: "100vh" }}>
+        <${Grid} container component="main" sx=${{height: "100vh"}}>
           <${Grid}
             item
             xs=${false}
             sm=${4}
             md=${7}
             sx=${{
-              backgroundImage: `url(${SplashImage})`,
-              backgroundRepeat: "no-repeat",
-              backgroundColor: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.grey[50]
-                  : theme.palette.grey[900],
-              backgroundSize: "contain",
-              backgroundPosition: "center",
-            } as SxProps<typeof theme>}
-          />
+        backgroundImage: `url(${SplashImage})`,
+        backgroundRepeat: "no-repeat",
+        backgroundColor: (theme) =>
+          theme.palette.mode === "light"
+            ? theme.palette.grey[50]
+            : theme.palette.grey[900],
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      } as SxProps<typeof theme>}
+          >
+            <${Box}
+              sx=${{
+        height: "fit-content",
+        width: 1,
+        py: 2,
+        px: 4,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+            >
+              <${Box} component="img" src=${SideLogo1} sx=${{width: 96}} />
+              <${Typography}
+                variant="h4"
+                sx=${{textAlign: "center", fontWeight: 800}}
+              >
+                Sistema de Administración de Incidencias
+              <//>
+              <${Box} component="img" src=${SideLogo2} sx=${{width: 96}} />
+            <//>
+            <${Box}
+              component="img"
+              src=${CompanyLogo}
+              sx=${{
+        position: "relative",
+        top: "calc(50% - 256px)",
+        left: "calc(50% - 152px)",
+        height: 256,
+        width: 304,
+      }}
+            />
+          <//>
           <${Grid}
             item
             xs=${12}
@@ -104,27 +139,27 @@ export default function LoginPage() {
             square
           >
             ${error !== undefined
-              ? error.message === "Autorización del Token fallida."
-                ? ""
-                : html`<${Alert} severity="error">${error.message}<//>`
-              : ""}
+        ? error.message === "Autorización del Token fallida."
+          ? ""
+          : html`<${Alert} severity="error">${error.message}<//>`
+        : ""}
             <${Box}
               sx=${{
-                my: 8,
-                mx: 4,
-                gap: 2,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
+        my: 8,
+        mx: 4,
+        gap: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
             >
               <${Box}
                 component="img"
                 href="/"
                 sx=${{
-                  height: 92,
-                  mb: 8,
-                }}
+        height: 92,
+        mb: 8,
+      }}
                 alt="Your logo."
                 src=${Logo}
               />
@@ -140,7 +175,7 @@ export default function LoginPage() {
                   <${Box}
                     component="form"
                     noValidate
-                    sx=${{ mt: 1 }}
+                    sx=${{mt: 1}}
                     onReset=${props.handleReset}
                     onSubmit=${props.handleSubmit}
                   >
@@ -152,12 +187,12 @@ export default function LoginPage() {
                       value=${props.values.username}
                       onChange=${props.handleChange}
                       error=${props.touched.username &&
-                      Boolean(props.errors.username)}
+        Boolean(props.errors.username)}
                       helperText=${props.touched.username &&
-                      props.errors.username}
+        props.errors.username}
                     />
                     ${props.touched.username &&
-                    html`<${FormHelperText} error>${props.errors.username}<//>`}
+        html`<${FormHelperText} error>${props.errors.username}<//>`}
                     <${InputLabel} htmlFor="password">Contraseña<//>
                     <${Field}
                       as=${OutlinedInput}
@@ -167,24 +202,24 @@ export default function LoginPage() {
                       value=${props.values.password}
                       onChange=${props.handleChange}
                       error=${props.touched.password &&
-                      Boolean(props.errors.password)}
+        Boolean(props.errors.password)}
                       endAdornment=${html`<${InputAdornment} position="end">
                         <${IconButton}
                           aria-label="toggle password visibility"
                           onClick=${() => setViewPassword(!viewPassword)}
                           onMouseDown=${(
-                            e: React.MouseEvent<HTMLButtonElement>
-                          ) => e.preventDefault()}
+          e: React.MouseEvent<HTMLButtonElement>
+        ) => e.preventDefault()}
                           edge="end"
                         >
                           ${viewPassword
-                            ? html`<${VisibilityOff} />`
-                            : html`<${Visibility} />`}
+            ? html`<${VisibilityOff} />`
+            : html`<${Visibility} />`}
                         <//>
                       <//>`}
                     />
                     ${props.touched.password &&
-                    html`<${FormHelperText} error=${true}>
+        html`<${FormHelperText} error=${true}>
                       ${props.errors.password}
                     <//>`}
                     <${Button}
@@ -192,11 +227,11 @@ export default function LoginPage() {
                       type="submit"
                       fullWidth
                       variant="contained"
-                      sx=${{ p: 1, mt: 3, mb: 2 }}
+                      sx=${{p: 1, mt: 3, mb: 2}}
                     >
                       ${props.isSubmitting
-                        ? html`<${CircularProgress} size=${24} />`
-                        : "Iniciar Sesión"}
+          ? html`<${CircularProgress} size=${24} />`
+          : "Iniciar Sesión"}
                     <//>
                   <//>
                 `}
