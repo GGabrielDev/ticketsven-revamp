@@ -247,8 +247,6 @@ export default function Parish() {
                             <//>
                           </span>
                         <//>
-                        ${
-                          /*
                         <${Tooltip}
                           title="Borrar Organismo"
                           placement="top-end"
@@ -266,9 +264,6 @@ export default function Parish() {
                           </span>
                         <//>
                         <//>
-                        */
-                          null
-                        }
                       <//>
                     `
                   : html`

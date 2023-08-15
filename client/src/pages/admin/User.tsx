@@ -354,8 +354,6 @@ export default function User() {
                             <//>
                           </span>
                         <//>
-                        ${
-                          /*
                         <${Tooltip}
                           title=${selectedRow.id === user?.id
                             ? "No se puede borrar el usuario en uso"
@@ -373,10 +371,7 @@ export default function User() {
                               Borrar
                             <//>
                           </span>
-                          <//>
-                           */
-                          null
-                        }
+                        <//>
                       <//>
                     `
                   : html`

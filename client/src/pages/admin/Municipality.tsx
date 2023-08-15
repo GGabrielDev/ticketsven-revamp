@@ -209,8 +209,6 @@ export default function Municipality() {
                             <//>
                           </span>
                         <//>
-                        ${
-                          /*
                         <${Tooltip}
                           title=${selectedRow.parishes.length > 0
                             ? "No se puede borrar si tiene parroquias asignadas"
@@ -229,9 +227,7 @@ export default function Municipality() {
                               Borrar
                             <//>
                           </span>
-                          <//>*/
-                          null
-                        }
+                        <//>
                       <//>
                     `
                   : html`

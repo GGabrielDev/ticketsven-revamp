@@ -247,8 +247,6 @@ export default function Parish() {
                             <//>
                           </span>
                         <//>
-                        ${
-                          /*
                         <${Tooltip}
                           title=${selectedRow.quadrants.length > 0
                             ? "No se puede borrar si tiene CCPs asignados"
@@ -267,9 +265,7 @@ export default function Parish() {
                               Borrar
                             <//>
                           </span>
-                          <//>
-                           */
-                          null
+                        <//>
                         }
                       <//>
                     `
