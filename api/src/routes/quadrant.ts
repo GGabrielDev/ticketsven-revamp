@@ -1,26 +1,30 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
 import { Parish } from "../models/Parish";
 import { Quadrant } from "../models/Quadrant";
 import HttpException from "../exceptions/HttpException";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
+// Type Declarations
 interface IQuadrantBody {
   name: string;
   parishId: number;
 }
 
-interface IQuadrantQuery {
-  parishId: string;
-}
-
 type RouteRequest = Request<
   Record<"parishId" | "quadrantId", string>,
-  IQuadrantQuery,
+  Record<"parishId", string>,
   IQuadrantBody
 >;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",

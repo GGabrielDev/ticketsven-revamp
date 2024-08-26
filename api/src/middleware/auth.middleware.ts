@@ -1,13 +1,21 @@
-import { RequestHandler } from "express";
+// Package Imports
 import { verify } from "jsonwebtoken";
+
+// File Imports
 import HttpException from "../exceptions/HttpException";
 import { User } from "../models/User";
 import { Role } from "../models/Role";
 
-const { JWT_SECRET } = process.env;
+// Type Imports
+import type { RequestHandler } from "express";
 
+// Type Declarations
 type Roles = "operator" | "dispatcher" | "supervisor" | "admin";
 
+// Const Declarations
+const { JWT_SECRET } = process.env;
+
+// Logic
 export const authJWT: RequestHandler = (req, _, next) => {
   try {
     if (!JWT_SECRET)

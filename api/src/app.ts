@@ -1,12 +1,18 @@
+// Package Declarations
 import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
+
+// File Declarations
 import routes from "./routes/index.js";
 import errorHandler from "./middleware/error.middleware";
 
+// Const Declarations
+// TODO: Set the server to start on localhost if this variable is not declared and output that information to the console.
 const { CLIENT_URL } = process.env;
 
+// Logic
 express.json({ limit: "50mb" });
 const server = express();
 

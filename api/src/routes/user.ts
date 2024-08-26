@@ -1,11 +1,16 @@
-import { Router, Request, Response, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
 import HttpException from "../exceptions/HttpException";
 import { User } from "../models/User";
 import { Role } from "../models/Role";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
+// Type Declarations
 type RequestUserParams = {
   userId: string;
 };
@@ -22,6 +27,9 @@ type RouteRequest = Request<
   Record<string, never>,
   RequestUserBody
 >;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",

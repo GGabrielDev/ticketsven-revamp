@@ -1,6 +1,14 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import { Parish } from "./Parish";
+import { Ticket } from "./Ticket";
+
+// Type Imports
+import type {
   Association,
-  DataTypes,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -11,16 +19,13 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
-  Model,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Parish } from "./Parish";
-import { Ticket } from "./Ticket";
 
+// Class Declaration
 export class Municipality extends Model<
   InferAttributes<Municipality>,
   InferCreationAttributes<Municipality>
@@ -71,6 +76,7 @@ export class Municipality extends Model<
   };
 }
 
+// Model Inizialization
 Municipality.init(
   {
     id: {

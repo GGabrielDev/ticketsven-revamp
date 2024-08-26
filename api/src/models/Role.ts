@@ -1,6 +1,13 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import { User } from "./User";
+
+// Type Imports
+import type {
   Association,
-  DataTypes,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -11,15 +18,13 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
-  Model,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { User } from "./User";
 
+// Class Declaration
 export class Role extends Model<
   InferAttributes<Role>,
   InferCreationAttributes<Role>
@@ -57,6 +62,7 @@ export class Role extends Model<
   };
 }
 
+// Model Inizialization
 Role.init(
   {
     id: {

@@ -1,12 +1,19 @@
-import { Router, Request, Response, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { sign } from "jsonwebtoken";
+
+// File Imports
 import HttpException from "../exceptions/HttpException";
 import { User } from "../models/User";
 
+// Const Declarations
+// TODO: Make this enviromental variables mandatory for the system to startup
 const { JWT_SECRET, JWT_EXPIRE } = process.env;
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
+// Type Declarations
 interface IAuthBody {
   username: string;
   password: string;
@@ -19,6 +26,9 @@ type RouteRequest = Request<
   Record<string, never>,
   IAuthBody
 >;
+
+// Logic
+const router = Router();
 
 router.post(
   "/login",

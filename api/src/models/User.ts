@@ -1,4 +1,14 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+import bcrypt from "bcryptjs";
+
+// File Imports
+import sequelize from "../db/config";
+import { Ticket } from "./Ticket";
+import { Role } from "./Role";
+
+// Type Imports
+import type {
   CreationOptional,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
@@ -12,19 +22,17 @@ import {
   BelongsToManyRemoveAssociationsMixin,
   BelongsToManyCountAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
-  DataTypes,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
   Association,
 } from "sequelize";
-import bcrypt from "bcryptjs";
-import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { Role } from "./Role";
 
+// Const Declarations
+const saltRounds = 10;
+
+// Class Declaration
 export class User extends Model<
   InferAttributes<User>,
   InferCreationAttributes<User>
@@ -86,8 +94,7 @@ export class User extends Model<
   declare validatePassword: NonAttribute<(password: string) => boolean>;
 }
 
-const saltRounds = 10;
-
+// Model Inizialization
 User.init(
   {
     id: {
@@ -131,6 +138,7 @@ User.init(
     paranoid: true,
   }
 );
+// Model Hooks
 User.beforeCreate(async (user) => {
   try {
     const salt = await bcrypt.genSalt(saltRounds);

@@ -1,17 +1,18 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
 import { Quadrant } from "../models/Quadrant";
 import { Municipality } from "../models/Municipality";
 import { Parish } from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
-interface IParishParams {
-  parishId: number;
-}
-
+// Type Declarations
 interface IParishQuery {
   name: string;
   municipalityId: number;
@@ -22,7 +23,14 @@ interface IParishBody {
   municipalityId: number;
 }
 
-type RouteRequest = Request<IParishParams, IParishQuery, IParishBody>;
+type RouteRequest = Request<
+  Record<"parishId", number>,
+  IParishQuery,
+  IParishBody
+>;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",

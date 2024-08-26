@@ -1,7 +1,10 @@
 import { Sequelize } from "sequelize";
 
+// Const Declarations
+// TODO: Force the server not to start if this enviromantal variables are not declared.
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT } = process.env;
 
+// Logic
 export default new Sequelize(
   DB_NAME as string,
   DB_USER as string,

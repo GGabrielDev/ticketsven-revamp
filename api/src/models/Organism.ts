@@ -1,10 +1,18 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import { Ticket } from "./Ticket";
+import { OrganismGroup } from "./OrganismGroup";
+
+// Type Imports
+import type {
   Association,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
   CreationOptional,
-  DataTypes,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -18,13 +26,10 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { OrganismGroup } from "./OrganismGroup";
 
+// Class Declaration
 export class Organism extends Model<
   InferAttributes<Organism>,
   InferCreationAttributes<Organism>
@@ -79,6 +84,7 @@ export class Organism extends Model<
   };
 }
 
+// Model Inizialization
 Organism.init(
   {
     id: {

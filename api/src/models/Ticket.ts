@@ -1,4 +1,18 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import { User } from "./User";
+import { Municipality } from "./Municipality";
+import { Organism } from "./Organism";
+import { OrganismGroup } from "./OrganismGroup";
+import { Parish } from "./Parish";
+import { Reason } from "./Reason";
+import { Quadrant } from "./Quadrant";
+
+// Type Imports
+import type {
   Association,
   BelongsToGetAssociationMixin,
   BelongsToCreateAssociationMixin,
@@ -13,21 +27,13 @@ import {
   BelongsToManyCountAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
   CreationOptional,
-  DataTypes,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { User } from "./User";
-import { Municipality } from "./Municipality";
-import { Organism } from "./Organism";
-import { OrganismGroup } from "./OrganismGroup";
-import { Parish } from "./Parish";
-import { Reason } from "./Reason";
-import { Quadrant } from "./Quadrant";
+
+// Class Declaration
 export class Ticket extends Model<
   InferAttributes<Ticket>,
   InferCreationAttributes<Ticket>
@@ -138,6 +144,7 @@ export class Ticket extends Model<
   };
 }
 
+// Model Inizialization
 Ticket.init(
   {
     id: {

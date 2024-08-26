@@ -1,10 +1,14 @@
+// File Imports
 import sequelize from "./config";
 import initAssociations from "./associations";
 import { Role } from "../models/Role";
 import { User } from "../models/User";
 
+// Const declarations
+// TODO: If the program is started on the mode that requires this variables, force the program not to start if they are not provided.
 const { ADMIN_USER, ADMIN_PASSWORD } = process.env;
 
+// Logic
 // Test function to check the connectivity to the database.
 const checkConnection = async () => {
   try {

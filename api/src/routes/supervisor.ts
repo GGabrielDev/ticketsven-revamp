@@ -1,16 +1,23 @@
-import { Router, Request, Response, NextFunction } from "express";
-import sequelize from "sequelize";
-import { Op } from "sequelize";
+// Package Imports
+import { Router } from "express";
+import sequelize, { Op } from "sequelize";
+
+// File Imports
 import HttpException from "../exceptions/HttpException";
 import { Reason } from "../models/Reason";
 import { Ticket } from "../models/Ticket";
 
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
+
+// Type Declarations
 type RouteRequest = Request<
   Record<string, never>, // Params
   Record<"startDate" | "endDate", string>, // Query
   Record<string, never> // Body
 >;
 
+// Logic
 const router = Router();
 
 router.get("/dates", async (_, res: Response, next: NextFunction) => {
