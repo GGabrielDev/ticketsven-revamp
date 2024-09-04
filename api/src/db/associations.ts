@@ -77,7 +77,11 @@ export default () => {
   });
 
   // Role associations
-  Role.hasMany(User, { sourceKey: "id", foreignKey: "roleId", as: "users" });
+  Role.belongsToMany(User, {
+    sourceKey: "id",
+    foreignKey: "roleId",
+    through: "user_roles",
+  });
 
   // Ticket associations
   Ticket.belongsTo(Municipality, {
@@ -99,7 +103,11 @@ export default () => {
   });
 
   // User associations
-  User.belongsTo(Role, { foreignKey: "roleId", as: "role" });
+  User.belongsToMany(Role, {
+    sourceKey: "id",
+    foreignKey: "userId",
+    through: "user_roles",
+  });
   User.belongsToMany(Ticket, {
     sourceKey: "id",
     foreignKey: "userId",

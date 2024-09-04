@@ -19,14 +19,11 @@
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Package Imports
-import * as dotenv from "dotenv";
+import "dotenv/config";
 
 // File Imports
 import server from "./src/app";
 import { startDbForce, startDbNormal } from "./src/db/init";
-
-// Enviromental variables inizialization
-dotenv.config();
 
 // Const Declaration
 // TODO: Force program not to start if this enviromental variable is not declared

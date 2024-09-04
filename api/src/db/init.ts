@@ -25,21 +25,46 @@ export const startDbForce = async () => {
     console.log(
       "Force DB start scheduled - Wiping DB and creating default roles"
     );
-    await sequelize.sync({ force: true });
-    const adminRole = await Role.create({ id: 1, name: "admin" });
-    await Role.create({ id: 2, name: "supervisor" });
-    await Role.create({ id: 3, name: "dispatcher" });
-    await Role.create({ id: 4, name: "operator" });
 
-    const adminUser = await User.create({
-      username: ADMIN_USER || "admin",
-      fullname: "Administrador del Sistema",
-      password: ADMIN_PASSWORD || "password",
-    });
+    await sequelize.sync({ force: true }); // Sync without a transaction
 
-    adminRole.addUser(adminUser);
+    // Use a transaction for the role and user creation operations
+    await sequelize
+      .transaction(async (transaction) => {
+        // Create roles
+        const adminRole = await Role.create({ name: "admin" }, { transaction });
 
-    console.log("Roles and Admin User created.");
+        await Role.create({ name: "supervisor" }, { transaction });
+        await Role.create({ name: "dispatcher" }, { transaction });
+        await Role.create({ name: "operator" }, { transaction });
+
+        // Retrieve the role from the database to ensure it's there
+        const fetchedAdminRole = await Role.findOne({
+          where: { name: "admin" },
+          transaction,
+        });
+        if (!fetchedAdminRole) {
+          throw new Error("Admin role was not found after creation.");
+        }
+
+        // Create admin user
+        const adminUser = await User.create(
+          {
+            username: ADMIN_USER || "admin",
+            fullname: "Administrador del Sistema",
+            password: ADMIN_PASSWORD || "password",
+          },
+          { transaction }
+        );
+
+        // Add user to role
+        await fetchedAdminRole.addUser(adminUser, { transaction });
+
+        console.log("Roles and Admin User created.");
+      })
+      .catch((err) => {
+        console.error("Transaction failed:", err);
+      });
   });
 };
 

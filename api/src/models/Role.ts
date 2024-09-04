@@ -8,16 +8,15 @@ import { User } from "./User";
 // Type Imports
 import type {
   Association,
-  HasManyAddAssociationMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationsMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyHasAssociationMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManyRemoveAssociationsMixin,
+  BelongsToManyCountAssociationsMixin,
+  BelongsToManyCreateAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
@@ -30,7 +29,7 @@ export class Role extends Model<
   InferCreationAttributes<Role>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  declare id: CreationOptional<number>;
+  declare id: CreationOptional<string>;
   declare name: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
@@ -42,20 +41,20 @@ export class Role extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getUsers: HasManyGetAssociationsMixin<User>; // Note the null assertions!
-  declare countUsers: HasManyCountAssociationsMixin;
-  declare hasUser: HasManyHasAssociationMixin<User, User["id"]>;
-  declare hasUsers: HasManyHasAssociationsMixin<User, User["id"]>;
-  declare setUsers: HasManySetAssociationsMixin<User, User["id"]>;
-  declare addUser: HasManyAddAssociationMixin<User, User["id"]>;
-  declare addUsers: HasManyAddAssociationsMixin<User, User["id"]>;
-  declare removeUser: HasManyRemoveAssociationMixin<User, User["id"]>;
-  declare removeUsers: HasManyRemoveAssociationsMixin<User, User["id"]>;
-  declare createUser: HasManyCreateAssociationMixin<User, "roleId">;
+  declare getUsers: BelongsToManyGetAssociationsMixin<User>;
+  declare countUsers: BelongsToManyCountAssociationsMixin;
+  declare hasUser: BelongsToManyHasAssociationMixin<User, User["id"]>;
+  declare hasUsers: BelongsToManyHasAssociationMixin<User, User["id"]>;
+  declare setUsers: BelongsToManySetAssociationsMixin<User, User["id"]>;
+  declare addUser: BelongsToManyAddAssociationMixin<User, User["id"]>;
+  declare addUsers: BelongsToManyAddAssociationsMixin<User, User["id"]>;
+  declare removeUser: BelongsToManyRemoveAssociationMixin<User, User["id"]>;
+  declare removeUsers: BelongsToManyRemoveAssociationsMixin<User, User["id"]>;
+  declare createUser: BelongsToManyCreateAssociationMixin<User>;
 
-  // You can also pre-declare possible inclusions, these will only be populated if you
-  // actively include a relation.
-  declare users?: NonAttribute<User[]>; // Note this is optional since it's only populated when explicitly requested in code
+  // You can also pre-declare possible inclusions, these will only be
+  // populated if you actively include a relation.
+  declare users?: NonAttribute<User[]>;
 
   declare static associations: {
     users: Association<Role, User>;
@@ -66,9 +65,9 @@ export class Role extends Model<
 Role.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     name: {
       type: DataTypes.STRING,

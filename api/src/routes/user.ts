@@ -11,21 +11,10 @@ import { Role } from "../models/Role";
 import type { Request, Response, NextFunction } from "express";
 
 // Type Declarations
-type RequestUserParams = {
-  userId: string;
-};
-
-type RequestUserBody = {
-  username: string;
-  password: string;
-  fullname: string;
-  roleId: number;
-};
-
 type RouteRequest = Request<
-  RequestUserParams,
+  Record<"userId", string>,
   Record<string, never>,
-  RequestUserBody
+  Record<"username" | "password" | "fullname" | "roleId", string>
 >;
 
 // Logic
@@ -89,7 +78,7 @@ router.post(
         password,
         fullname,
       });
-      await user.setRole(role);
+      await user.addRole(role);
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {
@@ -111,15 +100,18 @@ router.put(
     try {
       const { userId } = req.params;
       const { username, password, fullname, roleId } = req.body;
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId, {
+        include: [{ model: Role, as: "roles" }],
+      });
       if (!user)
         throw new HttpException(404, "The selected user doesn't exists");
       user.update({ username, password, fullname });
-      if (!(user.roleId === roleId)) {
+
+      if (user.roles && !user.roles.some((role) => role.id === roleId)) {
         const role = await Role.findByPk(roleId);
         if (!role)
           throw new HttpException(404, "The selected role doesn't exists");
-        user.setRole(role);
+        user.addRole(role);
       }
       return res.status(201).json(
         await User.findByPk(user.id, {

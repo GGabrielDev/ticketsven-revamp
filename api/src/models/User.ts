@@ -10,9 +10,6 @@ import { Role } from "./Role";
 // Type Imports
 import type {
   CreationOptional,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToCreateAssociationMixin,
   BelongsToManyGetAssociationsMixin,
   BelongsToManyAddAssociationsMixin,
   BelongsToManySetAssociationsMixin,
@@ -22,7 +19,6 @@ import type {
   BelongsToManyRemoveAssociationsMixin,
   BelongsToManyCountAssociationsMixin,
   BelongsToManyCreateAssociationMixin,
-  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
@@ -49,21 +45,19 @@ export class User extends Model<
   // deletedAt can be undefined during creation (paranoid table)
   declare deletedAt: CreationOptional<Date>;
 
-  // foreign keys are automatically added by associations methods (like Project.belongsTo)
-  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
-  // display an error if ownerId is missing.
-  declare roleId: ForeignKey<Role["id"]>;
-
-  // `municipality` is an eagerly-loaded association.
-  // We tag it as `NonAttribute`
-  declare role?: NonAttribute<Role>;
-
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getRole: BelongsToGetAssociationMixin<Role>;
-  declare setRole: BelongsToSetAssociationMixin<Role, Role["id"]>;
-  declare createRole: BelongsToCreateAssociationMixin<Role>;
+  declare getRoles: BelongsToManyGetAssociationsMixin<Role>;
+  declare countRoles: BelongsToManyCountAssociationsMixin;
+  declare hasRole: BelongsToManyHasAssociationMixin<Role, Role["id"]>;
+  declare hasRoles: BelongsToManyHasAssociationMixin<Role, Role["id"]>;
+  declare setRoles: BelongsToManySetAssociationsMixin<Role, Role["id"]>;
+  declare addRole: BelongsToManyAddAssociationMixin<Role, Role["id"]>;
+  declare addRoles: BelongsToManyAddAssociationsMixin<Role, Role["id"]>;
+  declare removeRole: BelongsToManyRemoveAssociationMixin<Role, Role["id"]>;
+  declare removeRoles: BelongsToManyRemoveAssociationsMixin<Role, Role["id"]>;
+  declare createRole: BelongsToManyCreateAssociationMixin<Role>;
 
   declare getTickets: BelongsToManyGetAssociationsMixin<Ticket>;
   declare countTickets: BelongsToManyCountAssociationsMixin;
@@ -85,9 +79,10 @@ export class User extends Model<
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare tickets?: NonAttribute<Ticket[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare roles?: NonAttribute<Role[]>;
 
   public declare static associations: {
-    role: Association<User, Role>;
+    roles: Association<User, Role>;
     tickets: Association<User, Ticket>;
   };
 

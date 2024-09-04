@@ -10,7 +10,7 @@ import { Role } from "../models/Role";
 import type { RequestHandler } from "express";
 
 // Type Declarations
-type Roles = "operator" | "dispatcher" | "supervisor" | "admin";
+type AssignedRoles = "operator" | "dispatcher" | "supervisor" | "admin";
 
 // Const Declarations
 const { JWT_SECRET } = process.env;
@@ -38,36 +38,43 @@ export const authJWT: RequestHandler = (req, _, next) => {
   }
 };
 
-export const authRole: (role: Roles | Roles[]) => RequestHandler =
-  (role) => async (req, _, next) => {
-    try {
-      if (!req.userId)
-        throw new HttpException(500, "Autenticación debe de ser verificada.");
-      const user = await User.findByPk(req.userId, {
-        include: [{ model: Role, as: "role" }],
-      });
-      if (user === null)
-        throw new HttpException(404, "El usuario asignado al token no existe.");
-      req.user = user;
-      const roleName = (await user.getRole()).name as Roles;
-      switch (typeof role) {
-        case "string":
-          if (roleName !== role)
+export const authRole: (
+  role: AssignedRoles | AssignedRoles[]
+) => RequestHandler = (role) => async (req, _, next) => {
+  try {
+    if (!req.userId)
+      throw new HttpException(500, "Autenticación debe de ser verificada.");
+    const user = await User.findByPk(req.userId, {
+      include: [{ model: Role, as: "role" }],
+    });
+    if (user === null)
+      throw new HttpException(404, "El usuario asignado al token no existe.");
+    req.user = user;
+    const userRoles = (await user.getRoles()) as Role[];
+    switch (typeof role) {
+      case "string":
+        userRoles.forEach((userRole) => {
+          if (userRole.name !== role)
             throw new HttpException(
               403,
               "Este usuario no esta autorizado para esta ruta."
             );
-          break;
-        case "object":
-          if (!role.includes(roleName))
-            throw new HttpException(
-              403,
-              "Este usuario no esta autorizado para esta ruta."
-            );
-      }
-      next();
-    } catch (error) {
-      console.error(error);
-      next(error);
+        });
+        break;
+      case "object":
+        role.forEach((argRole) => {
+          userRoles.forEach((userRole) => {
+            if (userRole.name !== argRole)
+              throw new HttpException(
+                403,
+                "Este usuario no esta autorizado para esta ruta."
+              );
+          });
+        });
     }
-  };
+    next();
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
