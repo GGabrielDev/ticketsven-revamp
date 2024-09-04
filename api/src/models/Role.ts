@@ -23,6 +23,9 @@ import type {
   NonAttribute,
 } from "sequelize";
 
+// Type Declarations
+type Roles = "operator" | "dispatcher" | "supervisor" | "admin";
+
 // Class Declaration
 export class Role extends Model<
   InferAttributes<Role>,
@@ -30,7 +33,7 @@ export class Role extends Model<
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<string>;
-  declare name: string;
+  declare name: Roles;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
   // updatedAt can be undefined during creation

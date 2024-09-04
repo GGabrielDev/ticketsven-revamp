@@ -9,9 +9,6 @@ import { Role } from "../models/Role";
 // Type Imports
 import type { RequestHandler } from "express";
 
-// Type Declarations
-type AssignedRoles = "operator" | "dispatcher" | "supervisor" | "admin";
-
 // Const Declarations
 const { JWT_SECRET } = process.env;
 
@@ -39,7 +36,7 @@ export const authJWT: RequestHandler = (req, _, next) => {
 };
 
 export const authRole: (
-  role: AssignedRoles | AssignedRoles[]
+  role: Role["name"] | Role["name"][]
 ) => RequestHandler = (role) => async (req, _, next) => {
   try {
     if (!req.userId)
