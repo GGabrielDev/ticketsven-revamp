@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 
 // File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { OrganismGroup } from "../models/OrganismGroup";
+import OrganismGroup from "../models/OrganismGroup";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports

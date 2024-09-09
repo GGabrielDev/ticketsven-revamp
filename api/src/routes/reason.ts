@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 
 // File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { Reason } from "../models/Reason";
+import Reason from "../models/Reason";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports

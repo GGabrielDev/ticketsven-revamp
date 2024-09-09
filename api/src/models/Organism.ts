@@ -3,8 +3,8 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { OrganismGroup } from "./OrganismGroup";
+import Ticket from "./Ticket";
+import OrganismGroup from "./OrganismGroup";
 
 // Type Imports
 import type {
@@ -30,7 +30,7 @@ import type {
 } from "sequelize";
 
 // Class Declaration
-export class Organism extends Model<
+export default class Organism extends Model<
   InferAttributes<Organism>,
   InferCreationAttributes<Organism>
 > {

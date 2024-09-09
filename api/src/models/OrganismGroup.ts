@@ -3,8 +3,8 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import { Organism } from "./Organism";
-import { Ticket } from "./Ticket";
+import Organism from "./Organism";
+import Ticket from "./Ticket";
 
 import {
   Association,
@@ -25,7 +25,7 @@ import {
 } from "sequelize";
 
 // Class Declaration
-export class OrganismGroup extends Model<
+export default class OrganismGroup extends Model<
   InferAttributes<OrganismGroup>,
   InferCreationAttributes<OrganismGroup>
 > {

@@ -3,7 +3,7 @@ import { Router } from "express";
 import { Op } from "sequelize";
 
 import { authRole } from "../middleware/auth.middleware";
-import { Municipality } from "../models/Municipality";
+import Municipality from "../models/Municipality";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports

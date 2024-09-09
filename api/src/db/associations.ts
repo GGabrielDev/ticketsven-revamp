@@ -1,13 +1,13 @@
 // File Imports
-import { Municipality } from "../models/Municipality";
-import { Organism } from "../models/Organism";
-import { OrganismGroup } from "../models/OrganismGroup";
-import { Parish } from "../models/Parish";
-import { Quadrant } from "../models/Quadrant";
-import { Reason } from "../models/Reason";
-import { Role } from "../models/Role";
-import { Ticket } from "../models/Ticket";
-import { User } from "../models/User";
+import Municipality from "../models/Municipality";
+import Organism from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
+import Parish from "../models/Parish";
+import Quadrant from "../models/Quadrant";
+import Reason from "../models/Reason";
+import Role from "../models/Role";
+import Ticket from "../models/Ticket";
+import User from "../models/User";
 
 export default () => {
   // Municipality associations

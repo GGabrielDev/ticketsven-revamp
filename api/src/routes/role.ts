@@ -2,7 +2,7 @@
 import { Router } from "express";
 
 // File Declarations
-import { Role } from "../models/Role";
+import Role from "../models/Role";
 
 // Type Imports
 import type { Response, NextFunction } from "express";

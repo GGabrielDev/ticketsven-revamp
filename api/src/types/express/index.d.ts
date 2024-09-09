@@ -1,6 +1,6 @@
 // src/types/express/index.d.ts
 
-import { User } from "../../models/User";
+import User from "../../models/User";
 
 // To make the file a module and avoid the TypeScript error
 export {};

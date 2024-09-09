@@ -3,9 +3,9 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { Municipality } from "./Municipality";
-import { Quadrant } from "./Quadrant";
+import Ticket from "./Ticket";
+import Municipality from "./Municipality";
+import Quadrant from "./Quadrant";
 
 // Type Imports
 import type {
@@ -31,7 +31,7 @@ import type {
 } from "sequelize";
 
 // Class Declaration
-export class Parish extends Model<
+export default class Parish extends Model<
   InferAttributes<Parish>,
   InferCreationAttributes<Parish>
 > {

@@ -3,7 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import { User } from "./User";
+import User from "./User";
 
 // Type Imports
 import type {
@@ -27,7 +27,7 @@ import type {
 type Roles = "operator" | "dispatcher" | "supervisor" | "admin";
 
 // Class Declaration
-export class Role extends Model<
+export default class Role extends Model<
   InferAttributes<Role>,
   InferCreationAttributes<Role>
 > {
@@ -73,7 +73,7 @@ Role.init(
       defaultValue: DataTypes.UUIDV4,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM("operator", "dispatcher", "supervisor", "admin"),
       allowNull: false,
     },
     createdAt: {

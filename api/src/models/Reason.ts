@@ -3,7 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
+import Ticket from "./Ticket";
 
 // Type Imports
 import type {
@@ -25,7 +25,7 @@ import type {
 } from "sequelize";
 
 // Class Declaration
-export class Reason extends Model<
+export default class Reason extends Model<
   InferAttributes<Reason>,
   InferCreationAttributes<Reason>
 > {

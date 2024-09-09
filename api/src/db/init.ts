@@ -1,8 +1,8 @@
 // File Imports
 import sequelize from "./config";
 import initAssociations from "./associations";
-import { Role } from "../models/Role";
-import { User } from "../models/User";
+import Role from "../models/Role";
+import User from "../models/User";
 
 // Const declarations
 // TODO: If the program is started on the mode that requires this variables, force the program not to start if they are not provided.
@@ -32,8 +32,7 @@ export const startDbForce = async () => {
     await sequelize
       .transaction(async (transaction) => {
         // Create roles
-        const adminRole = await Role.create({ name: "admin" }, { transaction });
-
+        await Role.create({ name: "admin" }, { transaction });
         await Role.create({ name: "supervisor" }, { transaction });
         await Role.create({ name: "dispatcher" }, { transaction });
         await Role.create({ name: "operator" }, { transaction });
@@ -43,6 +42,7 @@ export const startDbForce = async () => {
           where: { name: "admin" },
           transaction,
         });
+
         if (!fetchedAdminRole) {
           throw new Error("Admin role was not found after creation.");
         }

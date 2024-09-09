@@ -4,14 +4,14 @@ import { Op } from "sequelize";
 
 // File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { Municipality } from "../models/Municipality";
-import { Organism } from "../models/Organism";
-import { OrganismGroup } from "../models/OrganismGroup";
-import { Parish } from "../models/Parish";
-import { Quadrant } from "../models/Quadrant";
-import { Reason } from "../models/Reason";
-import { Ticket } from "../models/Ticket";
-import { User } from "../models/User";
+import Municipality from "../models/Municipality";
+import Organism from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
+import Parish from "../models/Parish";
+import Quadrant from "../models/Quadrant";
+import Reason from "../models/Reason";
+import Ticket from "../models/Ticket";
+import User from "../models/User";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports

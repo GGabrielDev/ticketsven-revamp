@@ -4,8 +4,8 @@ import { Router } from "express";
 // File Imports
 import { authRole } from "../middleware/auth.middleware";
 import HttpException from "../exceptions/HttpException";
-import { User } from "../models/User";
-import { Role } from "../models/Role";
+import User from "../models/User";
+import Role from "../models/Role";
 
 // Type Imports
 import type { Request, Response, NextFunction } from "express";
@@ -29,7 +29,7 @@ router.get(
         throw new HttpException(403, "A wrong JWT token has been sent");
       const user = await User.findByPk(userId, {
         attributes: {
-          exclude: ["password", "roleId"],
+          exclude: ["password"],
         },
         include: [{ model: Role, as: "role" }],
       });
@@ -49,7 +49,7 @@ router.get("/all", async (_, res: Response, next: NextFunction) => {
   try {
     const result = await User.findAll({
       attributes: {
-        exclude: ["password", "roleId"],
+        exclude: ["password"],
       },
       include: [{ model: Role, as: "role" }],
     });
@@ -82,7 +82,7 @@ router.post(
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {
-            exclude: ["password", "roleId"],
+            exclude: ["password"],
           },
           include: [{ model: Role, as: "role" }],
         })
@@ -116,7 +116,7 @@ router.put(
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {
-            exclude: ["password", "roleId"],
+            exclude: ["password"],
           },
           include: [{ model: Role, as: "role" }],
         })

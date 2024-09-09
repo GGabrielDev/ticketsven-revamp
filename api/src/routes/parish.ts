@@ -4,9 +4,9 @@ import { Op } from "sequelize";
 
 // File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { Quadrant } from "../models/Quadrant";
-import { Municipality } from "../models/Municipality";
-import { Parish } from "../models/Parish";
+import Quadrant from "../models/Quadrant";
+import Municipality from "../models/Municipality";
+import Parish from "../models/Parish";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports

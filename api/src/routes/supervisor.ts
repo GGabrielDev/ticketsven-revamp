@@ -4,8 +4,8 @@ import sequelize, { Op } from "sequelize";
 
 // File Imports
 import HttpException from "../exceptions/HttpException";
-import { Reason } from "../models/Reason";
-import { Ticket } from "../models/Ticket";
+import Reason from "../models/Reason";
+import Ticket from "../models/Ticket";
 
 // Type Imports
 import type { Request, Response, NextFunction } from "express";

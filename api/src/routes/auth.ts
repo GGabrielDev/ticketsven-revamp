@@ -4,7 +4,7 @@ import { sign } from "jsonwebtoken";
 
 // File Imports
 import HttpException from "../exceptions/HttpException";
-import { User } from "../models/User";
+import User from "../models/User";
 
 // Const Declarations
 // TODO: Make this enviromental variables mandatory for the system to startup

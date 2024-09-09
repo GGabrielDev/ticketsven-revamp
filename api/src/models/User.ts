@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 
 // File Imports
 import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { Role } from "./Role";
+import Ticket from "./Ticket";
+import Role from "./Role";
 
 // Type Imports
 import type {
@@ -29,7 +29,7 @@ import type {
 const saltRounds = 10;
 
 // Class Declaration
-export class User extends Model<
+export default class User extends Model<
   InferAttributes<User>,
   InferCreationAttributes<User>
 > {

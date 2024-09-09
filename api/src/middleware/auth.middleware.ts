@@ -3,8 +3,8 @@ import { verify } from "jsonwebtoken";
 
 // File Imports
 import HttpException from "../exceptions/HttpException";
-import { User } from "../models/User";
-import { Role } from "../models/Role";
+import User from "../models/User";
+import Role from "../models/Role";
 
 // Type Imports
 import type { RequestHandler } from "express";
@@ -41,13 +41,13 @@ export const authRole: (
   try {
     if (!req.userId)
       throw new HttpException(500, "Autenticación debe de ser verificada.");
-    const user = await User.findByPk(req.userId, {
-      include: [{ model: Role, as: "role" }],
-    });
+    const user = await User.findByPk(req.userId);
     if (user === null)
       throw new HttpException(404, "El usuario asignado al token no existe.");
     req.user = user;
-    const userRoles = (await user.getRoles()) as Role[];
+    const userRoles = await user.getRoles();
+    // Counter for case "object"
+    let counter = 0;
     switch (typeof role) {
       case "string":
         userRoles.forEach((userRole) => {
@@ -61,13 +61,14 @@ export const authRole: (
       case "object":
         role.forEach((argRole) => {
           userRoles.forEach((userRole) => {
-            if (userRole.name !== argRole)
-              throw new HttpException(
-                403,
-                "Este usuario no esta autorizado para esta ruta."
-              );
+            if (userRole.name !== argRole) counter++;
           });
         });
+        if (!counter)
+          throw new HttpException(
+            403,
+            "Este usuario no esta autorizado para esta ruta."
+          );
     }
     next();
   } catch (error) {

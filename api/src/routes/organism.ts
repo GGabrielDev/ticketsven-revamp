@@ -3,8 +3,8 @@ import { Router } from "express";
 import { Op } from "sequelize";
 
 import { authRole } from "../middleware/auth.middleware";
-import { OrganismGroup } from "../models/OrganismGroup";
-import { Organism } from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
+import Organism from "../models/Organism";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports
