@@ -1,6 +1,6 @@
 // Package Imports
 import { DataTypes, Model } from "sequelize";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 
 // File Imports
 import sequelize from "../db/config";
