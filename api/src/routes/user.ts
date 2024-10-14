@@ -31,7 +31,7 @@ router.get(
         attributes: {
           exclude: ["password"],
         },
-        include: [{ model: Role, as: "role" }],
+        include: [{ model: Role, as: "roles" }],
       });
       if (!user) throw new HttpException(404, "User doesn't exists");
       return res.status(200).json(user);
@@ -51,7 +51,7 @@ router.get("/all", async (_, res: Response, next: NextFunction) => {
       attributes: {
         exclude: ["password"],
       },
-      include: [{ model: Role, as: "role" }],
+      include: [{ model: Role, as: "roles" }],
     });
     return res.status(200).json(result);
   } catch (error) {
@@ -84,7 +84,7 @@ router.post(
           attributes: {
             exclude: ["password"],
           },
-          include: [{ model: Role, as: "role" }],
+          include: [{ model: Role, as: "roles" }],
         })
       );
     } catch (error) {
@@ -118,7 +118,7 @@ router.put(
           attributes: {
             exclude: ["password"],
           },
-          include: [{ model: Role, as: "role" }],
+          include: [{ model: Role, as: "roles" }],
         })
       );
     } catch (error) {
