@@ -27,8 +27,8 @@ import { startDbForce, startDbNormal } from "./src/db/init";
 
 // Const Declaration
 // TODO: Force program not to start if this enviromental variable is not declared
-const { API_PORT } = process.env;
-const { SELECT_START } = process.env || null;
+const { API_PORT } = process.env ?? "3001";
+const { SELECT_START } = process.env ?? null;
 
 const startServer = () =>
   server.listen(
