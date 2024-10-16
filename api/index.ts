@@ -17,11 +17,16 @@
 //     =====`-.____`.___ \_____/___.-`___.-'=====
 //                       `=---='
 //     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import * as dotenv from "dotenv";
-dotenv.config();
+
+// Package Imports
+import "dotenv/config";
+
+// File Imports
 import server from "./src/app";
 import { startDbForce, startDbNormal } from "./src/db/init";
 
+// Const Declaration
+// TODO: Force program not to start if this enviromental variable is not declared
 const { API_PORT } = process.env;
 const { SELECT_START } = process.env || null;
 

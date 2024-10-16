@@ -1,6 +1,13 @@
-import { Router, Response, NextFunction } from "express";
-import { Role } from "../models/Role";
+// Package Imports
+import { Router } from "express";
 
+// File Declarations
+import Role from "../models/Role";
+
+// Type Imports
+import type { Response, NextFunction } from "express";
+
+// Logic
 const router = Router();
 
 router.get("/", async (_, res: Response, next: NextFunction) => {

@@ -1,24 +1,23 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
 import { authRole } from "../middleware/auth.middleware";
-import { Municipality } from "../models/Municipality";
+import Municipality from "../models/Municipality";
 import HttpException from "../exceptions/HttpException";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
-interface IMunicipalityParams {
-  municipalityId: number;
-}
-
-interface IMunicipalityBody {
-  name: string;
-}
-
+// Type Declarations
 type RouteRequest = Request<
-  IMunicipalityParams,
+  Record<"municipalityId", number>,
   Record<string, never>,
-  IMunicipalityBody
+  Record<"name", string>
 >;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",

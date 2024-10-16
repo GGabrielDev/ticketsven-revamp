@@ -1,17 +1,11 @@
-import { ErrorRequestHandler } from "express";
+// File Imports
 import HttpException from "../exceptions/HttpException";
 
-/**
- * Custom error handler to standardize error objects returned to
- * the client
- *
- * @param err Error caught by Express.js
- * @param req Request object provided by Express
- * @param res Response object provided by Express
- * @param next NextFunction function provided by Express
- */
+// Type Imports
+import type { ErrorRequestHandler } from "express";
 
-const handleError: ErrorRequestHandler = (err, req, res, next) => {
+// Logic
+const handleError: ErrorRequestHandler = (err, _, res) => {
   console.error(err);
   let customError = err;
 
@@ -22,11 +16,14 @@ const handleError: ErrorRequestHandler = (err, req, res, next) => {
       err
     );
   }
-
-  // we are not using the next function to prvent from triggering
-  // the default error-handler. However, make sure you are sending a
-  // response to client to prevent memory leaks in case you decide to
-  // NOT use, like in this example, the NextFunction .i.e., next(new Error())
+  /*
+   ** We are not using the next function to prvent from triggering
+   ** the default error-handler. However, make sure you are sending a
+   ** response to client to prevent memory leaks in case you decide to
+   ** NOT use, like in this example, the NextFunction .i.e., next(new Error())
+   **
+   ** Honestly, I copy pasted this middleware :v
+   */
   res.status((customError as HttpException).status).send(customError);
 };
 

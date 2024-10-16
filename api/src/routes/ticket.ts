@@ -1,25 +1,38 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { Municipality } from "../models/Municipality";
-import { Organism } from "../models/Organism";
-import { OrganismGroup } from "../models/OrganismGroup";
-import { Parish } from "../models/Parish";
-import { Quadrant } from "../models/Quadrant";
-import { Reason } from "../models/Reason";
-import { Ticket } from "../models/Ticket";
-import { User } from "../models/User";
+import Municipality from "../models/Municipality";
+import Organism from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
+import Parish from "../models/Parish";
+import Quadrant from "../models/Quadrant";
+import Reason from "../models/Reason";
+import Ticket from "../models/Ticket";
+import User from "../models/User";
 import HttpException from "../exceptions/HttpException";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
+// Type Declarations
+type RouteRequest = Request<
+  Record<"ticketId", string>, // Params
+  Record<string, never>, // Query
+  Partial<Ticket> // Body
+>;
+
+// Const Declarations
 const ticketAttrExclude = [
   "municipalityId",
   "parishId",
   "reasonId",
   "quadrantId",
 ];
-const ticketInclude = [
+
+const ticketAttrInclude = [
   { model: Municipality, as: "municipality" },
   { model: Organism, as: "organism" },
   { model: OrganismGroup, as: "organismGroup" },
@@ -33,21 +46,18 @@ const ticketInclude = [
   },
 ];
 
-type RouteRequest = Request<
-  Record<"ticketId", string>, // Params
-  Record<string, never>, // Query
-  Partial<Ticket> // Body
->;
+// Logic
+const router = Router();
 
 router.get(
   "/open",
   authRole(["dispatcher"]),
-  async (_, res: Response, next: NextFunction) => {
+  async (_: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const result = await Ticket.findAll({
         attributes: ["id"],
         where: { isOpen: { [Op.eq]: true } },
-        include: ticketInclude,
+        include: ticketAttrInclude,
       });
       return res.status(200).send(result);
     } catch (error) {
@@ -67,7 +77,7 @@ router.get(
         attributes: {
           exclude: ticketAttrExclude,
         },
-        include: ticketInclude,
+        include: ticketAttrInclude,
       });
       if (!result)
         throw new HttpException(401, "The requested Ticket doesn't exists");
@@ -142,7 +152,7 @@ router.post(
           attributes: {
             exclude: ticketAttrExclude,
           },
-          include: ticketInclude,
+          include: ticketAttrInclude,
         })
       );
     } catch (error) {
@@ -179,7 +189,7 @@ router.post(
           attributes: {
             exclude: ticketAttrExclude,
           },
-          include: ticketInclude,
+          include: ticketAttrInclude,
         })
       );
     } catch (error) {
@@ -212,7 +222,7 @@ router.put(
         throw new HttpException(400, "A ticket id must be provided");
       const ticket = await Ticket.findByPk(ticketId, {
         attributes: { exclude: ticketAttrExclude },
-        include: ticketInclude,
+        include: ticketAttrInclude,
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
@@ -277,7 +287,7 @@ router.put(
 
       const ticket = await Ticket.findByPk(ticketId, {
         attributes: { exclude: ticketAttrExclude },
-        include: ticketInclude,
+        include: ticketAttrInclude,
       });
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");

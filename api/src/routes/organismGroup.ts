@@ -1,25 +1,25 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { OrganismGroup } from "../models/OrganismGroup";
+import OrganismGroup from "../models/OrganismGroup";
 import HttpException from "../exceptions/HttpException";
+
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
+
+// Type Declarations
+type RouteRequest = Request<
+  Record<"organismGroupId", number>,
+  Record<string, never>,
+  Record<"name", string>
+>;
 
 const router = Router();
 
-interface IOrganismGroupParams {
-  organismGroupId: number;
-}
-
-interface IOrganismGroupBody {
-  name: string;
-}
-
-type RouteRequest = Request<
-  IOrganismGroupParams,
-  Record<string, never>,
-  IOrganismGroupBody
->;
-
+// Logic
 router.get(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {

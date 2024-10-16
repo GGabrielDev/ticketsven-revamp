@@ -1,10 +1,18 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import Parish from "./Parish";
+import Ticket from "./Ticket";
+
+// Type Imports
+import type {
   Association,
   CreationOptional,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
-  DataTypes,
   ForeignKey,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
@@ -18,14 +26,11 @@ import {
   HasManyRemoveAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Parish } from "./Parish";
-import { Ticket } from "./Ticket";
 
-export class Quadrant extends Model<
+// Class Declaration
+export default class Quadrant extends Model<
   InferAttributes<Quadrant>,
   InferCreationAttributes<Quadrant>
 > {
@@ -75,6 +80,7 @@ export class Quadrant extends Model<
   };
 }
 
+// Model Inizialization
 Quadrant.init(
   {
     id: {

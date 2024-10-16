@@ -1,6 +1,13 @@
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import Organism from "./Organism";
+import Ticket from "./Ticket";
+
 import {
   Association,
-  DataTypes,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -11,17 +18,14 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
-  Model,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Organism } from "./Organism";
-import { Ticket } from "./Ticket";
 
-export class OrganismGroup extends Model<
+// Class Declaration
+export default class OrganismGroup extends Model<
   InferAttributes<OrganismGroup>,
   InferCreationAttributes<OrganismGroup>
 > {
@@ -80,6 +84,7 @@ export class OrganismGroup extends Model<
   };
 }
 
+// Model Inizialization
 OrganismGroup.init(
   {
     id: {

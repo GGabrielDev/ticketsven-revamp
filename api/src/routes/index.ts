@@ -1,5 +1,10 @@
+// Package Imports
 import { Router } from "express";
+
+// File Imports
 import { authJWT, authRole } from "../middleware/auth.middleware";
+
+// -- Route Imports
 import authRouter from "./auth";
 import municipalityRouter from "./municipality";
 import organismRouter from "./organism";
@@ -12,6 +17,7 @@ import supervisorRouter from "./supervisor";
 import ticketRouter from "./ticket";
 import userRouter from "./user";
 
+// Logic
 const router = Router();
 
 router.use("/auth", authRouter);
@@ -25,12 +31,8 @@ router.use("/organismGroup", organismGroupRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
-// All of this ones require the "supervisor" or "admin" role
-router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
 router.use("/ticket", ticketRouter);
-
-router.use(authRole("admin"));
-
-router.use("/role", roleRouter);
+router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
+router.use("/role", authRole("admin"), roleRouter);
 
 export default router;

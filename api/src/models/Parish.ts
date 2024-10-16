@@ -1,10 +1,19 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import Ticket from "./Ticket";
+import Municipality from "./Municipality";
+import Quadrant from "./Quadrant";
+
+// Type Imports
+import type {
   Association,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
   CreationOptional,
-  DataTypes,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -18,15 +27,11 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
-import { Municipality } from "./Municipality";
-import { Quadrant } from "./Quadrant";
 
-export class Parish extends Model<
+// Class Declaration
+export default class Parish extends Model<
   InferAttributes<Parish>,
   InferCreationAttributes<Parish>
 > {
@@ -98,6 +103,7 @@ export class Parish extends Model<
   };
 }
 
+// Model Inizialization
 Parish.init(
   {
     id: {

@@ -1,7 +1,14 @@
-import {
+// Package Imports
+import { DataTypes, Model } from "sequelize";
+
+// File Imports
+import sequelize from "../db/config";
+import Ticket from "./Ticket";
+
+// Type Imports
+import type {
   Association,
   CreationOptional,
-  DataTypes,
   InferAttributes,
   InferCreationAttributes,
   HasManyAddAssociationMixin,
@@ -14,13 +21,11 @@ import {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
-  Model,
   NonAttribute,
 } from "sequelize";
-import sequelize from "../db/config";
-import { Ticket } from "./Ticket";
 
-export class Reason extends Model<
+// Class Declaration
+export default class Reason extends Model<
   InferAttributes<Reason>,
   InferCreationAttributes<Reason>
 > {
@@ -55,6 +60,7 @@ export class Reason extends Model<
   };
 }
 
+// Model Inizialization
 Reason.init(
   {
     id: {

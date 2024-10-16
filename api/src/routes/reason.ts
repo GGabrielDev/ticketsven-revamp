@@ -1,21 +1,29 @@
-import { Request, Response, Router, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
 import { Op } from "sequelize";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
-import { Reason } from "../models/Reason";
+import Reason from "../models/Reason";
 import HttpException from "../exceptions/HttpException";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
-interface IReasonParams {
-  reasonId: number;
-}
-
+// Type Declarations
 interface IReasonBody {
   name: string;
   priority: number;
 }
 
-type RouteRequest = Request<IReasonParams, Record<string, never>, IReasonBody>;
+type RouteRequest = Request<
+  Record<"reasonId", number>,
+  Record<string, never>,
+  IReasonBody
+>;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",

@@ -1,27 +1,24 @@
-import { Router, Request, Response, NextFunction } from "express";
+// Package Imports
+import { Router } from "express";
+
+// File Imports
 import { authRole } from "../middleware/auth.middleware";
 import HttpException from "../exceptions/HttpException";
-import { User } from "../models/User";
-import { Role } from "../models/Role";
+import User from "../models/User";
+import Role from "../models/Role";
 
-const router = Router();
+// Type Imports
+import type { Request, Response, NextFunction } from "express";
 
-type RequestUserParams = {
-  userId: string;
-};
-
-type RequestUserBody = {
-  username: string;
-  password: string;
-  fullname: string;
-  roleId: number;
-};
-
+// Type Declarations
 type RouteRequest = Request<
-  RequestUserParams,
+  Record<"userId", string>,
   Record<string, never>,
-  RequestUserBody
+  Record<"username" | "password" | "fullname" | "roleId", string>
 >;
+
+// Logic
+const router = Router();
 
 router.get(
   "/",
@@ -32,9 +29,9 @@ router.get(
         throw new HttpException(403, "A wrong JWT token has been sent");
       const user = await User.findByPk(userId, {
         attributes: {
-          exclude: ["password", "roleId"],
+          exclude: ["password"],
         },
-        include: [{ model: Role, as: "role" }],
+        include: [{ model: Role, as: "roles" }],
       });
       if (!user) throw new HttpException(404, "User doesn't exists");
       return res.status(200).json(user);
@@ -52,9 +49,9 @@ router.get("/all", async (_, res: Response, next: NextFunction) => {
   try {
     const result = await User.findAll({
       attributes: {
-        exclude: ["password", "roleId"],
+        exclude: ["password"],
       },
-      include: [{ model: Role, as: "role" }],
+      include: [{ model: Role, as: "roles" }],
     });
     return res.status(200).json(result);
   } catch (error) {
@@ -81,13 +78,13 @@ router.post(
         password,
         fullname,
       });
-      await user.setRole(role);
+      await user.addRole(role);
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {
-            exclude: ["password", "roleId"],
+            exclude: ["password"],
           },
-          include: [{ model: Role, as: "role" }],
+          include: [{ model: Role, as: "roles" }],
         })
       );
     } catch (error) {
@@ -103,22 +100,25 @@ router.put(
     try {
       const { userId } = req.params;
       const { username, password, fullname, roleId } = req.body;
-      const user = await User.findByPk(userId);
+      const user = await User.findByPk(userId, {
+        include: [{ model: Role, as: "roles" }],
+      });
       if (!user)
         throw new HttpException(404, "The selected user doesn't exists");
       user.update({ username, password, fullname });
-      if (!(user.roleId === roleId)) {
+
+      if (user.roles && !user.roles.some((role) => role.id === roleId)) {
         const role = await Role.findByPk(roleId);
         if (!role)
           throw new HttpException(404, "The selected role doesn't exists");
-        user.setRole(role);
+        user.addRole(role);
       }
       return res.status(201).json(
         await User.findByPk(user.id, {
           attributes: {
-            exclude: ["password", "roleId"],
+            exclude: ["password"],
           },
-          include: [{ model: Role, as: "role" }],
+          include: [{ model: Role, as: "roles" }],
         })
       );
     } catch (error) {

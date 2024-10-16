@@ -1,12 +1,13 @@
-import { Municipality } from "../models/Municipality";
-import { Organism } from "../models/Organism";
-import { OrganismGroup } from "../models/OrganismGroup";
-import { Parish } from "../models/Parish";
-import { Quadrant } from "../models/Quadrant";
-import { Reason } from "../models/Reason";
-import { Role } from "../models/Role";
-import { Ticket } from "../models/Ticket";
-import { User } from "../models/User";
+// File Imports
+import Municipality from "../models/Municipality";
+import Organism from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
+import Parish from "../models/Parish";
+import Quadrant from "../models/Quadrant";
+import Reason from "../models/Reason";
+import Role from "../models/Role";
+import Ticket from "../models/Ticket";
+import User from "../models/User";
 
 export default () => {
   // Municipality associations
@@ -76,7 +77,11 @@ export default () => {
   });
 
   // Role associations
-  Role.hasMany(User, { sourceKey: "id", foreignKey: "roleId", as: "users" });
+  Role.belongsToMany(User, {
+    sourceKey: "id",
+    foreignKey: "roleId",
+    through: "user_roles",
+  });
 
   // Ticket associations
   Ticket.belongsTo(Municipality, {
@@ -98,7 +103,11 @@ export default () => {
   });
 
   // User associations
-  User.belongsTo(Role, { foreignKey: "roleId", as: "role" });
+  User.belongsToMany(Role, {
+    sourceKey: "id",
+    foreignKey: "userId",
+    through: "user_roles",
+  });
   User.belongsToMany(Ticket, {
     sourceKey: "id",
     foreignKey: "userId",
