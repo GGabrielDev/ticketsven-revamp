@@ -1,2 +1,4 @@
-# Ignoring until merge
+# Adding folders to the nested .gitignores take precedence
+api/
+directory/
 legal/
