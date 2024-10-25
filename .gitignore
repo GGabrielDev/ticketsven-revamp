@@ -1,4 +1,4 @@
-# Adding folders to the nested .gitignores take precedence
+# Base .gitignore to recognize nested .gitignores
 api/
 directory/
 legal/
