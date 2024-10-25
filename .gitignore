@@ -1,4 +1,2 @@
-# Base .gitignore to recognize nested .gitignores
-api/
-directory/
+#Ignoring folders
 legal/

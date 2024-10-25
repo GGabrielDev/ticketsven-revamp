@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit"
-import userReducer from "./features/user/userSlice"
+import contactReducer from "./features/contacts/contatcSlice"
 
 export const store = configureStore({
   reducer: {
-    user: userReducer,
+    contact: contactReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 })

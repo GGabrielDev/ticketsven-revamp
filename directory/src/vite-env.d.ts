@@ -19,6 +19,8 @@ type ErrorType = {
 // Slice types
 type GenericType = Record<"id" | "name", string>
 
+type ContactType = GenericType & Record<"phone_number", string>
+
 type RoleType = GenericType
 
 type UserType = Record<"id" | "username" | "fullname", string> & {
