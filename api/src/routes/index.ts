@@ -6,6 +6,7 @@ import { authJWT, authRole } from "../middleware/auth.middleware";
 
 // -- Route Imports
 import authRouter from "./auth";
+import contactRouter from "./contacts";
 import municipalityRouter from "./municipality";
 import organismRouter from "./organism";
 import organismGroupRouter from "./organismGroup";
@@ -21,6 +22,7 @@ import userRouter from "./user";
 const router = Router();
 
 router.use("/auth", authRouter);
+router.use("/contacts", contactRouter);
 
 router.use(authJWT);
 
