@@ -21,6 +21,16 @@ type GenericType = Record<"id" | "name", string>
 
 type ContactType = GenericType & Record<"phone_number", string>
 
+type OrganismType = GenericType
+
+type OrganismGroupType = GenericType & {
+  organisms: GenericType[]
+}
+
+type OrganismType = GenericType & {
+  organismGroup: GenericType
+}
+
 type RoleType = GenericType
 
 type UserType = Record<"id" | "username" | "fullname", string> & {

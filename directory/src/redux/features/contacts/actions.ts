@@ -34,7 +34,7 @@ export const asyncActions = {
     ContactType[],
     string,
     { rejectValue: ErrorType }
-  >("contact/getByName", async (payload, { rejectWithValue }) => {
+  >("contact/getByPhoneNumber", async (payload, { rejectWithValue }) => {
     try {
       return (
         await axios.get("/contact", {

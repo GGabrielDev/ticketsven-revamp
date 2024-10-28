@@ -2,8 +2,10 @@ import React from "react"
 import { CssBaseline } from "@mui/material"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { Provider } from "react-redux"
 import { createRoot } from "react-dom/client"
 
+import { store } from "./redux/store"
 import ThemeProvider from "./components/ThemeProvider"
 import App from "./App"
 
@@ -19,12 +21,14 @@ if (container) {
 
   root.render(
     <React.StrictMode>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <ThemeProvider>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
-      </LocalizationProvider>
+      <Provider store={store}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <ThemeProvider>
+            <CssBaseline />
+            <App />
+          </ThemeProvider>
+        </LocalizationProvider>
+      </Provider>
     </React.StrictMode>,
   )
 } else {

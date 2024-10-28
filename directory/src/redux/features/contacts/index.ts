@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { asyncActions } from "./contactActions"
+import { asyncActions } from "./actions"
+
 import type { RootState } from "../../store"
 
 export type SliceType = {

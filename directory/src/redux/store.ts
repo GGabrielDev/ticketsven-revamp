@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit"
-import contactReducer from "./features/contacts/contatcSlice"
+import contactReducer from "./features/contacts"
+import organismReducer from "./features/organism"
+import organismGroupReducer from "./features/organismGroup"
 
 export const store = configureStore({
   reducer: {
     contact: contactReducer,
+    organism: organismReducer,
+    organismGroup: organismGroupReducer,
   },
   devTools: process.env.NODE_ENV !== "production",
 })
