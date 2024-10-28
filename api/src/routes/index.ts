@@ -22,7 +22,7 @@ import userRouter from "./user";
 const router = Router();
 
 router.use("/auth", authRouter);
-router.use("/contacts", contactRouter);
+router.use("/contact", contactRouter);
 
 router.use(authJWT);
 
