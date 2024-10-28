@@ -30,7 +30,6 @@ export const authJWT: RequestHandler = (req, _, next) => {
     req.userId = payload.userId;
     next();
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
