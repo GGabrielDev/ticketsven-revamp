@@ -3,12 +3,18 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
+import Organism from "./Organism";
 
 // Type Imports
 import type {
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  BelongsToCreateAssociationMixin,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from "sequelize";
 
 // Class Declaration
@@ -26,6 +32,22 @@ export default class Contact extends Model<
   declare updatedAt: CreationOptional<Date>;
   // deletedAt can be undefined during creation (paranoid table)
   declare deletedAt: CreationOptional<Date>;
+
+  // foreign keys are automatically added by associations methods (like Project.belongsTo)
+  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
+  // display an error if ownerId is missing.
+  declare organismId: ForeignKey<Organism["id"]>;
+
+  // `organism` is an eagerly-loaded association.
+  // We tag it as `NonAttribute`
+  declare organism?: NonAttribute<Organism>;
+
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
+  declare getOrganism: BelongsToGetAssociationMixin<Organism>;
+  declare setOrganism: BelongsToSetAssociationMixin<Organism, Organism["id"]>;
+  declare createOrganism: BelongsToCreateAssociationMixin<Organism>;
 }
 
 // Model Inizialization

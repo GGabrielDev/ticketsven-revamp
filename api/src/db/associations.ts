@@ -1,4 +1,5 @@
 // File Imports
+import Contact from "../models/Contact";
 import Municipality from "../models/Municipality";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
@@ -31,6 +32,11 @@ export default () => {
     sourceKey: "id",
     foreignKey: "organismId",
     as: "tickets",
+  });
+  Organism.hasMany(Contact, {
+    sourceKey: "id",
+    foreignKey: "organismId",
+    as: "contacts",
   });
 
   // Organism Group associations
@@ -112,5 +118,11 @@ export default () => {
     sourceKey: "id",
     foreignKey: "userId",
     through: "user_tickets",
+  });
+
+  // Contact associations
+  Contact.belongsTo(Organism, {
+    foreignKey: "organismId",
+    as: "organism",
   });
 };

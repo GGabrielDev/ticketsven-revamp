@@ -2,18 +2,22 @@
 import { Router } from "express";
 import { Op } from "sequelize";
 
-import { authRole } from "../middleware/auth.middleware";
 import Contact from "../models/Contact";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports
 import type { Request, Response, NextFunction } from "express";
+import Organism from "../models/Organism";
 
 // Type Declarations
+type RequestBody = Record<"name" | "phone_number", string> & {
+  organismId: number;
+};
+
 type RouteRequest = Request<
-  Record<"contactId", number>,
+  Record<"contactId" | "organismId", number>,
   Record<string, never>,
-  Record<"name" | "phone_number", string>
+  RequestBody
 >;
 
 // Logic
@@ -36,6 +40,7 @@ router.get(
               },
             }
           : {},
+        include: [{ model: Organism, as: "organism" }],
       });
 
       return res.status(200).send(result);
@@ -51,7 +56,12 @@ router.get(
     try {
       const { contactId } = req.params;
 
-      const result = await Contact.findByPk(contactId);
+      const result = await Contact.findByPk(contactId, {
+        attributes: {
+          exclude: ["organismId"],
+        },
+        include: [{ model: Organism, as: "organism" }],
+      });
 
       return res.status(200).send(result);
     } catch (error) {
@@ -64,17 +74,30 @@ router.post(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { name, phone_number } = req.body;
+      const { name, phone_number, organismId } = req.body;
 
-      if (!name || !phone_number)
+      if (!(name && phone_number && organismId))
         throw new HttpException(400, "There are missing in the body");
+
+      const organism = await Organism.findByPk(organismId);
+      if (!organism) {
+        throw new HttpException(404, "The requested Organism doesn't exist");
+      }
 
       const result = await Contact.create({
         name,
         phone_number,
       });
+      await organism.addContact(result);
 
-      return res.status(201).send(await Contact.findByPk(result.id));
+      return res.status(201).send(
+        await Contact.findByPk(result.id, {
+          attributes: {
+            exclude: ["organismId"],
+          },
+          include: [{ model: Organism, as: "organism" }],
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -86,7 +109,7 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { contactId } = req.params;
-      const { name, phone_number } = req.body;
+      const { name, phone_number, organismId } = req.body;
 
       if (!contactId) {
         throw new HttpException(400, "The Contact ID is missing as the param");
@@ -96,6 +119,11 @@ router.put(
 
       if (!result) {
         throw new HttpException(404, "The requested Contact doesn't exist");
+      }
+
+      if (organismId) {
+        const organism = await Organism.findByPk(organismId);
+        if (organism) result.setOrganism(organismId);
       }
 
       if (name && name !== result.name) result.update({ name });
