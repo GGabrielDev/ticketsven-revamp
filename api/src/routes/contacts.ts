@@ -30,6 +30,7 @@ router.get(
       const { name, phone_number } = req.body;
 
       const result = await Contact.findAll({
+        order: [["name", "DESC"]],
         where: name
           ? {
               name: {
@@ -40,7 +41,10 @@ router.get(
               },
             }
           : {},
-        include: [{ model: Organism, as: "organism" }],
+        attributes: ["id", "name", "phone_number"],
+        include: [
+          { model: Organism, as: "organism", attributes: ["id", "name"] },
+        ],
       });
 
       return res.status(200).send(result);
@@ -57,10 +61,10 @@ router.get(
       const { contactId } = req.params;
 
       const result = await Contact.findByPk(contactId, {
-        attributes: {
-          exclude: ["organismId"],
-        },
-        include: [{ model: Organism, as: "organism" }],
+        attributes: ["id", "name", "phone_number"],
+        include: [
+          { model: Organism, as: "organism", attributes: ["id", "name"] },
+        ],
       });
 
       return res.status(200).send(result);
@@ -92,10 +96,10 @@ router.post(
 
       return res.status(201).send(
         await Contact.findByPk(result.id, {
-          attributes: {
-            exclude: ["organismId"],
-          },
-          include: [{ model: Organism, as: "organism" }],
+          attributes: ["id", "name", "phone_number"],
+          include: [
+            { model: Organism, as: "organism", attributes: ["id", "name"] },
+          ],
         })
       );
     } catch (error) {
@@ -130,7 +134,14 @@ router.put(
       if (phone_number && phone_number !== result.phone_number)
         result.update({ phone_number });
 
-      res.status(200).send(result);
+      res.status(200).send(
+        await Contact.findByPk(result.id, {
+          attributes: ["id", "name", "phone_number"],
+          include: [
+            { model: Organism, as: "organism", attributes: ["id", "name"] },
+          ],
+        })
+      );
     } catch (error) {
       next(error);
     }
