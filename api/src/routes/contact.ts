@@ -8,6 +8,7 @@ import HttpException from "../exceptions/HttpException";
 // Type Imports
 import type { Request, Response, NextFunction } from "express";
 import Organism from "../models/Organism";
+import OrganismGroup from "../models/OrganismGroup";
 
 // Type Declarations
 type RequestBody = Record<"name" | "phone_number", string> & {
@@ -43,7 +44,18 @@ router.get(
           : {},
         attributes: ["id", "name", "phone_number"],
         include: [
-          { model: Organism, as: "organism", attributes: ["id", "name"] },
+          {
+            model: Organism,
+            as: "organism",
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: OrganismGroup,
+                as: "organismGroup",
+                attributes: ["id", "name"],
+              },
+            ],
+          },
         ],
       });
 
@@ -63,7 +75,18 @@ router.get(
       const result = await Contact.findByPk(contactId, {
         attributes: ["id", "name", "phone_number"],
         include: [
-          { model: Organism, as: "organism", attributes: ["id", "name"] },
+          {
+            model: Organism,
+            as: "organism",
+            attributes: ["id", "name"],
+            include: [
+              {
+                model: OrganismGroup,
+                as: "organismGroup",
+                attributes: ["id", "name"],
+              },
+            ],
+          },
         ],
       });
 
@@ -98,7 +121,18 @@ router.post(
         await Contact.findByPk(result.id, {
           attributes: ["id", "name", "phone_number"],
           include: [
-            { model: Organism, as: "organism", attributes: ["id", "name"] },
+            {
+              model: Organism,
+              as: "organism",
+              attributes: ["id", "name"],
+              include: [
+                {
+                  model: OrganismGroup,
+                  as: "organismGroup",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
           ],
         })
       );
@@ -138,7 +172,18 @@ router.put(
         await Contact.findByPk(result.id, {
           attributes: ["id", "name", "phone_number"],
           include: [
-            { model: Organism, as: "organism", attributes: ["id", "name"] },
+            {
+              model: Organism,
+              as: "organism",
+              attributes: ["id", "name"],
+              include: [
+                {
+                  model: OrganismGroup,
+                  as: "organismGroup",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
           ],
         })
       );

@@ -6,7 +6,7 @@ import { authJWT, authRole } from "../middleware/auth.middleware";
 
 // -- Route Imports
 import authRouter from "./auth";
-import contactRouter from "./contacts";
+import contactRouter from "./contact";
 import municipalityRouter from "./municipality";
 import organismRouter from "./organism";
 import organismGroupRouter from "./organismGroup";
