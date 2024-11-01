@@ -5,6 +5,8 @@ import FormContact from "./components/forms/FormContact"
 import FormOrganism from "./components/forms/FormOrganism"
 import FormOrganismGroup from "./components/forms/FormOrganismGroup"
 
+import ContactTable from "./components/tables/ContactTable"
+
 import type { MouseEvent } from "react"
 
 import { useAppDispatch, useAppSelector } from "./redux/hooks"
@@ -153,6 +155,19 @@ export default function App() {
           </Box>
         </Box>
       ) : null}
+      {contacts.length === 0 ? (
+        <Typography
+          variant="h4"
+          sx={{
+            margin: 2,
+            textAlign: "center",
+          }}
+        >
+          No Hay Contactos Disponibles
+        </Typography>
+      ) : (
+        <ContactTable contacts={contacts} />
+      )}
     </Box>
   )
 }

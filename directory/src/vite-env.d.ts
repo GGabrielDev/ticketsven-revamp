@@ -19,17 +19,16 @@ type ErrorType = {
 // Slice types
 type GenericType = Record<"id" | "name", string>
 
-type ContactType = GenericType & Record<"phone_number", string>
-
-type OrganismType = GenericType
+type OrganismType = GenericType & {
+  organismGroup: GenericType
+}
 
 type OrganismGroupType = GenericType & {
   organisms: GenericType[]
 }
 
-type OrganismType = GenericType & {
-  organismGroup: GenericType
-}
+type ContactType = GenericType &
+  Record<"phone_number", string> & { organism: OrganismType }
 
 type RoleType = GenericType
 

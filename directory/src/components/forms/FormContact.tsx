@@ -38,7 +38,7 @@ const validationSchema = yup.object({
       "Número de teléfono no válido. Ejemplo: 04123456789 o 02123456789",
     )
     .required("El número de teléfono es obligatorio."),
-  organismGroupId: yup
+  organismId: yup
     .number()
     .notOneOf([0], "Debe de seleccionar un Organismo.")
     .required("Debe de seleccionar un Organismo."),
@@ -59,6 +59,7 @@ const FormContact = () => {
       values,
       { setSubmitting, resetForm }: FormikHelpers<FormData>,
     ) => {
+      console.log(values)
       dispatch(createContact(values)).then(() => {
         setSubmitting(false)
         resetForm()
