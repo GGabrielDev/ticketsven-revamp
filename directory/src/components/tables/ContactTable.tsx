@@ -15,9 +15,11 @@ import ArrowDropDown from "@mui/icons-material/ArrowDropDown"
 
 const ContactTable = ({ contacts }: { contacts: ContactType[] }) => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
-  const [sortKey, setSortKey] = useState<"name" | "organism">("name")
+  const [sortKey, setSortKey] = useState<"name" | "organism" | "organismGroup">(
+    "name",
+  )
 
-  const handleSort = (key: "name" | "organism") => {
+  const handleSort = (key: "name" | "organism" | "organismGroup") => {
     const newDirection =
       sortKey === key && sortDirection === "asc" ? "desc" : "asc"
     setSortDirection(newDirection)
@@ -44,7 +46,7 @@ const ContactTable = ({ contacts }: { contacts: ContactType[] }) => {
               <TableCell
                 onClick={() => handleSort("name")}
                 sx={{
-                  width: "30%",
+                  width: "25%",
                   fontWeight: "bold",
                   backgroundColor: "primary.main",
                   color: "white",
@@ -64,7 +66,7 @@ const ContactTable = ({ contacts }: { contacts: ContactType[] }) => {
               <TableCell
                 align="left"
                 sx={{
-                  width: "40%",
+                  width: "20%",
                   fontWeight: "bold",
                   backgroundColor: "primary.main",
                   color: "white",
@@ -73,9 +75,29 @@ const ContactTable = ({ contacts }: { contacts: ContactType[] }) => {
                 Numero de Telefono
               </TableCell>
               <TableCell
+                onClick={() => handleSort("organismGroup")}
+                sx={{
+                  width: "25%",
+                  fontWeight: "bold",
+                  backgroundColor: "primary.main",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <Box display="flex" alignItems="center">
+                  Grupo de Organismo{" "}
+                  {sortKey === "organismGroup" &&
+                    (sortDirection === "asc" ? (
+                      <ArrowDropUp />
+                    ) : (
+                      <ArrowDropDown />
+                    ))}
+                </Box>
+              </TableCell>
+              <TableCell
                 onClick={() => handleSort("organism")}
                 sx={{
-                  width: "30%",
+                  width: "25%",
                   fontWeight: "bold",
                   backgroundColor: "primary.main",
                   color: "white",
@@ -105,6 +127,7 @@ const ContactTable = ({ contacts }: { contacts: ContactType[] }) => {
               >
                 <TableCell>{entry.name}</TableCell>
                 <TableCell>{entry.phone_number}</TableCell>
+                <TableCell>{entry.organism.organismGroup.name}</TableCell>
                 <TableCell>{entry.organism.name}</TableCell>
               </TableRow>
             ))}
