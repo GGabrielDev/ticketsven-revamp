@@ -107,7 +107,7 @@ router.post(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { name, organismGroupId } = req.body;
-      
+
       if (!(name && organismGroupId))
         throw new HttpException(
           400,
