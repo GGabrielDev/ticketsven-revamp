@@ -25,9 +25,6 @@ router.use("/auth", authRouter);
 router.use("/contact", contactRouter);
 
 // TODO: Add back authentication and authorization to merge to dev
-router.use("/organism", organismRouter);
-router.use("/organismGroup", organismGroupRouter);
-
 router.use(authJWT);
 
 router.use("/user", userRouter);
@@ -36,6 +33,8 @@ router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
 router.use("/ticket", ticketRouter);
+router.use("/organism", organismRouter);
+router.use("/organismGroup", organismGroupRouter);
 router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
 router.use("/role", authRole("admin"), roleRouter);
 

@@ -5,7 +5,7 @@ import LoadingBox from "../components/utilities/LoadingBox"
 import type { ReactNode } from "react"
 
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
-import { selectors, actions } from "../redux/features/user/userSlice"
+import { selectors, actions } from "../redux/features/user/"
 
 const { getUser, clearToken } = actions
 const { selectUser, selectStatus, selectToken } = selectors

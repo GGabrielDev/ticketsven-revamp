@@ -1,5 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import axios from "../../../helper/Axios"
+import axios, { axiosConfig } from "../../../helper/Axios"
+
+import type { RootState } from "../../store"
 
 export const asyncActions = {
   getAllOrganisms: createAsyncThunk<
@@ -16,11 +18,12 @@ export const asyncActions = {
   getOrganismsByGroup: createAsyncThunk<
     OrganismType[],
     number,
-    { rejectValue: ErrorType }
-  >("organism/getByGroup", async (payload, { rejectWithValue }) => {
+    { state: RootState; rejectValue: ErrorType }
+  >("organism/getByGroup", async (payload, { rejectWithValue, getState }) => {
     try {
       return (
         await axios.get("/organism/organismGroup", {
+          ...axiosConfig(getState().user.token),
           params: {
             organismGroupId: payload,
           },
@@ -33,10 +36,16 @@ export const asyncActions = {
   createOrganism: createAsyncThunk<
     OrganismType,
     Partial<OrganismType>,
-    { rejectValue: ErrorType }
-  >("organism/post", async (payload, { rejectWithValue }) => {
+    { state: RootState; rejectValue: ErrorType }
+  >("organism/post", async (payload, { rejectWithValue, getState }) => {
     try {
-      return (await axios.post("/organism", payload)).data
+      return (
+        await axios.post(
+          "/organism",
+          payload,
+          axiosConfig(getState().user.token),
+        )
+      ).data
     } catch (error: any) {
       return rejectWithValue(error.response.data)
     }
@@ -44,21 +53,30 @@ export const asyncActions = {
   editOrganism: createAsyncThunk<
     OrganismType,
     OrganismType,
-    { rejectValue: ErrorType }
-  >("organism/put", async (payload, { rejectWithValue }) => {
+    { state: RootState; rejectValue: ErrorType }
+  >("organism/put", async (payload, { rejectWithValue, getState }) => {
     try {
-      return (await axios.put(`/organism/${payload.id}`, payload)).data
+      return (
+        await axios.put(
+          `/organism/${payload.id}`,
+          payload,
+          axiosConfig(getState().user.token),
+        )
+      ).data
     } catch (error: any) {
       return rejectWithValue(error.response.data)
     }
   }),
   deleteOrganism: createAsyncThunk<
-    OrganismType["id"],
+    string,
     OrganismType,
-    { rejectValue: ErrorType }
-  >("organism/delete", async (payload, { rejectWithValue }) => {
+    { state: RootState; rejectValue: ErrorType }
+  >("organism/delete", async (payload, { rejectWithValue, getState }) => {
     try {
-      await axios.delete(`/organism/${payload.id}`)
+      await axios.delete(
+        `/organism/${payload.id}`,
+        axiosConfig(getState().user.token),
+      )
       return payload.id
     } catch (error: any) {
       return rejectWithValue(error.response.data)

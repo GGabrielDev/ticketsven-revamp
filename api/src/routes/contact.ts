@@ -9,6 +9,7 @@ import HttpException from "../exceptions/HttpException";
 import type { Request, Response, NextFunction } from "express";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
+import { authJWT, authRole } from "../middleware/auth.middleware";
 
 // Type Declarations
 type RequestBody = Record<"name" | "phone_number", string> & {
@@ -96,6 +97,9 @@ router.get(
     }
   }
 );
+
+// From this point, only users with the "admin" role can use the following routes.
+router.use(authJWT, authRole("admin"));
 
 router.post(
   "/",
