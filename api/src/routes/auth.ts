@@ -1,6 +1,16 @@
 // Package Imports
 import { Router } from "express";
 import { sign } from "jsonwebtoken";
+<<<<<<< Updated upstream
+=======
+import HttpException from "../exceptions/HttpException";
+import { User } from "../models/User";
+import dotenv from 'dotenv';
+
+// Cargar las variables de entorno desde el archivo .env
+dotenv.config();
+
+>>>>>>> Stashed changes
 
 // File Imports
 import HttpException from "../exceptions/HttpException";

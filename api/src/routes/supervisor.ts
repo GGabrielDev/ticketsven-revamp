@@ -63,18 +63,34 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
 
     let month = oldestDate.getMonth();
     let year = oldestDate.getFullYear();
+
+    const newMonth = newestDate.getMonth();
+    const newYear = newestDate.getFullYear();
+
+    let extra = false
+
     const dates: number[][] = [];
-    do {
-      dates.push([new Date(`${month + 1}/1/${year}`).getTime()]);
+
+    const logic = () => {
+      dates.push([new Date(`${month}/1/${year}`).getTime()]);
+      
       month++;
-      if (month === 12) {
-        month = 0;
+      if (month > 12) {
+        month = 1;
         year++;
       }
+
       dates[dates.length - 1].push(
-        new Date(`${month + 1}/1/${year}`).getTime()
+        new Date(`${month}/1/${year}`).getTime()
       );
-    } while (month <= newestDate.getMonth() || year < newestDate.getFullYear());
+    }
+
+    do {
+      logic()
+    } while (month <= newMonth || year < newYear);
+
+    // Repeats logic once more after the cycle is done to add date range for present ticket
+    logic()
 
     let left = 0;
     let right = dates.length - 1;
