@@ -16,6 +16,7 @@ import roleRouter from "./role";
 import supervisorRouter from "./supervisor";
 import ticketRouter from "./ticket";
 import userRouter from "./user";
+import utilityRouter from "./utility";
 
 // Logic
 const router = Router();
@@ -24,6 +25,7 @@ router.use("/auth", authRouter);
 
 router.use(authJWT);
 
+router.use("/utility", utilityRouter);
 router.use("/user", userRouter);
 router.use("/municipality", municipalityRouter);
 router.use("/organism", organismRouter);
