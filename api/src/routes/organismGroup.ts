@@ -20,6 +20,8 @@ type RouteRequest = Request<
 const router = Router();
 
 // Logic
+// NOTE: organismGroup is deprecated, but the logic has just been isolated to prevent bugs
+// TODO: Archive code properly
 router.get(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
