@@ -73,7 +73,13 @@ Role.init(
       defaultValue: DataTypes.UUIDV4,
     },
     name: {
-      type: DataTypes.ENUM("operator", "dispatcher", "supervisor", "admin"),
+      type: DataTypes.ENUM(
+        "operator",
+        "dispatcher",
+        "supervisor",
+        "legal",
+        "admin"
+      ),
       allowNull: false,
     },
     createdAt: {

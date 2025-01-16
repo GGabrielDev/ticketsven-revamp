@@ -24,6 +24,11 @@ import {
   NonAttribute,
 } from "sequelize";
 
+// NOTE: The Entity OrganismGroup is no more required by the proyect, but the association can't be
+// arbitrarially removed due to possible bugs
+// TODO: Properly either archive or remove OrganismoGroup entity and dependency without breaking
+// existing deployments
+
 // Class Declaration
 export default class OrganismGroup extends Model<
   InferAttributes<OrganismGroup>,

@@ -52,6 +52,8 @@ router.get(
   }
 );
 
+/*
+ * Deprecated route due to not meeting the requirements of the program any longer
 router.get(
   "/organismGroup",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
@@ -78,6 +80,7 @@ router.get(
     }
   }
 );
+*/
 
 router.get(
   "/:organismId",
@@ -106,30 +109,20 @@ router.post(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { name, organismGroupId } = req.body;
+      const { name } = req.body;
 
-      if (!(name && organismGroupId))
-        throw new HttpException(
-          400,
-          `The following values are missing from the request's body: ${
-            !name
-              ? !organismGroupId
-                ? "name and organismGroupId"
-                : "name"
-              : null
-          }`
-        );
-
-      const organismGroup = await OrganismGroup.findByPk(organismGroupId);
-      if (!organismGroup) {
+      const defaultOrganismGroup = (await OrganismGroup.findAll())[0];
+      if (!defaultOrganismGroup) {
         throw new HttpException(
           404,
           "The requested Organism Group doesn't exist"
         );
       }
 
+      if (!name) throw new HttpException(400, "Faltan parametros");
+
       const result = await Organism.create({ name });
-      await organismGroup.addOrganism(result);
+      await defaultOrganismGroup.addOrganism(result);
 
       return res.status(201).send(
         await Organism.findByPk(result.id, {
@@ -151,7 +144,7 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { organismId } = req.params;
-      const { name, organismGroupId } = req.body;
+      const { name } = req.body;
 
       if (!organismId) {
         throw new HttpException(400, "The Organism ID is missing as the param");
@@ -160,11 +153,6 @@ router.put(
 
       if (!result) {
         throw new HttpException(404, "The requested Organism doesn't exist");
-      }
-
-      if (organismGroupId) {
-        const organismGroup = await OrganismGroup.findByPk(organismGroupId);
-        if (organismGroup) result.setOrganismGroup(organismGroupId);
       }
 
       if (name) await result.update({ name });

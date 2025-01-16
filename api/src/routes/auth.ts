@@ -2,9 +2,12 @@
 import { Router } from "express";
 import { sign } from "jsonwebtoken";
 
-// File Imports
 import HttpException from "../exceptions/HttpException";
 import User from "../models/User";
+import dotenv from "dotenv";
+
+// Cargar las variables de entorno desde el archivo .env
+dotenv.config();
 
 // Const Declarations
 // TODO: Make this enviromental variables mandatory for the system to startup
