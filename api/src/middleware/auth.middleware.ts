@@ -61,7 +61,7 @@ export const authRole: (
       case "object":
         role.forEach((argRole) => {
           userRoles.forEach((userRole) => {
-            if (userRole.name !== argRole) counter++;
+            if (userRole.name === argRole) counter++;
           });
         });
         if (!counter)

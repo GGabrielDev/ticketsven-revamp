@@ -37,6 +37,9 @@ export default class User extends Model<
   declare id: CreationOptional<string>;
   declare username: string;
   declare fullname: string;
+  declare position?: string;
+  declare id_number?: number;
+  declare id_type?: "V" | "E" | "J"; // enum type
   declare password: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
@@ -110,6 +113,18 @@ User.init(
       validate: {
         is: /^[a-zA-Z\s.]+$/g,
       },
+    },
+    position: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    id_number: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    id_type: {
+      type: DataTypes.ENUM("V", "E", "J"),
+      allowNull: true,
     },
     password: {
       type: DataTypes.STRING,
