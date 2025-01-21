@@ -3,7 +3,6 @@ import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import FormLabel from "@mui/material/FormLabel"
 import FormControl from "@mui/material/FormControl"
-import Link from "@mui/material/Link"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import Stack from "@mui/material/Stack"
@@ -52,41 +51,36 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }))
 
 export default function App() {
-  const [emailError, setEmailError] = React.useState(false)
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("")
+  const [usernameError, setusernameError] = React.useState(false)
+  const [usernameErrorMessage, setusernameErrorMessage] = React.useState("")
   const [passwordError, setPasswordError] = React.useState(false)
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("")
-  const [open, setOpen] = React.useState(false)
-
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
+    if (usernameError || passwordError) {
       event.preventDefault()
       return
     }
     const data = new FormData(event.currentTarget)
     console.log({
-      email: data.get("email"),
+      username: data.get("username"),
       password: data.get("password"),
     })
   }
 
   const validateInputs = () => {
-    const email = document.getElementById("email") as HTMLInputElement
+    const username = document.getElementById("username") as HTMLInputElement
     const password = document.getElementById("password") as HTMLInputElement
 
     let isValid = true
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true)
-      setEmailErrorMessage("Please enter a valid email address.")
+    if (!username.value || !/\S+@\S+\.\S+/.test(username.value)) {
+      setusernameError(true)
+      setusernameErrorMessage("Please enter a valid username address.")
       isValid = false
     } else {
-      setEmailError(false)
-      setEmailErrorMessage("")
+      setusernameError(false)
+      setusernameErrorMessage("")
     }
 
     if (!password.value || password.value.length < 6) {
@@ -109,7 +103,7 @@ export default function App() {
           variant="h4"
           sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
         >
-          Sign in
+          Iniciar Sesion
         </Typography>
         <Box
           component="form"
@@ -123,26 +117,26 @@ export default function App() {
           }}
         >
           <FormControl>
-            <FormLabel htmlFor="email">Email</FormLabel>
+            <FormLabel htmlFor="username">Usuario</FormLabel>
             <TextField
-              error={emailError}
-              helperText={emailErrorMessage}
-              id="email"
-              type="email"
-              name="email"
-              placeholder="your@email.com"
-              autoComplete="email"
+              error={usernameError}
+              helperText={usernameErrorMessage}
+              id="username"
+              type="username"
+              name="username"
+              placeholder="Ven911"
+              autoComplete="username"
               autoFocus
               required
               fullWidth
               variant="outlined"
-              color={emailError ? "error" : "primary"}
-              sx={{ ariaLabel: "email" }}
+              color={usernameError ? "error" : "primary"}
+              sx={{ ariaLabel: "username" }}
             />
           </FormControl>
           <FormControl>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor="password">Contraseña</FormLabel>
             </Box>
             <TextField
               error={passwordError}
@@ -165,7 +159,7 @@ export default function App() {
             variant="contained"
             onClick={validateInputs}
           >
-            Sign in
+            Acceder
           </Button>
         </Box>
       </Card>
