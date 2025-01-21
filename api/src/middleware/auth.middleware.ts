@@ -45,31 +45,23 @@ export const authRole: (
     if (user === null)
       throw new HttpException(404, "El usuario asignado al token no existe.");
     req.user = user;
-    const userRoles = await user.getRoles();
+    const userRoles = (await user.getRoles()).map(roles => roles.name);
     // Counter for case "object"
     let counter = 0;
     switch (typeof role) {
       case "string":
-        userRoles.forEach((userRole) => {
-          if (userRole.name !== role)
-            throw new HttpException(
-              403,
-              "Este usuario no esta autorizado para esta ruta."
-            );
-        });
+        userRoles.forEach((userRole) => { if (userRole === role) counter++ });
         break;
       case "object":
-        role.forEach((argRole) => {
-          userRoles.forEach((userRole) => {
-            if (userRole.name === argRole) counter++;
-          });
+        role.forEach((argRole) => { 
+          userRoles.forEach((userRole) => { if (userRole === argRole) counter++ });
         });
-        if (!counter)
-          throw new HttpException(
-            403,
-            "Este usuario no esta autorizado para esta ruta."
-          );
-    }
+      }
+      if (!counter)
+        throw new HttpException(
+          403,
+          "Este usuario no esta autorizado para esta ruta."
+        );
     next();
   } catch (error) {
     console.error(error);
