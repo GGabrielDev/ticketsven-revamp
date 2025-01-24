@@ -57,9 +57,9 @@ export default class Municipality extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getstate: BelongsToGetAssociationMixin<State>;
-  declare setstate: BelongsToSetAssociationMixin<State, State["id"]>;
-  declare createstate: BelongsToCreateAssociationMixin<State>;
+  declare getState: BelongsToGetAssociationMixin<State>;
+  declare setState: BelongsToSetAssociationMixin<State, State["id"]>;
+  declare createState: BelongsToCreateAssociationMixin<State>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
