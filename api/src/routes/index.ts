@@ -12,6 +12,7 @@ import parishRouter from "./parish";
 import quadrantRouter from "./quadrant";
 import reasonRouter from "./reason";
 import roleRouter from "./role";
+import stateRouter from "./state";
 import supervisorRouter from "./supervisor";
 import ticketRouter from "./ticket";
 import userRouter from "./user";
@@ -31,8 +32,9 @@ router.use("/organism", organismRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
-router.use("/ticket", ticketRouter);
+router.use("/state", stateRouter);
 router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
+router.use("/ticket", ticketRouter);
 router.use("/role", authRole("admin"), roleRouter);
 
 export default router;
