@@ -6,11 +6,28 @@ import Parish from "../models/Parish";
 import Quadrant from "../models/Quadrant";
 import Reason from "../models/Reason";
 import Role from "../models/Role";
+import State from "../models/State";
 import Ticket from "../models/Ticket";
 import User from "../models/User";
 
 export default () => {
+  // State associations
+  State.hasMany(Municipality, {
+    sourceKey: "id",
+    foreignKey: "stateId",
+    as: "municipalities",
+  });
+  State.hasMany(Ticket, {
+    sourceKey: "id",
+    foreignKey: "stateId",
+    as: "tickets",
+  });
+
   // Municipality associations
+  Municipality.belongsTo(State, {
+    foreignKey: "stateId",
+    as: "state",
+  });
   Municipality.hasMany(Parish, {
     sourceKey: "id",
     foreignKey: "municipalityId",
@@ -84,6 +101,10 @@ export default () => {
   });
 
   // Ticket associations
+  Ticket.belongsTo(State, {
+    foreignKey: "stateId",
+    as: "state",
+  });
   Ticket.belongsTo(Municipality, {
     foreignKey: "municipalityId",
     as: "municipality",
