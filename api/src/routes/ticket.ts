@@ -10,6 +10,7 @@ import OrganismGroup from "../models/OrganismGroup";
 import Parish from "../models/Parish";
 import Quadrant from "../models/Quadrant";
 import Reason from "../models/Reason";
+import State from "../models/State";
 import Ticket from "../models/Ticket";
 import User from "../models/User";
 import HttpException from "../exceptions/HttpException";
@@ -26,6 +27,7 @@ type RouteRequest = Request<
 
 // Const Declarations
 const ticketAttrExclude = [
+  "stateId",
   "municipalityId",
   "parishId",
   "reasonId",
@@ -33,6 +35,7 @@ const ticketAttrExclude = [
 ];
 
 const ticketAttrInclude = [
+  { model: State, as: "state" },
   { model: Municipality, as: "municipality" },
   { model: Organism, as: "organism" },
   { model: OrganismGroup, as: "organismGroup" },
@@ -102,6 +105,7 @@ router.post(
         caller_name,
         id_number,
         id_type,
+        stateId,
         municipalityId,
         parishId,
         address,
@@ -116,6 +120,7 @@ router.post(
           reasonId &&
           id_type &&
           caller_name &&
+          stateId &&
           municipalityId &&
           parishId &&
           address &&
@@ -124,6 +129,8 @@ router.post(
         )
       )
         throw new HttpException(401, "Request is missing required arguments");
+      if (!(await State.findByPk(stateId)))
+        throw new HttpException(401, "Selected State doesn't exists")
       if (!(await Municipality.findByPk(municipalityId)))
         throw new HttpException(401, "Selected Municipality doesn't exists");
       if (!(await Parish.findByPk(parishId)))
@@ -143,6 +150,7 @@ router.post(
       });
       await Promise.all([
         result.addUser(userId),
+        result.setState(stateId),
         result.setMunicipality(municipalityId),
         result.setParish(parishId),
         result.setReason(reasonId),

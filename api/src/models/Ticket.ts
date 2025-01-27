@@ -8,8 +8,9 @@ import Municipality from "./Municipality";
 import Organism from "./Organism";
 import OrganismGroup from "./OrganismGroup";
 import Parish from "./Parish";
-import Reason from "./Reason";
 import Quadrant from "./Quadrant";
+import Reason from "./Reason";
+import State from "./State";
 
 // Type Imports
 import type {
@@ -81,6 +82,7 @@ export default class Ticket extends Model<
   declare parishId: ForeignKey<Parish["id"]>;
   declare quadrantId: ForeignKey<Quadrant["id"]>;
   declare reasonId: ForeignKey<Reason["id"]>;
+  declare stateId: ForeignKey<State["id"]>;
 
   // `municipality` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
@@ -94,6 +96,13 @@ export default class Ticket extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
+  declare createState: BelongsToCreateAssociationMixin<State>;
+  declare getState: BelongsToGetAssociationMixin<State>;
+  declare setState: BelongsToSetAssociationMixin<
+    State,
+    State["id"]
+  >;
+
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
   declare getMunicipality: BelongsToGetAssociationMixin<Municipality>;
   declare setMunicipality: BelongsToSetAssociationMixin<

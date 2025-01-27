@@ -3,17 +3,12 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import Parish from "./Parish";
-import State from "./State";
+import Municipality from "./Municipality";
 import Ticket from "./Ticket";
 
 // Type Imports
 import type {
   Association,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToCreateAssociationMixin,
-  CreationOptional,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -24,16 +19,16 @@ import type {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
-  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  CreationOptional,
   NonAttribute,
 } from "sequelize";
 
 // Class Declaration
-export default class Municipality extends Model<
-  InferAttributes<Municipality>,
-  InferCreationAttributes<Municipality>
+export default class State extends Model<
+  InferAttributes<State>,
+  InferCreationAttributes<State>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
@@ -45,35 +40,43 @@ export default class Municipality extends Model<
   // deletedAt can be undefined during creation (paranoid table)
   declare deletedAt: CreationOptional<Date>;
 
-  // foreign keys are automatically added by associations methods (like Project.belongsTo)
-  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
-  // display an error if ownerId is missing.
-  declare stateId: ForeignKey<State["id"]>;
-
-  // `state` is an eagerly-loaded association.
-  // We tag it as `NonAttribute`
-  declare state?: NonAttribute<State>;
-
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getState: BelongsToGetAssociationMixin<State>;
-  declare setState: BelongsToSetAssociationMixin<State, State["id"]>;
-  declare createState: BelongsToCreateAssociationMixin<State>;
-
-  // Since TS cannot determine model association at compile time
-  // we have to declare them here purely virtually
-  // these will not exist until `Model.init` was called.
-  declare getParishes: HasManyGetAssociationsMixin<Parish>; // Note the null assertions!
-  declare countParishes: HasManyCountAssociationsMixin;
-  declare hasParish: HasManyHasAssociationMixin<Parish, Parish["id"]>;
-  declare hasParishes: HasManyHasAssociationsMixin<Parish, Parish["id"]>;
-  declare setParishes: HasManySetAssociationsMixin<Parish, Parish["id"]>;
-  declare addParish: HasManyAddAssociationMixin<Parish, Parish["id"]>;
-  declare addParishes: HasManyAddAssociationsMixin<Parish, Parish["id"]>;
-  declare removeParish: HasManyRemoveAssociationMixin<Parish, Parish["id"]>;
-  declare removeParishes: HasManyRemoveAssociationsMixin<Parish, Parish["id"]>;
-  declare createParish: HasManyCreateAssociationMixin<Parish, "municipalityId">;
+  declare getMunicipalities: HasManyGetAssociationsMixin<Municipality>; // Note the null assertions!
+  declare countMunicipalities: HasManyCountAssociationsMixin;
+  declare hasMunicipality: HasManyHasAssociationMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare hasMunicipalities: HasManyHasAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare setMunicipalities: HasManySetAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare addMunicipality: HasManyAddAssociationMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare addMunicipalities: HasManyAddAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare removeMunicipality: HasManyRemoveAssociationMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare removeMunicipalities: HasManyRemoveAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare createMunicipality: HasManyCreateAssociationMixin<
+    Municipality,
+    "stateId"
+  >;
 
   declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
   declare countTickets: HasManyCountAssociationsMixin;
@@ -88,17 +91,17 @@ export default class Municipality extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare parishes?: NonAttribute<Parish[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare municipalities?: NonAttribute<Municipality[]>; // Note this is optional since it's only populated when explicitly requested in code
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    parishes: Association<Municipality, Parish>;
-    tickets: Association<Municipality, Ticket>;
+    municipalities: Association<State, Municipality>;
+    tickets: Association<State, Ticket>;
   };
 }
 
 // Model Inizialization
-Municipality.init(
+State.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -120,10 +123,10 @@ Municipality.init(
   {
     sequelize,
     name: {
-      singular: "municipality",
-      plural: "municipalities",
+      singular: "state",
+      plural: "states",
     },
-    tableName: "municipalities",
+    tableName: "states",
     paranoid: true,
   }
 );
