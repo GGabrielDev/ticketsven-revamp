@@ -21,7 +21,7 @@ import type { Request, Response, NextFunction } from "express";
 // Type Declarations
 type RouteRequest = Request<
   Record<"ticketId", string>, // Params
-  Record<string, never>, // Query
+  Record<"startTime" | "endTime", number>, // Query
   Partial<Ticket> // Body
 >;
 
@@ -63,6 +63,81 @@ router.get(
         include: ticketAttrInclude,
       });
       return res.status(200).send(result);
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/time",
+  authRole(["operator"]),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Extract query parameters for start and end times
+      const { startTime, endTime } = req.query;
+
+      // Default to the last 24 hours if no time bracket is provided
+      const defaultStartTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago in milliseconds
+      const defaultEndTime = Date.now(); // Current time in milliseconds
+
+      // Parse the start and end times from the query, or use defaults
+      const start = startTime ? Number(startTime) : defaultStartTime;
+      const end = endTime ? Number(endTime) : defaultEndTime;
+
+      // Validate the timestamps
+      if (isNaN(start) || isNaN(end)) {
+        throw new HttpException(
+          400,
+          "Invalid timestamp. Provide a valid UNIX timestamp in milliseconds."
+        );
+      }
+
+      if (start > end) {
+        throw new HttpException(400, "Start time must be before end time.");
+      }
+
+      // Fetch tickets within the specified time bracket
+      const tickets = await Ticket.findAll({
+        where: {
+          call_started: {
+            [Op.between]: [new Date(start), new Date(end)], // Convert timestamps to Date objects
+          },
+        },
+        attributes: [
+          "id",
+          "isOpen",
+          "phone_number",
+          "caller_name",
+          "id_number",
+          "id_type",
+          "address",
+          "reference_point",
+          "details",
+          "call_started",
+          "call_ended",
+          "dispatch_time",
+          "arrival_time",
+          "finish_time",
+          "dispatch_details",
+          "reinforcement_units",
+          "follow_up",
+          "closing_state",
+          "closing_details",
+          "createdAt",
+          "updatedAt",
+        ], // Include only the fields provided during the first post
+        include: [
+          {
+            model: Reason,
+            as: "reason", // Only include the reason association
+          },
+        ],
+      });
+
+      // Return the filtered tickets
+      return res.status(200).send(tickets);
     } catch (error) {
       console.error(error);
       next(error);
@@ -130,7 +205,7 @@ router.post(
       )
         throw new HttpException(401, "Request is missing required arguments");
       if (!(await State.findByPk(stateId)))
-        throw new HttpException(401, "Selected State doesn't exists")
+        throw new HttpException(401, "Selected State doesn't exists");
       if (!(await Municipality.findByPk(municipalityId)))
         throw new HttpException(401, "Selected Municipality doesn't exists");
       if (!(await Parish.findByPk(parishId)))
