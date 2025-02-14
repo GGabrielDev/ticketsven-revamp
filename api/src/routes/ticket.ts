@@ -72,7 +72,7 @@ router.get(
 
 router.get(
   "/time",
-  authRole(["operator"]),
+  authRole(["operator", "dispatcher"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extract query parameters for start and end times
