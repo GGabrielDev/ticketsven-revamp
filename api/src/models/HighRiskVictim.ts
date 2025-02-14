@@ -94,27 +94,27 @@ HighRiskVictim.init(
     },
     age: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     id_number: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     id_type: {
       type: DataTypes.ENUM("V", "E", "J"),
-      allowNull: false,
+      allowNull: true,
     },
     remitent: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     document_number: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     topic: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     delivered_date: {
       type: DataTypes.DATE,

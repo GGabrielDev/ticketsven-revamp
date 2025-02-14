@@ -29,6 +29,7 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "sequelize";
+import HighRiskVictim from "./HighRiskVictim";
 
 // Class Declaration
 export default class Municipality extends Model<
@@ -64,6 +65,41 @@ export default class Municipality extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
+  declare getHighRiskVictim: HasManyGetAssociationsMixin<HighRiskVictim>; // Note the null assertions!
+  declare countHighRiskVictim: HasManyCountAssociationsMixin;
+  declare hasHighRiskVictim: HasManyHasAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare hasHighRiskVictims: HasManyHasAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare setHighRiskVictim: HasManySetAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictim: HasManyAddAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictims: HasManyAddAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictim: HasManyRemoveAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictims: HasManyRemoveAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare createHighRiskVictim: HasManyCreateAssociationMixin<
+    HighRiskVictim,
+    "municipalityId"
+  >;
+
   declare getParishes: HasManyGetAssociationsMixin<Parish>; // Note the null assertions!
   declare countParishes: HasManyCountAssociationsMixin;
   declare hasParish: HasManyHasAssociationMixin<Parish, Parish["id"]>;
@@ -88,10 +124,12 @@ export default class Municipality extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare parishes?: NonAttribute<Parish[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare highRiskVictim?: NonAttribute<HighRiskVictim[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare parishes?: NonAttribute<Parish[]>;
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
+    highRiskVictim: Association<Municipality, HighRiskVictim>;
     parishes: Association<Municipality, Parish>;
     tickets: Association<Municipality, Ticket>;
   };

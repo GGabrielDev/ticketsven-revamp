@@ -3,6 +3,7 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
+import HighRiskVictim from "./HighRiskVictim";
 import Municipality from "./Municipality";
 import Ticket from "./Ticket";
 
@@ -43,6 +44,41 @@ export default class State extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
+  declare getHighRiskVictim: HasManyGetAssociationsMixin<HighRiskVictim>; // Note the null assertions!
+  declare countHighRiskVictim: HasManyCountAssociationsMixin;
+  declare hasHighRiskVictim: HasManyHasAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare hasHighRiskVictims: HasManyHasAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare setHighRiskVictim: HasManySetAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictim: HasManyAddAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictims: HasManyAddAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictim: HasManyRemoveAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictims: HasManyRemoveAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare createHighRiskVictim: HasManyCreateAssociationMixin<
+    HighRiskVictim,
+    "stateId"
+  >;
+
   declare getMunicipalities: HasManyGetAssociationsMixin<Municipality>; // Note the null assertions!
   declare countMunicipalities: HasManyCountAssociationsMixin;
   declare hasMunicipality: HasManyHasAssociationMixin<
@@ -87,14 +123,16 @@ export default class State extends Model<
   declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
   declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
   declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
-  declare createTicket: HasManyCreateAssociationMixin<Ticket, "municipalityId">;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "stateId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare municipalities?: NonAttribute<Municipality[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare highRiskVictims?: NonAttribute<HighRiskVictim[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare municipalities?: NonAttribute<Municipality[]>;
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
+    highRiskVictims: Association<State, HighRiskVictim>;
     municipalities: Association<State, Municipality>;
     tickets: Association<State, Ticket>;
   };

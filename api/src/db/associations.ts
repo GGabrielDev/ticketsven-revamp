@@ -1,4 +1,5 @@
 // File Imports
+import HighRiskVictim from "../models/HighRiskVictim";
 import Municipality from "../models/Municipality";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
@@ -12,6 +13,11 @@ import User from "../models/User";
 
 export default () => {
   // State associations
+  State.hasMany(HighRiskVictim, {
+    sourceKey: "id",
+    foreignKey: "stateId",
+    as: "highRiskVictims",
+  });
   State.hasMany(Municipality, {
     sourceKey: "id",
     foreignKey: "stateId",
@@ -27,6 +33,11 @@ export default () => {
   Municipality.belongsTo(State, {
     foreignKey: "stateId",
     as: "state",
+  });
+  Municipality.hasMany(HighRiskVictim, {
+    sourceKey: "id",
+    foreignKey: "municipalityId",
+    as: "highRiskVictims",
   });
   Municipality.hasMany(Parish, {
     sourceKey: "id",
@@ -67,6 +78,11 @@ export default () => {
     foreignKey: "municipalityId",
     as: "municipality",
   });
+  Parish.hasMany(HighRiskVictim, {
+    sourceKey: "id",
+    foreignKey: "parishId",
+    as: "highRiskVictims",
+  });
   Parish.hasMany(Quadrant, {
     sourceKey: "id",
     foreignKey: "parishId",
@@ -85,6 +101,13 @@ export default () => {
     foreignKey: "quadrantId",
     as: "tickets",
   });
+  // HighRiskVictim associations
+  HighRiskVictim.belongsTo(State, { foreignKey: "stateId", as: "state" });
+  HighRiskVictim.belongsTo(Municipality, {
+    foreignKey: "municipalityId",
+    as: "municipality",
+  });
+  HighRiskVictim.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
 
   // Reason associations
   Reason.hasMany(Ticket, {
