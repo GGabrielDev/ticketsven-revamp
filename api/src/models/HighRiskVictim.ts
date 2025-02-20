@@ -1,11 +1,22 @@
 // Package Imports
 import {
+  Association,
   BelongsToCreateAssociationMixin,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyAddAssociationsMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -16,6 +27,7 @@ import {
 import sequelize from "../db/config";
 import Municipality from "./Municipality";
 import Parish from "./Parish";
+import Perpetrator from "./Perpetrator";
 import State from "./State";
 
 // Class Declaration
@@ -75,6 +87,49 @@ export default class HighRiskVictim extends Model<
   declare createParish: BelongsToCreateAssociationMixin<Parish>;
   declare getParish: BelongsToGetAssociationMixin<Parish>;
   declare setParish: BelongsToSetAssociationMixin<Parish, Parish["id"]>;
+
+  declare getPerpetrators: HasManyGetAssociationsMixin<Perpetrator>; // Note the null assertions!
+  declare countPerpetrators: HasManyCountAssociationsMixin;
+  declare hasPerpetrator: HasManyHasAssociationMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare hasPerpetrators: HasManyHasAssociationsMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare setPerpetrators: HasManySetAssociationsMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare addPerpetrator: HasManyAddAssociationMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare addPerpetrators: HasManyAddAssociationsMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare removePerpetrator: HasManyRemoveAssociationMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare removePerpetrators: HasManyRemoveAssociationsMixin<
+    Perpetrator,
+    Perpetrator["id"]
+  >;
+  declare createPerpetrator: HasManyCreateAssociationMixin<
+    Perpetrator,
+    "highRiskVictimId"
+  >;
+
+  // You can also pre-declare possible inclusions, these will only be populated if you
+  // actively include a relation.
+  declare perpetrators?: NonAttribute<Perpetrator[]>;
+
+  declare static associations: {
+    perpetrators: Association<Parish, Perpetrator>;
+  };
 }
 
 HighRiskVictim.init(

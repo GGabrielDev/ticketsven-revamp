@@ -4,6 +4,7 @@ import Municipality from "../models/Municipality";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
 import Parish from "../models/Parish";
+import Perpetrator from "../models/Perpetrator";
 import Quadrant from "../models/Quadrant";
 import Reason from "../models/Reason";
 import Role from "../models/Role";
@@ -101,13 +102,25 @@ export default () => {
     foreignKey: "quadrantId",
     as: "tickets",
   });
+
   // HighRiskVictim associations
+  HighRiskVictim.hasMany(Perpetrator, {
+    sourceKey: "id",
+    foreignKey: "highRiskVictimId",
+    as: "highRiskVictim",
+  });
   HighRiskVictim.belongsTo(State, { foreignKey: "stateId", as: "state" });
   HighRiskVictim.belongsTo(Municipality, {
     foreignKey: "municipalityId",
     as: "municipality",
   });
   HighRiskVictim.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
+
+  // Perpetrator associations
+  Perpetrator.belongsTo(HighRiskVictim, {
+    foreignKey: "highRiskVictimId",
+    as: "highRiskVictim",
+  });
 
   // Reason associations
   Reason.hasMany(Ticket, {
