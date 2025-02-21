@@ -107,8 +107,15 @@ export default () => {
   HighRiskVictim.hasMany(Perpetrator, {
     sourceKey: "id",
     foreignKey: "highRiskVictimId",
-    as: "highRiskVictim",
+    as: "perpetrators",
   });
+
+  HighRiskVictim.hasMany(Ticket, {
+    sourceKey: "id",
+    foreignKey: "highRiskVictimId",
+    as: "tickets",
+  });
+
   HighRiskVictim.belongsTo(State, { foreignKey: "stateId", as: "state" });
   HighRiskVictim.belongsTo(Municipality, {
     foreignKey: "municipalityId",
@@ -153,6 +160,10 @@ export default () => {
   Ticket.belongsTo(Parish, { foreignKey: "parishId", as: "parish" });
   Ticket.belongsTo(Quadrant, { foreignKey: "quadrantId", as: "quadrant" });
   Ticket.belongsTo(Reason, { foreignKey: "reasonId", as: "reason" });
+  Ticket.belongsTo(HighRiskVictim, {
+    foreignKey: "highRiskVictimId",
+    as: "highRiskVictim",
+  });
   Ticket.belongsToMany(User, {
     sourceKey: "id",
     foreignKey: "ticketId",

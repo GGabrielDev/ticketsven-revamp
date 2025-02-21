@@ -29,6 +29,7 @@ import Municipality from "./Municipality";
 import Parish from "./Parish";
 import Perpetrator from "./Perpetrator";
 import State from "./State";
+import Ticket from "./Ticket";
 
 // Class Declaration
 export default class HighRiskVictim extends Model<
@@ -123,12 +124,28 @@ export default class HighRiskVictim extends Model<
     "highRiskVictimId"
   >;
 
+  declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
+  declare countTickets: HasManyCountAssociationsMixin;
+  declare hasTicket: HasManyHasAssociationMixin<Ticket, Ticket["id"]>;
+  declare hasTickets: HasManyHasAssociationsMixin<Ticket, Ticket["id"]>;
+  declare setTickets: HasManySetAssociationsMixin<Ticket, Ticket["id"]>;
+  declare addTicket: HasManyAddAssociationMixin<Ticket, Ticket["id"]>;
+  declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
+  declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
+  declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
+  declare createTicket: HasManyCreateAssociationMixin<
+    Ticket,
+    "highRiskVictimId"
+  >;
+
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare perpetrators?: NonAttribute<Perpetrator[]>;
+  declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
     perpetrators: Association<Parish, Perpetrator>;
+    tickets: Association<State, Ticket>;
   };
 }
 
