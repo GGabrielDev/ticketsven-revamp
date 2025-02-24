@@ -2,9 +2,8 @@
 import { Router } from "express";
 import { Op } from "sequelize";
 
-// File Imports
 import { authRole } from "../middleware/auth.middleware";
-import OrganismGroup from "../models/OrganismGroup";
+import State from "../models/State";
 import HttpException from "../exceptions/HttpException";
 
 // Type Imports
@@ -12,23 +11,21 @@ import type { Request, Response, NextFunction } from "express";
 
 // Type Declarations
 type RouteRequest = Request<
-  Record<"organismGroupId", number>,
+  Record<"stateId", number>,
   Record<string, never>,
   Record<"name", string>
 >;
 
+// Logic
 const router = Router();
 
-// Logic
-// NOTE: organismGroup is deprecated, but the logic has just been isolated to prevent bugs
-// TODO: Archive code properly
 router.get(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { name } = req.body;
 
-      const result = await OrganismGroup.findAll({
+      const result = await State.findAll({
         where: name
           ? {
               name: {
@@ -36,7 +33,24 @@ router.get(
               },
             }
           : {},
-        include: [OrganismGroup.associations.organisms],
+        include: [State.associations.municipalities],
+      });
+
+      return res.status(200).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/:stateId",
+  async (req: RouteRequest, res: Response, next: NextFunction) => {
+    try {
+      const { stateId } = req.params;
+
+      const result = await State.findByPk(stateId, {
+        include: [State.associations.municipalities],
       });
 
       return res.status(200).send(result);
@@ -58,13 +72,13 @@ router.post(
       if (!name)
         throw new HttpException(400, "The name is missing as the body");
 
-      const result = await OrganismGroup.create({
+      const result = await State.create({
         name,
       });
 
       return res.status(201).send(
-        await OrganismGroup.findByPk(result.id, {
-          include: [OrganismGroup.associations.organisms],
+        await State.findByPk(result.id, {
+          include: [State.associations.municipalities],
         })
       );
     } catch (error) {
@@ -74,26 +88,20 @@ router.post(
 );
 
 router.put(
-  "/:organismGroupId",
+  "/:stateId",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { organismGroupId } = req.params;
+      const { stateId } = req.params;
       const { name } = req.body;
 
-      if (!organismGroupId) {
-        throw new HttpException(
-          400,
-          "The Organism Group ID is missing as the param"
-        );
+      if (!stateId) {
+        throw new HttpException(400, "The State ID is missing as the param");
       }
 
-      const result = await OrganismGroup.findByPk(organismGroupId);
+      const result = await State.findByPk(stateId);
 
       if (!result) {
-        throw new HttpException(
-          404,
-          "The requested Organism Group doesn't exist"
-        );
+        throw new HttpException(404, "The requested State doesn't exist");
       }
 
       if (name && name !== result.name) result.update({ name });
@@ -106,36 +114,23 @@ router.put(
 );
 
 router.delete(
-  "/:organismGroupId",
+  "/:stateId",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { organismGroupId } = req.params;
+      const { stateId } = req.params;
 
-      if (!organismGroupId) {
-        throw new HttpException(
-          400,
-          "The Organism Group ID is missing as the param"
-        );
+      if (!stateId) {
+        throw new HttpException(400, "The State ID is missing as the param");
       }
-      const result = await OrganismGroup.findByPk(organismGroupId);
+      const result = await State.findByPk(stateId);
 
-      if (!result)
-        throw new HttpException(
-          404,
-          "The requested Organism Group doesn't exist"
-        );
-
-      if (result.organisms && result.organisms.length > 0)
-        throw new HttpException(
-          400,
-          "You can't delete an Organism Group with associated organisms"
-        );
+      if (!result) {
+        throw new HttpException(404, "The requested State doesn't exist");
+      }
 
       await result.destroy();
 
-      res
-        .status(200)
-        .send("The choosed Organism Group was disable successfully");
+      res.status(200).send("The choosed State was disable successfully");
     } catch (error) {
       next(error);
     }

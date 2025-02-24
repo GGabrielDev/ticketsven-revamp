@@ -3,10 +3,11 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import Organism from "./Organism";
+import Municipality from "./Municipality";
 import Ticket from "./Ticket";
 
-import {
+// Type Imports
+import type {
   Association,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
@@ -24,15 +25,10 @@ import {
   NonAttribute,
 } from "sequelize";
 
-// NOTE: The Entity OrganismGroup is no more required by the proyect, but the association can't be
-// arbitrarially removed due to possible bugs
-// TODO: Properly either archive or remove OrganismoGroup entity and dependency without breaking
-// existing deployments
-
 // Class Declaration
-export default class OrganismGroup extends Model<
-  InferAttributes<OrganismGroup>,
-  InferCreationAttributes<OrganismGroup>
+export default class State extends Model<
+  InferAttributes<State>,
+  InferCreationAttributes<State>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
@@ -47,24 +43,39 @@ export default class OrganismGroup extends Model<
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
   // these will not exist until `Model.init` was called.
-  declare getOrganisms: HasManyGetAssociationsMixin<Organism>; // Note the null assertions!
-  declare countOrganisms: HasManyCountAssociationsMixin;
-  declare hasOrganism: HasManyHasAssociationMixin<Organism, Organism["id"]>;
-  declare hasOrganisms: HasManyHasAssociationsMixin<Organism, Organism["id"]>;
-  declare setOrganisms: HasManySetAssociationsMixin<Organism, Organism["id"]>;
-  declare addOrganism: HasManyAddAssociationMixin<Organism, Organism["id"]>;
-  declare addOrganisms: HasManyAddAssociationsMixin<Organism, Organism["id"]>;
-  declare removeOrganism: HasManyRemoveAssociationMixin<
-    Organism,
-    Organism["id"]
+  declare getMunicipalities: HasManyGetAssociationsMixin<Municipality>; // Note the null assertions!
+  declare countMunicipalities: HasManyCountAssociationsMixin;
+  declare hasMunicipality: HasManyHasAssociationMixin<
+    Municipality,
+    Municipality["id"]
   >;
-  declare removeOrganisms: HasManyRemoveAssociationsMixin<
-    Organism,
-    Organism["id"]
+  declare hasMunicipalities: HasManyHasAssociationsMixin<
+    Municipality,
+    Municipality["id"]
   >;
-  declare createOrganism: HasManyCreateAssociationMixin<
-    Organism,
-    "organismGroupId"
+  declare setMunicipalities: HasManySetAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare addMunicipality: HasManyAddAssociationMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare addMunicipalities: HasManyAddAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare removeMunicipality: HasManyRemoveAssociationMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare removeMunicipalities: HasManyRemoveAssociationsMixin<
+    Municipality,
+    Municipality["id"]
+  >;
+  declare createMunicipality: HasManyCreateAssociationMixin<
+    Municipality,
+    "stateId"
   >;
 
   declare getTickets: HasManyGetAssociationsMixin<Ticket>; // Note the null assertions!
@@ -80,17 +91,17 @@ export default class OrganismGroup extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare organisms?: NonAttribute<Organism[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare municipalities?: NonAttribute<Municipality[]>; // Note this is optional since it's only populated when explicitly requested in code
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
-    organisms: Association<OrganismGroup, Organism>;
-    tickets: Association<OrganismGroup, Ticket>;
+    municipalities: Association<State, Municipality>;
+    tickets: Association<State, Ticket>;
   };
 }
 
 // Model Inizialization
-OrganismGroup.init(
+State.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -112,10 +123,10 @@ OrganismGroup.init(
   {
     sequelize,
     name: {
-      singular: "organismGroup",
-      plural: "organismGroups",
+      singular: "state",
+      plural: "states",
     },
-    tableName: "organismGroups",
+    tableName: "states",
     paranoid: true,
   }
 );

@@ -3,6 +3,7 @@ import sequelize from "./config";
 import initAssociations from "./associations";
 import Role from "../models/Role";
 import User from "../models/User";
+import OrganismGroup from "../models/OrganismGroup";
 
 // Const declarations
 // TODO: If the program is started on the mode that requires this variables, force the program not to start if they are not provided.
@@ -62,6 +63,11 @@ export const startDbForce = async () => {
         await fetchedAdminRole.addUser(adminUser, { transaction });
 
         console.log("Roles and Admin User created.");
+
+        // Declare default organismGroup
+        await OrganismGroup.create({ name: "default" }, { transaction });
+
+        console.log("Created default organismGroup for legacy association");
       })
       .catch((err) => {
         console.error("Transaction failed:", err);

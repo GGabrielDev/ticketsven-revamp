@@ -4,11 +4,16 @@ import { DataTypes, Model } from "sequelize";
 // File Imports
 import sequelize from "../db/config";
 import Parish from "./Parish";
+import State from "./State";
 import Ticket from "./Ticket";
 
 // Type Imports
 import type {
   Association,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  BelongsToCreateAssociationMixin,
+  CreationOptional,
   HasManyAddAssociationMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
@@ -19,9 +24,9 @@ import type {
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
   NonAttribute,
 } from "sequelize";
 
@@ -39,6 +44,22 @@ export default class Municipality extends Model<
   declare updatedAt: CreationOptional<Date>;
   // deletedAt can be undefined during creation (paranoid table)
   declare deletedAt: CreationOptional<Date>;
+
+  // foreign keys are automatically added by associations methods (like Project.belongsTo)
+  // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
+  // display an error if ownerId is missing.
+  declare stateId: ForeignKey<State["id"]>;
+
+  // `state` is an eagerly-loaded association.
+  // We tag it as `NonAttribute`
+  declare state?: NonAttribute<State>;
+
+  // Since TS cannot determine model association at compile time
+  // we have to declare them here purely virtually
+  // these will not exist until `Model.init` was called.
+  declare getState: BelongsToGetAssociationMixin<State>;
+  declare setState: BelongsToSetAssociationMixin<State, State["id"]>;
+  declare createState: BelongsToCreateAssociationMixin<State>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
