@@ -6,6 +6,7 @@ import { authJWT, authRole } from "../middleware/auth.middleware";
 
 // -- Route Imports
 import authRouter from "./auth";
+import contactRouter from "./contact";
 import municipalityRouter from "./municipality";
 import organismRouter from "./organism";
 import parishRouter from "./parish";
@@ -22,16 +23,19 @@ import utilityRouter from "./utility";
 const router = Router();
 
 router.use("/auth", authRouter);
+router.use("/contact", contactRouter);
 
+// TODO: Add back authentication and authorization to merge to dev
 router.use(authJWT);
 
 router.use("/utility", utilityRouter);
 router.use("/user", userRouter);
 router.use("/municipality", municipalityRouter);
-router.use("/organism", organismRouter);
 router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
+router.use("/ticket", ticketRouter);
+router.use("/organism", organismRouter);
 router.use("/state", stateRouter);
 router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
 router.use("/ticket", ticketRouter);

@@ -24,7 +24,7 @@ const handleError: ErrorRequestHandler = (err, _, res) => {
    **
    ** Honestly, I copy pasted this middleware :v
    */
-  res.status((customError as HttpException).status).send(customError);
+  res.status(customError.status).send(customError);
 };
 
 export default handleError;
