@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { useNavigate } from "react-router-dom"
 import axios, { axiosConfig } from "../../../helper/Axios"
 
 import type { RootState } from "../../store"
@@ -19,10 +18,7 @@ export const asyncActions = {
   logout: createAsyncThunk("user/logout", async () => {
     // Set the token to an empty string in local storage
     localStorage.setItem("user/token", "")
-
-    // Use useNavigate to navigate to the desired route after logout
-    const navigate = useNavigate()
-    navigate("/") // Replace '/' with the desired route after logout
+    return true // Just signal completion
   }),
   getUser: createAsyncThunk<
     UserType,

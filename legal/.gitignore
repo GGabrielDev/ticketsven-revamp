@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Vite control folder
+# Package relaterd folders
+.react-router/
 .vite/

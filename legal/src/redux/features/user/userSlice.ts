@@ -25,12 +25,14 @@ export type SliceType = {
 export const initialState = {
   status: "Idle",
   // Set the token of the initialState as the one present in the local storage
-  token: localStorage.getItem("user/token"),
+  token:
+    typeof window !== "undefined" ? localStorage.getItem("user/token") : null,
   users: [],
   roles: [],
-  theme: !localStorage.getItem("user/theme")
-    ? "light"
-    : localStorage.getItem("user/theme"),
+  theme:
+    (typeof window !== "undefined"
+      ? (localStorage.getItem("user/theme") as "light" | "dark")
+      : null) || "light",
 } as SliceType
 
 const userSlice = createSlice({
@@ -43,6 +45,12 @@ const userSlice = createSlice({
 
       // Set the token to an empty string in local storage
       localStorage.setItem("user/token", "")
+    },
+    clearUserState: state => {
+      state.user = undefined
+      state.token = ""
+      state.status = "Logout"
+      state.error = undefined
     },
     toggleColorTheme: state => {
       const newTheme = state.theme === "light" ? "dark" : "light"
@@ -114,6 +122,8 @@ const userSlice = createSlice({
       })
       .addCase(asyncActions.logout.fulfilled, state => {
         state.status = "Logout"
+        state.token = ""
+        state.user = undefined
       })
       .addCase(asyncActions.getUser.pending, state => {
         state.status = "Loading"

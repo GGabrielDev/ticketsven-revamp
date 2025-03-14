@@ -1,20 +1,19 @@
 import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Outlet } from "react-router"
 import LoadingBox from "../components/utilities/LoadingBox"
-
-import type { ReactNode } from "react"
-
 import { useAppSelector, useAppDispatch } from "../redux/hooks"
 import { selectors, actions } from "../redux/features/user/userSlice"
 
 const { getUser, clearToken } = actions
 const { selectUser, selectStatus, selectToken } = selectors
 
-type AuthControllerProps = {
-  children: ReactNode | ReactNode[]
-}
-
-export default function AuthController(props: AuthControllerProps) {
+export default function AuthController({
+  initialLoad,
+  setInitialLoad,
+}: {
+  initialLoad: boolean
+  setInitialLoad: (value: boolean) => void
+}) {
   const user = useAppSelector(selectUser)
   const token = useAppSelector(selectToken)
   const status = useAppSelector(selectStatus)
@@ -22,27 +21,35 @@ export default function AuthController(props: AuthControllerProps) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    switch (status) {
-      case "Error":
-        dispatch(clearToken())
-        navigate("/")
-        break
-      case "Idle":
-        if (!token) navigate("/")
+    if (initialLoad) {
+      setInitialLoad(false)
+      return
     }
-  }, [dispatch, navigate, status, token])
+
+    const authCheck = async () => {
+      if (token) {
+        if (!user) {
+          await dispatch(getUser())
+        }
+        navigate("/", { replace: true })
+      } else {
+        navigate("/login", { replace: true })
+      }
+    }
+
+    authCheck()
+  }, [token, user, dispatch, navigate, initialLoad, setInitialLoad])
 
   useEffect(() => {
-    dispatch(getUser())
-    const interval = setInterval(() => {
-      if (token) dispatch(getUser())
-    }, 60000)
-    return () => clearInterval(interval)
-  }, [dispatch, token])
+    if (status === "Error") {
+      dispatch(clearToken())
+      navigate("/login", { replace: true })
+    }
+  }, [status, dispatch, navigate])
 
-  return status === "Loading" && !token && !user ? (
-    <LoadingBox />
-  ) : (
-    props.children
-  )
+  if (token && !user) {
+    return <LoadingBox message="Verificando credenciales..." />
+  }
+
+  return <Outlet />
 }
