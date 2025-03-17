@@ -1,5 +1,7 @@
 // File Imports
 import Contact from "../models/Contact";
+import Deparment from "../models/Deparment";
+import Item from "../models/Item";
 import Municipality from "../models/Municipality";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
@@ -145,5 +147,15 @@ export default () => {
   Contact.belongsTo(Organism, {
     foreignKey: "organismId",
     as: "organism",
+  });
+
+  // Item associations
+  Item.belongsTo(Deparment, { foreignKey: "departmentId", as: "deparment" });
+
+  // Deparment associations
+  Deparment.hasMany(Item, {
+    sourceKey: "id",
+    foreignKey: "reasonId",
+    as: "items",
   });
 };
