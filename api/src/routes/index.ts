@@ -6,6 +6,7 @@ import { authJWT, authRole } from "../middleware/auth.middleware";
 
 // -- Route Imports
 import authRouter from "./auth";
+import legalRouter from "./legal";
 import municipalityRouter from "./municipality";
 import organismRouter from "./organism";
 import parishRouter from "./parish";
@@ -33,6 +34,7 @@ router.use("/parish", parishRouter);
 router.use("/quadrant", quadrantRouter);
 router.use("/reason", reasonRouter);
 router.use("/state", stateRouter);
+router.use("/legal", legalRouter);
 router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
 router.use("/ticket", ticketRouter);
 router.use("/role", authRole("admin"), roleRouter);
