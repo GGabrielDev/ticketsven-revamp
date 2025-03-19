@@ -2,7 +2,7 @@
 import { DataTypes, Model } from "sequelize";
 
 // File Imports
-import sequelize from "../db/config";
+import sequelize from "../../db/config";
 import Item from "./Item";
 
 // Type Imports

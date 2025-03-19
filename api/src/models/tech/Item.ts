@@ -2,7 +2,7 @@
 import { DataTypes, Model } from "sequelize";
 
 // File Imports
-import sequelize from "../db/config";
+import sequelize from "../../db/config";
 import Deparment from "./Deparment";
 
 // Type Imports
@@ -25,6 +25,11 @@ export default class Item extends Model<
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
+  declare brand?: string;
+  declare model?: string;
+  declare serial?: string;
+  declare amount: number;
+  declare details: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
   // updatedAt can be undefined during creation
@@ -61,6 +66,27 @@ Item.init(
       autoIncrement: true,
     },
     name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    brand: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    model: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    serial: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    amount: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      defaultValue: 1,
+    },
+    details: {
       type: DataTypes.STRING,
       allowNull: false,
     },

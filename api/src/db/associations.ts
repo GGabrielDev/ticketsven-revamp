@@ -1,7 +1,7 @@
 // File Imports
 import Contact from "../models/Contact";
-import Deparment from "../models/Deparment";
-import Item from "../models/Item";
+import Deparment from "../models/tech/Deparment";
+import Item from "../models/tech/Item";
 import Municipality from "../models/Municipality";
 import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
