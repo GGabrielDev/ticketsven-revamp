@@ -7,6 +7,7 @@ import Organism from "../models/Organism";
 import OrganismGroup from "../models/OrganismGroup";
 import Parish from "../models/Parish";
 import Quadrant from "../models/Quadrant";
+import RAM from "../models/tech/RAM";
 import Reason from "../models/Reason";
 import Role from "../models/Role";
 import State from "../models/State";
@@ -151,11 +152,25 @@ export default () => {
 
   // Item associations
   Item.belongsTo(Deparment, { foreignKey: "departmentId", as: "deparment" });
+  Item.hasMany(RAM, {
+    sourceKey: "id",
+    foreignKey: "itemId",
+    as: "rams",
+  });
 
   // Deparment associations
   Deparment.hasMany(Item, {
     sourceKey: "id",
-    foreignKey: "reasonId",
+    foreignKey: "departmentId",
     as: "items",
   });
+  Deparment.hasMany(RAM, {
+    sourceKey: "id",
+    foreignKey: "departmentId",
+    as: "rams",
+  });
+
+  // RAM associations
+  RAM.belongsTo(Deparment, { foreignKey: "departmentId", as: "deparment" });
+  RAM.belongsTo(Item, { foreignKey: "itemId", as: "item" });
 };

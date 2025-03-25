@@ -4,9 +4,11 @@ import { DataTypes, Model } from "sequelize";
 // File Imports
 import sequelize from "../../db/config";
 import Deparment from "./Deparment";
+import RAM from "./RAM";
 
 // Type Imports
 import type {
+  Association,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   BelongsToCreateAssociationMixin,
@@ -14,6 +16,16 @@ import type {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  HasManyAddAssociationMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyAddAssociationsMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
   NonAttribute,
 } from "sequelize";
 
@@ -55,6 +67,25 @@ export default class Item extends Model<
     Deparment["id"]
   >;
   declare createDeparment: BelongsToCreateAssociationMixin<Deparment>;
+
+  declare getRAMs: HasManyGetAssociationsMixin<RAM>; // Note the null assertions!
+  declare countRAMs: HasManyCountAssociationsMixin;
+  declare hasRAM: HasManyHasAssociationMixin<RAM, RAM["id"]>;
+  declare hasRAMs: HasManyHasAssociationsMixin<RAM, RAM["id"]>;
+  declare setRAMs: HasManySetAssociationsMixin<RAM, RAM["id"]>;
+  declare addRAM: HasManyAddAssociationMixin<RAM, RAM["id"]>;
+  declare addRAMs: HasManyAddAssociationsMixin<RAM, RAM["id"]>;
+  declare removeRAM: HasManyRemoveAssociationMixin<RAM, RAM["id"]>;
+  declare removeRAMs: HasManyRemoveAssociationsMixin<RAM, RAM["id"]>;
+  declare createRAM: HasManyCreateAssociationMixin<RAM, "itemId">;
+
+  // You can also pre-declare possible inclusions, these will only be populated if you
+  // actively include a relation.
+  declare rams?: NonAttribute<RAM[]>;
+
+  declare static associations: {
+    rams: Association<Deparment, RAM>;
+  };
 }
 
 // Model Inizialization
@@ -105,7 +136,7 @@ Item.init(
       plural: "items",
     },
     tableName: "items",
-    timestamps: false,
+    timestamps: true,
     paranoid: true,
   }
 );

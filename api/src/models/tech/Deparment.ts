@@ -4,6 +4,7 @@ import { DataTypes, Model } from "sequelize";
 // File Imports
 import sequelize from "../../db/config";
 import Item from "./Item";
+import RAM from "./RAM";
 
 // Type Imports
 import type {
@@ -50,12 +51,25 @@ export default class Deparment extends Model<
   declare removeItems: HasManyRemoveAssociationsMixin<Item, Item["id"]>;
   declare createItem: HasManyCreateAssociationMixin<Item, "deparmentId">;
 
+  declare getRAMs: HasManyGetAssociationsMixin<RAM>; // Note the null assertions!
+  declare countRAMs: HasManyCountAssociationsMixin;
+  declare hasRAM: HasManyHasAssociationMixin<RAM, RAM["id"]>;
+  declare hasRAMs: HasManyHasAssociationsMixin<RAM, RAM["id"]>;
+  declare setRAMs: HasManySetAssociationsMixin<RAM, RAM["id"]>;
+  declare addRAM: HasManyAddAssociationMixin<RAM, RAM["id"]>;
+  declare addRAMs: HasManyAddAssociationsMixin<RAM, RAM["id"]>;
+  declare removeRAM: HasManyRemoveAssociationMixin<RAM, RAM["id"]>;
+  declare removeRAMs: HasManyRemoveAssociationsMixin<RAM, RAM["id"]>;
+  declare createRAM: HasManyCreateAssociationMixin<RAM, "deparmentId">;
+
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare items?: NonAttribute<Item[]>;
+  declare rams?: NonAttribute<RAM[]>;
 
   declare static associations: {
     items: Association<Deparment, Item>;
+    rams: Association<Deparment, RAM>;
   };
 }
 
@@ -86,6 +100,7 @@ Deparment.init(
       plural: "deparments",
     },
     tableName: "deparments",
+    timestamps: true,
     paranoid: true,
   }
 );

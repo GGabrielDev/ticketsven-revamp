@@ -4,6 +4,7 @@ import { DataTypes, Model } from "sequelize";
 // File Imports
 import sequelize from "../../db/config";
 import Deparment from "./Deparment";
+import Item from "./Item";
 
 // Type Imports
 import type {
@@ -41,10 +42,12 @@ export default class RAM extends Model<
   // by branding them using the `ForeignKey` type, `Project.init` will know it does not need to
   // display an error if ownerId is missing.
   declare deparmentId: ForeignKey<Deparment["id"]>;
+  declare itemId: ForeignKey<Item["id"]>;
 
   // `deparment` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
   declare deparment?: NonAttribute<Deparment>;
+  declare item?: NonAttribute<Item>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -55,6 +58,10 @@ export default class RAM extends Model<
     Deparment["id"]
   >;
   declare createDeparment: BelongsToCreateAssociationMixin<Deparment>;
+
+  declare getItem: BelongsToGetAssociationMixin<Item>;
+  declare setItem: BelongsToSetAssociationMixin<Item, Item["id"]>;
+  declare createItem: BelongsToCreateAssociationMixin<Item>;
 }
 
 // Model Inizialization
@@ -100,11 +107,11 @@ RAM.init(
   {
     sequelize,
     name: {
-      singular: "item",
-      plural: "items",
+      singular: "ram",
+      plural: "rams",
     },
-    tableName: "items",
-    timestamps: false,
+    tableName: "rams",
+    timestamps: true,
     paranoid: true,
   }
 );
