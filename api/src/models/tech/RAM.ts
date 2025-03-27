@@ -24,10 +24,10 @@ export default class RAM extends Model<
   InferCreationAttributes<RAM>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  declare id: CreationOptional<number>;
+  declare id: CreationOptional<string>;
   declare type: string;
-  declare size: string;
-  declare speed: string;
+  declare size: number;
+  declare speed: number;
   declare brand?: string;
   declare model?: string;
   declare serial?: string;
@@ -68,20 +68,20 @@ export default class RAM extends Model<
 RAM.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     type: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     size: {
-      type: DataTypes.STRING,
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     speed: {
-      type: DataTypes.STRING,
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     brand: {

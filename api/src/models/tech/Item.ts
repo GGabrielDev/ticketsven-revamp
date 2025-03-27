@@ -35,7 +35,7 @@ export default class Item extends Model<
   InferCreationAttributes<Item>
 > {
   // Some fields are optional when calling UserModel.create() or UserModel.build()
-  declare id: CreationOptional<number>;
+  declare id: CreationOptional<string>;
   declare name: string;
   declare brand?: string;
   declare model?: string;
@@ -92,9 +92,9 @@ export default class Item extends Model<
 Item.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     name: {
       type: DataTypes.STRING,
