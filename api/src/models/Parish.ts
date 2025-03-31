@@ -29,6 +29,7 @@ import type {
   InferCreationAttributes,
   NonAttribute,
 } from "sequelize";
+import HighRiskVictim from "./HighRiskVictim";
 
 // Class Declaration
 export default class Parish extends Model<
@@ -64,6 +65,41 @@ export default class Parish extends Model<
   >;
   declare createMunicipality: BelongsToCreateAssociationMixin<Municipality>;
 
+  declare getHighRiskVictim: HasManyGetAssociationsMixin<HighRiskVictim>; // Note the null assertions!
+  declare countHighRiskVictim: HasManyCountAssociationsMixin;
+  declare hasHighRiskVictim: HasManyHasAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare hasHighRiskVictims: HasManyHasAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare setHighRiskVictim: HasManySetAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictim: HasManyAddAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare addHighRiskVictims: HasManyAddAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictim: HasManyRemoveAssociationMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare removeHighRiskVictims: HasManyRemoveAssociationsMixin<
+    HighRiskVictim,
+    HighRiskVictim["id"]
+  >;
+  declare createHighRiskVictim: HasManyCreateAssociationMixin<
+    HighRiskVictim,
+    "parishId"
+  >;
+
   declare getQuadrants: HasManyGetAssociationsMixin<Quadrant>; // Note the null assertions!
   declare countQuadrants: HasManyCountAssociationsMixin;
   declare hasQuadrant: HasManyHasAssociationMixin<Quadrant, Quadrant["id"]>;
@@ -94,10 +130,12 @@ export default class Parish extends Model<
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
-  declare quadrants?: NonAttribute<Quadrant[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare highRiskVictim?: NonAttribute<HighRiskVictim[]>; // Note this is optional since it's only populated when explicitly requested in code
+  declare quadrants?: NonAttribute<Quadrant[]>;
   declare tickets?: NonAttribute<Ticket[]>;
 
   declare static associations: {
+    highRiskVictim: Association<Parish, HighRiskVictim>;
     quadrants: Association<Parish, Quadrant>;
     tickets: Association<Parish, Ticket>;
   };

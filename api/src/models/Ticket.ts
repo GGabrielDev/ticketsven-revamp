@@ -1,8 +1,9 @@
 // Package Imports
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Op } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
+import HighRiskVictim from "./HighRiskVictim";
 import User from "./User";
 import Municipality from "./Municipality";
 import Organism from "./Organism";
@@ -83,6 +84,7 @@ export default class Ticket extends Model<
   declare quadrantId: ForeignKey<Quadrant["id"]>;
   declare reasonId: ForeignKey<Reason["id"]>;
   declare stateId: ForeignKey<State["id"]>;
+  declare highRiskVictimId: ForeignKey<HighRiskVictim["id"]>;
 
   // `municipality` is an eagerly-loaded association.
   // We tag it as `NonAttribute`
@@ -92,6 +94,7 @@ export default class Ticket extends Model<
   declare parish?: NonAttribute<Parish>;
   declare quadrant?: NonAttribute<Quadrant>;
   declare reason?: NonAttribute<Reason>;
+  declare highRiskVictim?: NonAttribute<HighRiskVictim>;
 
   // Since TS cannot determine model association at compile time
   // we have to declare them here purely virtually
@@ -132,6 +135,10 @@ export default class Ticket extends Model<
   declare createReason: BelongsToCreateAssociationMixin<Reason>;
   declare getReason: BelongsToGetAssociationMixin<Reason>;
   declare setReason: BelongsToSetAssociationMixin<Reason, Reason["id"]>;
+
+declare getHighRiskVictim: BelongsToGetAssociationMixin<HighRiskVictim>;
+declare setHighRiskVictim: BelongsToSetAssociationMixin<HighRiskVictim, HighRiskVictim["id"]>;
+declare createHighRiskVictim: BelongsToCreateAssociationMixin<HighRiskVictim>;
 
   declare getUsers: BelongsToManyGetAssociationsMixin<User>;
   declare countUsers: BelongsToManyCountAssociationsMixin;
@@ -255,3 +262,33 @@ Ticket.init(
     paranoid: true,
   }
 );
+
+Ticket.afterCreate(async (ticket) => {
+  try {
+    const whereConditions = [];
+    
+    if (ticket.phone_number) {
+      whereConditions.push({ phone_number: ticket.phone_number });
+    }
+    
+    if (ticket.id_number && ticket.id_type) {
+      whereConditions.push({
+        id_number: ticket.id_number,
+        id_type: ticket.id_type
+      });
+    }
+
+    if (whereConditions.length === 0) return;
+
+    const victim = await HighRiskVictim.findOne({
+      where: { [Op.or]: whereConditions },
+      order: [['createdAt', 'DESC']]
+    });
+
+    if (victim) {
+      await ticket.setHighRiskVictim(victim);
+    }
+  } catch (error) {
+    console.error('Auto-association failed:', error);
+  }
+});

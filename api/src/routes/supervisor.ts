@@ -24,27 +24,21 @@ router.get("/dates", async (_, res: Response, next: NextFunction) => {
   try {
     const oldestTicket = await Ticket.findOne({
       where: {
-        [Op.and]: {
-          isOpen: false,
-          [Op.or]: [
-            { closing_state: { [Op.eq]: "Efectiva" } },
-            { closing_state: { [Op.eq]: "No Efectiva" } },
-            { closing_state: { [Op.eq]: "Rechazada" } },
-          ],
-        },
+        [Op.or]: [
+          { closing_state: { [Op.eq]: "Efectiva" } },
+          { closing_state: { [Op.eq]: "No Efectiva" } },
+          { closing_state: { [Op.eq]: "Rechazada" } },
+        ],
       },
       order: [["createdAt", "ASC"]],
     });
     const newestTicket = await Ticket.findOne({
       where: {
-        [Op.and]: {
-          isOpen: false,
-          [Op.or]: [
-            { closing_state: { [Op.eq]: "Efectiva" } },
-            { closing_state: { [Op.eq]: "No Efectiva" } },
-            { closing_state: { [Op.eq]: "Rechazada" } },
-          ],
-        },
+        [Op.or]: [
+          { closing_state: { [Op.eq]: "Efectiva" } },
+          { closing_state: { [Op.eq]: "No Efectiva" } },
+          { closing_state: { [Op.eq]: "Rechazada" } },
+        ],
       },
       order: [["createdAt", "DESC"]],
     });
@@ -122,16 +116,13 @@ router.get(
       const tickets = await Ticket.findAll({
         attributes: ["id", "createdAt"],
         where: {
-          [Op.and]: {
-            isOpen: false,
-            [Op.or]: [
-              { closing_state: { [Op.eq]: "Efectiva" } },
-              { closing_state: { [Op.eq]: "No Efectiva" } },
-              { closing_state: { [Op.eq]: "Rechazada" } },
-            ],
-            createdAt: {
-              [Op.between]: [start, end],
-            },
+          [Op.or]: [
+            { closing_state: { [Op.eq]: "Efectiva" } },
+            { closing_state: { [Op.eq]: "No Efectiva" } },
+            { closing_state: { [Op.eq]: "Rechazada" } },
+          ],
+          createdAt: {
+            [Op.between]: [start, end],
           },
         },
         include: [{ as: "reason", model: Reason }],
