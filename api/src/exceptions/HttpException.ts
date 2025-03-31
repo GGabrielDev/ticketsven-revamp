@@ -3,7 +3,7 @@ export class HttpException {
   message!: string;
   additionalInfo!: any;
 
-  constructor(status: number = 500, message: string, additionalInfo: any = {}) {
+  constructor(status = 500, message: string, additionalInfo: any = {}) {
     this.message = message;
     this.status = status;
     this.additionalInfo = additionalInfo;

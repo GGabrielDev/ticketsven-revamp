@@ -3,8 +3,9 @@ import { DataTypes, Model } from "sequelize";
 
 // File Imports
 import sequelize from "../db/config";
-import Ticket from "./Ticket";
+import Contact from "./Contact";
 import OrganismGroup from "./OrganismGroup";
+import Ticket from "./Ticket";
 
 // Type Imports
 import type {
@@ -37,7 +38,6 @@ export default class Organism extends Model<
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   declare id: CreationOptional<number>;
   declare name: string;
-  declare closing_details?: string;
   // createdAt can be undefined during creation
   declare createdAt: CreationOptional<Date>;
   // updatedAt can be undefined during creation
@@ -73,14 +73,30 @@ export default class Organism extends Model<
   declare addTickets: HasManyAddAssociationsMixin<Ticket, Ticket["id"]>;
   declare removeTicket: HasManyRemoveAssociationMixin<Ticket, Ticket["id"]>;
   declare removeTickets: HasManyRemoveAssociationsMixin<Ticket, Ticket["id"]>;
-  declare createTicket: HasManyCreateAssociationMixin<Ticket, "parishId">;
+  declare createTicket: HasManyCreateAssociationMixin<Ticket, "organismId">;
+
+  declare getContacts: HasManyGetAssociationsMixin<Contact>; // Note the null assertions!
+  declare countContacts: HasManyCountAssociationsMixin;
+  declare hasContact: HasManyHasAssociationMixin<Contact, Contact["id"]>;
+  declare hasContacts: HasManyHasAssociationsMixin<Contact, Contact["id"]>;
+  declare setContacts: HasManySetAssociationsMixin<Contact, Contact["id"]>;
+  declare addContact: HasManyAddAssociationMixin<Contact, Contact["id"]>;
+  declare addContacts: HasManyAddAssociationsMixin<Contact, Contact["id"]>;
+  declare removeContact: HasManyRemoveAssociationMixin<Contact, Contact["id"]>;
+  declare removeContacts: HasManyRemoveAssociationsMixin<
+    Contact,
+    Contact["id"]
+  >;
+  declare createContact: HasManyCreateAssociationMixin<Contact, "organismId">;
 
   // You can also pre-declare possible inclusions, these will only be populated if you
   // actively include a relation.
   declare tickets?: NonAttribute<Ticket[]>;
+  declare contacts?: NonAttribute<Contact[]>;
 
   declare static associations: {
     tickets: Association<Organism, Ticket>;
+    contacts: Association<Organism, Contact>;
   };
 }
 
