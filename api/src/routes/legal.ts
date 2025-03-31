@@ -186,6 +186,38 @@ router.get(
 );
 
 router.get(
+  "/tickets/highRiskVictim",
+  async (_, res: Response, next: NextFunction) => {
+    try {
+      const tickets = await Ticket.findAll({
+        where: {
+          highRiskVictimId: {
+            [Op.ne]: null,
+          },
+        },
+        include: [
+          { model: Reason, as: "reason" },
+          {
+            model: HighRiskVictim,
+            as: "highRiskVictim",
+            attributes: { exclude: ["stateId", "municipalityId", "parishId"] },
+            include: [
+              { model: State, as: "state" },
+              { model: Municipality, as: "municipality" },
+              { model: Parish, as: "parish" },
+              { model: Perpetrator, as: "perpetrators" },
+            ],
+          },
+        ],
+      });
+      res.status(200).send(tickets);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get(
   "/:id",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
