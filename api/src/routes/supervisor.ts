@@ -102,17 +102,19 @@ router.get(
       const tickets = await Ticket.findAll({
         attributes: ["id", "createdAt"],
         where: {
-          isOpen: true,
-          [Op.and]: {
-            isOpen: false,
-            [Op.or]: [
-              { closing_state: { [Op.eq]: "Efectiva" } },
-              { closing_state: { [Op.eq]: "No Efectiva" } },
-              { closing_state: { [Op.eq]: "Rechazada" } },
-            ],
-          },
-          createdAt: {
-            [Op.between]: [start, end],
+          [Op.or]: {
+            isOpen: true,
+            [Op.and]: {
+              isOpen: false,
+              [Op.or]: [
+                { closing_state: { [Op.eq]: "Efectiva" } },
+                { closing_state: { [Op.eq]: "No Efectiva" } },
+                { closing_state: { [Op.eq]: "Rechazada" } },
+              ],
+            },
+            createdAt: {
+              [Op.between]: [start, end],
+            },
           },
         },
         include: [{ as: "reason", model: Reason }],
