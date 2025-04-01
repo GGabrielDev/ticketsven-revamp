@@ -58,7 +58,7 @@ router.get(
   async (_: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const result = await Ticket.findAll({
-        attributes: ["id"],
+        attributes: ["id", "caller_name"],
         where: { isOpen: { [Op.eq]: true } },
         include: ticketAttrInclude,
       });
