@@ -32,6 +32,8 @@ const ticketAttrExclude = [
   "parishId",
   "reasonId",
   "quadrantId",
+  "organismId",
+  "organismGroupId",
 ];
 
 const ticketAttrInclude = [
@@ -42,6 +44,7 @@ const ticketAttrInclude = [
   { model: Parish, as: "parish" },
   { model: Quadrant, as: "quadrant" },
   { model: Reason, as: "reason" },
+  { model: Organism, as: "organism" },
   {
     model: User,
     as: "users",
@@ -82,7 +85,7 @@ router.get(
       const defaultStartTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago in milliseconds
       const defaultEndTime = Date.now(); // Current time in milliseconds
 
-      // Parse the start and end times from the query, or use defaults
+      // Parse the start and end timehttps://store.steampowered.com/news/app/311690/view/529842339955345340?l=englishs from the query, or use defaults
       const start = startTime ? Number(startTime) : defaultStartTime;
       const end = endTime ? Number(endTime) : defaultEndTime;
 
@@ -340,6 +343,8 @@ router.put(
       const { ticketId } = req.params;
       const {
         quadrantId,
+        organismId,
+        organismGroupId,
         dispatch_time,
         arrival_time,
         finish_time,
@@ -355,6 +360,7 @@ router.put(
       if (
         !(
           quadrantId &&
+          organismId &&
           dispatch_time &&
           arrival_time &&
           finish_time &&
@@ -375,6 +381,9 @@ router.put(
       if (!ticket)
         throw new HttpException(400, "The requested ticket doesn't exists");
       if (quadrantId && quadrantId > 0) await ticket.setQuadrant(quadrantId);
+      if (organismId && organismId > 0) await ticket.setOrganism(organismId);
+      if (organismGroupId && organismGroupId > 0)
+        await ticket.setOrganismGroup(organismGroupId);
       await ticket.update({
         dispatch_time,
         arrival_time,
