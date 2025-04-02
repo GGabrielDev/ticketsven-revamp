@@ -189,10 +189,10 @@ router.get(
   "/tickets/highRiskVictim",
   async (_, res: Response, next: NextFunction) => {
     try {
-      const tickets = await Ticket.findAll({
+      const tickets: Ticket[] = await Ticket.findAll({
         where: {
           highRiskVictimId: {
-            [Op.ne]: null,
+            [Op.ne]: "",
           },
         },
         include: [
