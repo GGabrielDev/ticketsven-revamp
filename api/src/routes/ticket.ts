@@ -150,7 +150,7 @@ router.get(
 
 router.get(
   "/:ticketId",
-  authRole(["dispatcher", "supervisor", "admin"]),
+  authRole(["dispatcher", "supervisor", "legal", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { ticketId } = req.params;
