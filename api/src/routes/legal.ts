@@ -138,7 +138,7 @@ router.get(
       const end = new Date(parseInt(endDate));
 
       const tickets = await Ticket.findAll({
-        attributes: ["id", "createdAt"],
+        attributes: ["id", "id_type", "id_number", "phone_number", "createdAt"],
         where: {
           [Op.and]: {
             isOpen: false,
@@ -152,7 +152,7 @@ router.get(
             },
           },
         },
-        include: [{ as: "reason", model: Reason }],
+        include: [{ as: "reason", model: Reason, attributes: ["name"] }],
         order: [["createdAt", "DESC"]],
       });
       const count = await Ticket.findAll({
