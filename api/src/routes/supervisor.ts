@@ -112,9 +112,7 @@ router.get(
                 { closing_state: { [Op.eq]: "Rechazada" } },
               ],
             },
-            createdAt: {
-              [Op.between]: [start, end],
-            },
+            createdAt: { [Op.between]: [start, end] },
           },
         },
         include: [{ as: "reason", model: Reason }],
@@ -132,17 +130,15 @@ router.get(
               "No Efectiva",
               "Rechazada",
               "Informativa",
-              "Abandonada",
               "Sabotaje",
+              "Abandonada",
             ],
           },
-          createdAt: {
-            [Op.between]: [start, end],
-          },
+          createdAt: { [Op.between]: [start, end] }, // Same dates as tickets query
         },
         group: ["closing_state"],
+        logging: console.log, // Add this to debug SQL
       });
-
       res.status(200).json({ tickets, count });
     } catch (error) {
       next(error);

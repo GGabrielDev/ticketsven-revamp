@@ -38,7 +38,7 @@ router.use("/reason", reasonRouter);
 router.use("/ticket", ticketRouter);
 router.use("/organism", organismRouter);
 router.use("/state", stateRouter);
-router.use("/legal", legalRouter);
+router.use("/legal", authRole(["legal"]), legalRouter);
 router.use("/supervisor", authRole(["supervisor", "admin"]), supervisorRouter);
 router.use("/ticket", ticketRouter);
 router.use("/role", authRole("admin"), roleRouter);

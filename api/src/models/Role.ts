@@ -24,7 +24,13 @@ import type {
 } from "sequelize";
 
 // Type Declarations
-type Roles = "operator" | "dispatcher" | "supervisor" | "legal" | "admin";
+type Roles =
+  | "operator"
+  | "dispatcher"
+  | "supervisor"
+  | "legal"
+  | "masterLegal"
+  | "admin";
 
 // Class Declaration
 export default class Role extends Model<
@@ -78,6 +84,7 @@ Role.init(
         "dispatcher",
         "supervisor",
         "legal",
+        "masterLegal",
         "admin"
       ),
       allowNull: false,

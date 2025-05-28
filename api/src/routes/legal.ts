@@ -336,6 +336,7 @@ router.post(
 
 router.put(
   "/:id",
+  authRole(["masterLegal"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -386,30 +387,39 @@ router.put(
       if (perpetrators) {
         const existingPerps = highRiskVictim.perpetrators || [];
         const existingPerpMap = new Map(existingPerps.map((p) => [p.id, p]));
+        const newPerpetrators: Perpetrator[] = [];
 
-        // Update existing or add new perpetrators
         for (const perp of perpetrators) {
           if (perp.id) {
+            // Update existing perpetrator
             const existing = existingPerpMap.get(perp.id);
-            if (!existing) continue;
-
-            // Type-safe comparison
-            const needsUpdate = (
-              Object.keys(perp) as Array<keyof Perpetrator>
-            ).some(
-              (key) =>
-                key !== "id" &&
-                key in existing &&
-                perp[key] !== existing.get(key)
-            );
-
-            if (needsUpdate) {
-              await existing.update(perp);
+            if (existing) {
+              const needsUpdate = Object.keys(perp).some(
+                (key) =>
+                  key !== "id" &&
+                  perp[key as keyof Perpetrator] !== existing.get(key)
+              );
+              if (needsUpdate) await existing.update(perp);
             }
           } else {
-            // Create new perpetrator logic remains same
+            // Create new perpetrator
+            if (
+              Object.values(perp).every(
+                (v) => v === undefined || v === null
+              )
+            ) {
+              throw new HttpException(
+                400,
+                "Perpetrator must have at least one field"
+              );
+            }
+            const newPerp = await highRiskVictim.createPerpetrator(perp);
+            newPerpetrators.push(newPerp);
           }
         }
+
+        // Combine existing and new perpetrators
+        highRiskVictim.perpetrators = [...existingPerps, ...newPerpetrators];
       }
 
       // Return updated entity
@@ -432,7 +442,7 @@ router.put(
 
 router.delete(
   "/:id",
-  authRole(["admin"]),
+  authRole(["masterLegal"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
