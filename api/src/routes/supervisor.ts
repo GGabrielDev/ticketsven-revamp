@@ -100,7 +100,7 @@ router.get(
       const end = new Date(parseInt(endDate));
 
       const tickets = await Ticket.findAll({
-        attributes: ["id", "closing_state", "isOpen", "createdAt"],
+        attributes: ["id", "isOpen", "closing_state", "createdAt"],
         where: {
           [Op.or]: {
             isOpen: true,
