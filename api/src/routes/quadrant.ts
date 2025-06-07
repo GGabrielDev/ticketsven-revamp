@@ -98,7 +98,7 @@ router.get(
 );
 
 // From this point, only users with the "admin" role can use the following routes.
-router.use(authRole("admin"));
+router.use(authRole(["chief", "admin"]));
 
 router.post(
   "/",

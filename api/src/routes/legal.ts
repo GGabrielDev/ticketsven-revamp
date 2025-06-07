@@ -336,7 +336,7 @@ router.post(
 
 router.put(
   "/:id",
-  authRole(["masterLegal"]),
+  authRole(["masterLegal", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -404,9 +404,7 @@ router.put(
           } else {
             // Create new perpetrator
             if (
-              Object.values(perp).every(
-                (v) => v === undefined || v === null
-              )
+              Object.values(perp).every((v) => v === undefined || v === null)
             ) {
               throw new HttpException(
                 400,
@@ -442,7 +440,7 @@ router.put(
 
 router.delete(
   "/:id",
-  authRole(["masterLegal"]),
+  authRole(["masterLegal", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

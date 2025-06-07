@@ -30,6 +30,8 @@ type Roles =
   | "supervisor"
   | "legal"
   | "masterLegal"
+  | "rrhh"
+  | "chief"
   | "admin";
 
 // Class Declaration
@@ -85,6 +87,8 @@ Role.init(
         "supervisor",
         "legal",
         "masterLegal",
+        "rrhh",
+        "chief",
         "admin"
       ),
       allowNull: false,

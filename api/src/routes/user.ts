@@ -14,8 +14,10 @@ import type { Request, Response, NextFunction } from "express";
 type RouteRequest = Request<
   Record<"userId", string>,
   Record<string, never>,
-  Partial<Record<"username" | "password" | "fullname" | "roleId" | "position", string>> 
-  & Partial<{id_type: "V" | "E" | "J", id_number: number}>
+  Partial<
+    Record<"username" | "password" | "fullname" | "roleId" | "position", string>
+  > &
+    Partial<{ id_type: "V" | "E" | "J"; id_number: number }>
 >;
 
 // Logic
@@ -44,7 +46,7 @@ router.get(
 );
 
 // From this point, only users with the "admin" role can use the following routes.
-router.use(authRole("admin"));
+router.use(authRole(["chief", "admin"]));
 
 router.get("/all", async (_, res: Response, next: NextFunction) => {
   try {
@@ -65,15 +67,28 @@ router.post(
   "/",
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
-      const { username, password, fullname, roleId, position, id_type, id_number } = req.body;
+      const {
+        username,
+        password,
+        fullname,
+        roleId,
+        position,
+        id_type,
+        id_number,
+      } = req.body;
       if (!(username && password && fullname && roleId))
         throw new HttpException(
           400,
           "Required values are missing in the request body"
         );
       const userBody = {
-        username, password, fullname, position, id_type, id_number
-      }
+        username,
+        password,
+        fullname,
+        position,
+        id_type,
+        id_number,
+      };
       const role = await Role.findByPk(roleId);
       if (!role)
         throw new HttpException(404, "The choosen role doesn't exists");
@@ -99,13 +114,28 @@ router.put(
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.params;
-      const { username, password, fullname, roleId, position, id_type, id_number } = req.body;
+      const {
+        username,
+        password,
+        fullname,
+        roleId,
+        position,
+        id_type,
+        id_number,
+      } = req.body;
       const user = await User.findByPk(userId, {
         include: [User.associations.roles],
       });
       if (!user)
         throw new HttpException(404, "The selected user doesn't exists");
-      user.update({ username, password, fullname, position, id_type, id_number });
+      user.update({
+        username,
+        password,
+        fullname,
+        position,
+        id_type,
+        id_number,
+      });
 
       if (user.roles && !user.roles.some((role) => role.id === roleId)) {
         const role = await Role.findByPk(roleId);

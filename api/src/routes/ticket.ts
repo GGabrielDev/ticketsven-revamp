@@ -57,7 +57,7 @@ const router = Router();
 
 router.get(
   "/open",
-  authRole(["dispatcher"]),
+  authRole(["dispatcher", "chief"]),
   async (_: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const result = await Ticket.findAll({
@@ -75,7 +75,7 @@ router.get(
 
 router.get(
   "/time",
-  authRole(["operator", "dispatcher"]),
+  authRole(["operator", "dispatcher", "chief"]),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extract query parameters for start and end times
@@ -150,7 +150,7 @@ router.get(
 
 router.get(
   "/:ticketId",
-  authRole(["dispatcher", "supervisor", "legal", "admin"]),
+  authRole(["dispatcher", "supervisor", "legal", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { ticketId } = req.params;
@@ -172,7 +172,7 @@ router.get(
 
 router.post(
   "/",
-  authRole(["operator"]),
+  authRole(["operator", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const {
@@ -250,7 +250,7 @@ router.post(
 
 router.post(
   "/close",
-  authRole("operator"),
+  authRole(["operator", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const {
@@ -287,7 +287,7 @@ router.post(
 
 router.put(
   "/edit/:ticketId",
-  authRole("dispatcher"),
+  authRole(["dispatcher", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { userId } = req;
@@ -337,7 +337,7 @@ router.put(
 
 router.put(
   "/close/:ticketId",
-  authRole("dispatcher"),
+  authRole(["dispatcher", "chief", "admin"]),
   async (req: RouteRequest, res: Response, next: NextFunction) => {
     try {
       const { ticketId } = req.params;

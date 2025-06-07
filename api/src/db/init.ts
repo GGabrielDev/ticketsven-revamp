@@ -34,6 +34,8 @@ export const startDbForce = async () => {
       .transaction(async (transaction) => {
         // Create roles
         await Role.create({ name: "admin" }, { transaction });
+        await Role.create({ name: "chief" }, { transaction });
+        await Role.create({ name: "rrhh" }, { transaction });
         await Role.create({ name: "legal" }, { transaction });
         await Role.create({ name: "masterLegal" }, { transaction });
         await Role.create({ name: "supervisor" }, { transaction });
