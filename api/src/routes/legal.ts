@@ -30,6 +30,7 @@ router.get("/", async (_: Request, res: Response, next: NextFunction) => {
         { model: Municipality, as: "municipality" },
         { model: Parish, as: "parish" },
         { model: Perpetrator, as: "perpetrators" },
+        { model: Ticket, as: "tickets" },
       ],
     });
     res.status(200).send(result);
@@ -206,6 +207,7 @@ router.get(
               { model: Municipality, as: "municipality" },
               { model: Parish, as: "parish" },
               { model: Perpetrator, as: "perpetrators" },
+              { model: Ticket, as: "tickets" },
             ],
           },
         ],
@@ -229,6 +231,7 @@ router.get(
           { model: Municipality, as: "municipality" },
           { model: Parish, as: "parish" },
           { model: Perpetrator, as: "perpetrators" },
+          { model: Ticket, as: "tickets" },
         ],
       });
       if (!result) throw new HttpException(404, "HighRiskVictim not found");
@@ -324,6 +327,7 @@ router.post(
           { model: Municipality, as: "municipality" },
           { model: Parish, as: "parish" },
           { model: Perpetrator, as: "perpetrators" },
+          { model: Ticket, as: "tickets" },
         ],
       });
 
@@ -350,6 +354,7 @@ router.put(
           { model: Municipality, as: "municipality" },
           { model: Parish, as: "parish" },
           { model: Perpetrator, as: "perpetrators" },
+          { model: Ticket, as: "tickets" },
         ],
       });
 
@@ -428,6 +433,7 @@ router.put(
           { model: Municipality, as: "municipality" },
           { model: Parish, as: "parish" },
           { model: Perpetrator, as: "perpetrators" },
+          { model: Ticket, as: "tickets" },
         ],
       });
 
